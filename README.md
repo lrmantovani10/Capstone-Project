@@ -19,9 +19,9 @@ more quickly, since they will show up at the top of the advertiser's ads managem
 
 * User Stories
 
-** "Nike is a multinational sports clothing company. Because they run many ads on Meta's family of apps that are often managed by third-parties, 
+- "Nike is a multinational sports clothing company. Because they run many ads on Meta's family of apps that are often managed by third-parties, 
 they currently need to spend many minutes sorting out which of these companies to contact through their ads managing platform."
 
-** "AlphaAds is an ads management company which often collaborate with multinationals like Adidas and CNN. Because the current Meta ads interface 
+- "AlphaAds is an ads management company which often collaborate with multinationals like Adidas and CNN. Because the current Meta ads interface 
 has no sorting system for partner advertising companies, AlphaAds employees often need to wait long to be notified about any changes to current ads campaigns, leading to delayed responses concerning their client's campaings. For example, they are only notified that Adidas stopped targeting 20 year-old
 college students in Germany on a sneaker campaign twenty minutes after the fact because Meta currently offers no sorting mechanism of partner companies on its ads management platform."
