@@ -8,10 +8,10 @@ Repo containing code for Lucas Mantovani's Meta University capstone project.
 
 #### Timeline
 
-Week 4 (Starting July 5th): Finish authentication, matching system
-Week 5: Enhance matching algorithm, add filters, modify profile option
-Week 6: Finish building profile setup page
-Week 7: Use actual database (MongoDB), integrate with Messenger API on Matches page
-Week 8: Stretch features (check Google Doc), fix bugs
-Week 9: Finish stretch features, fix bugs
+* Week 4 (Starting July 5th): Finish authentication, matching system
+* Week 5: Enhance matching algorithm, add filters, modify profile option
+* Week 6: Finish building profile setup page
+* Week 7: Use actual database (MongoDB), integrate with Messenger API on Matches page
+* Week 8: Stretch features (check Google Doc), fix bugs
+* Week 9: Finish stretch features, fix bugs
 
