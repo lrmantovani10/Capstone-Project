@@ -1,0 +1,23 @@
+.signupDiv{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-family: "Abel";
+}
+#signupMessage{
+    font-size: xxx-large;
+}
+#imageDiv{
+    justify-content: center;
+}
+#returnResponse{
+    text-align: center;
+}
+#multipleItems{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#loginOption{
+    text-align: center;
+}

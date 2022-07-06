@@ -1,0 +1,19 @@
+.app{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: rgb(75, 0, 130);
+}
+.nav{
+    font-family: "Abel";
+}
+
+.nav-link{
+    color:white;
+    font-size: x-large;
+}
+
+.nav-link:hover{
+    opacity: 80%;
+    color: grey;
+}
