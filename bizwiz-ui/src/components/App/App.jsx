@@ -1,4 +1,4 @@
-import * as React from 'react';
+ import * as React from 'react';
 import './App.css';
 import axios from 'axios';
 import '@fontsource/abel';
@@ -59,7 +59,6 @@ export default function App() {
       messageElement.innerHTML = "Account successfully created!"
       messageElement.style.color = "green"
       localStorage.setItem("userToken", response.data)
-    }).finally(() =>{
       window.location.replace("/profile")
     }).catch((error) => {
       messageElement.innerHTML = error.response.data.error.message
@@ -79,7 +78,6 @@ export default function App() {
       messageElement.innerHTML = "Logging in..."
       messageElement.style.color = "green"
       localStorage.setItem("userToken", response.data)
-    }).finally(() =>{
       window.location.replace("/")
     }).catch((error) => {
       messageElement.innerHTML = error.response.data.error.message
