@@ -1,23 +1,35 @@
-.signupDiv{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    font-family: "Abel";
+.signupDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: "Abel";
 }
-#signupMessage{
-    font-size: xxx-large;
+#signupMessage {
+  font-size: xxx-large;
 }
-#imageDiv{
-    justify-content: center;
+#imageDiv {
+  justify-content: center;
 }
-#returnResponse{
-    text-align: center;
+#returnResponse {
+  text-align: center;
 }
-#multipleItems{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+#multipleItems {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-#loginOption{
-    text-align: center;
+#loginOption {
+  text-align: center;
+}
+.accountTypeSelector {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  margin-bottom: 5%;
+}
+#check2 {
+  margin-left: 10%;
+}
+#accountDescriptor {
+  text-align: center;
 }

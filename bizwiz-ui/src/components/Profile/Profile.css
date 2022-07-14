@@ -1,0 +1,164 @@
+.profilePage {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  align-items: center;
+  text-align: center;
+}
+.profileHeader {
+  margin-top: 2%;
+}
+#profileImage {
+  width: 30vw;
+  height: 30vw;
+}
+#subImage {
+  width: 30vw;
+  height: 30vw;
+}
+#subheader {
+  font-size: large;
+  font-weight: lighter;
+}
+.swipingBasic {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  margin-left: 2%;
+  margin-right: 2%;
+  gap: 10%;
+}
+.secondItem {
+  display: flex;
+  flex-direction: column;
+  margin-right: 4%;
+  text-align: left;
+  gap: 30px;
+}
+.myIntro {
+  text-align: left;
+  font-size: x-large;
+  font-weight: lighter;
+  overflow: scroll;
+}
+
+#currentInfo {
+  font-weight: bold;
+  font-size: large;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 400px;
+}
+
+.currentInterests {
+  font-weight: lighter;
+  font-size: x-large;
+  max-width: 80%;
+  display: block;
+}
+.interestsDiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: scroll;
+  height: 230px;
+}
+.interestList {
+  margin-right: 10%;
+}
+
+.positionsList {
+  margin-right: 10%;
+}
+
+.locationsList {
+  margin-right: 10%;
+}
+
+.horizontalImages {
+  display: flex;
+  flex-direction: row;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.extraImage {
+  border-radius: 5%;
+  width: 20vw;
+  height: 20vw;
+  margin-left: 5%;
+  margin-bottom: 5%;
+}
+.horizontalImages {
+  display: block;
+  max-width: 80%;
+}
+
+.abelFont {
+  font-family: "Abel";
+  font-weight: bold;
+}
+
+#currentLinks {
+  display: flex;
+  flex-direction: row;
+  gap: 40%;
+  justify-content: center;
+  width: 100%;
+}
+.personalLink {
+  text-decoration: none;
+  color: white;
+  font-size: x-large;
+  font-family: "Abel";
+}
+.personalLink:hover {
+  opacity: 70%;
+  color: white;
+}
+#dangerZone {
+  border: 3px solid white;
+  padding: 20px;
+  margin-bottom: 3%;
+}
+#dangerWarning {
+  margin-bottom: 5%;
+}
+.dangerButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 10%;
+}
+.dangerButton {
+  width: 20vw;
+  height: 60px;
+}
+.interestElement {
+  margin-bottom: 10%;
+  border: 2px white solid;
+  border-radius: 7%;
+  padding: 8px;
+}
+#editButton {
+  margin-bottom: 5%;
+  width: 150px;
+  height: 50px;
+  position: absolute;
+  right: 5vw;
+}
+#userLocation {
+  width: 400px;
+  height: 300px;
+  margin-top: 2%;
+  margin-bottom: 6%;
+}
+.profileFooter {
+  margin-top: -5%;
+}
+#logoutStatus {
+  margin-bottom: 1%;
+}

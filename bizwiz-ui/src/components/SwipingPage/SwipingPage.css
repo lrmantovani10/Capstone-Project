@@ -1,88 +1,88 @@
-.swipingGeneral{
-    color: white;
-    text-align: center;
-    font-family: "Abel";
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+.swipingGeneral {
+  color: white;
+  text-align: center;
+  font-family: "Abel";
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-.swipingProfile{
-    display:flex;
-    flex-direction: column;
-    border: 2px solid white;
-    border-radius: 5%;
-    width: 500px;
-    height: 650px;
+.swipingProfile {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid white;
+  border-radius: 5%;
+  width: 500px;
+  height: 650px;
 }
-.swipingBasic{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: left;
-}
-
-#profileImage{
-    border: 2px solid white;
-    margin-left: 5%;
-    border-radius: 50%;
+.swipingBasic {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: left;
 }
 
-.aboutMe{
-    display: flex;
-    flex-direction: column;
-    margin-left: 4%;
-    width: 180px;
-    height: 100%;
-    font-size: large;
+#profileImage {
+  border: 2px solid white;
+  margin-left: 5%;
+  border-radius: 50%;
 }
 
-.myIntro{
-    text-align: left;
+.aboutMe {
+  display: flex;
+  flex-direction: column;
+  margin-left: 4%;
+  width: 180px;
+  height: 100%;
+  font-size: large;
 }
 
-.externals{
-    text-align: left;
-    font-size: large;
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    width: 100%;
-    margin-top: 4%;
-    justify-content: center;
+.myIntro {
+  text-align: left;
 }
 
-.qualification{
-    text-decoration: none;
-    color: white;
+.externals {
+  text-align: left;
+  font-size: large;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  width: 100%;
+  margin-top: 4%;
+  justify-content: center;
 }
 
-.qualification:hover{
-    opacity: 80%;
-    color:grey;
+.qualification {
+  text-decoration: none;
+  color: white;
 }
 
-.pictureHorizontal{
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
+.qualification:hover {
+  opacity: 80%;
+  color: grey;
 }
-.workPictures{
-    margin-top: 5%;
-    display:flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
+
+.pictureHorizontal {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
 }
-.workPicture{
-    width: 130px;
-    height: 130px;
-    border-radius: 30%;
+.workPictures {
+  margin-top: 5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
-.buttonChoice{
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
+.workPicture {
+  width: 130px;
+  height: 130px;
+  border-radius: 30%;
+}
+.buttonChoice {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
 }

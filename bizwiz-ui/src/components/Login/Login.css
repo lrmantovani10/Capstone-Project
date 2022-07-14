@@ -1,20 +1,20 @@
-.loginDiv{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    font-family: "Abel";
+.loginDiv {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: "Abel";
 }
-#loginMessage{
-    font-size: xxx-large;
+#loginMessage {
+  font-size: xxx-large;
 }
-#imageDiv{
-    justify-content: center;
+#imageDiv {
+  justify-content: center;
 }
-#signupOption{
-    text-align: center;
+#signupOption {
+  text-align: center;
 }
-#multipleItems{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+#multipleItems {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
