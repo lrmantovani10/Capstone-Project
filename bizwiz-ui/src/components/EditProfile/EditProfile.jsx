@@ -4,6 +4,7 @@ import Error from "../Error/Error";
 import axios from "axios";
 import "@fontsource/abel";
 import Button from "@mui/material/Button";
+import AddIcon from "@mui/icons-material/Add";
 import { ThemeProvider } from "@mui/material";
 
 export default function EditProfile(props) {
@@ -28,6 +29,15 @@ export default function EditProfile(props) {
             } else {
               props.setProfileImage(basePath + "profiles/default.png");
             }
+
+            if (user.resume.length > 0) {
+              props.setResume(
+                basePath + "resumes/" + user._id + "." + user.resume
+              );
+            } else {
+              props.setResume(basePath + "");
+            }
+
             let newExtras = [];
             user.other_pictures.map((element, index) => {
               if (element.length > 0) {
@@ -65,7 +75,7 @@ export default function EditProfile(props) {
     return (
       <div id="editProfile">
         <h1 id="editProfileHeader" className="abelFont">
-          {props.currentUser.name}
+          {props.currentUser.name}{" "}
         </h1>
 
         <div id="horizontalColumns">
@@ -73,7 +83,6 @@ export default function EditProfile(props) {
             <h2 id="editImageHeader" className="abelFont">
               Profile Image
             </h2>
-
             <div className="imageAlign">
               <img
                 id="profilePicPreview"
@@ -92,9 +101,7 @@ export default function EditProfile(props) {
                 />
               </div>
             </div>
-
             <h2 className="abelFont">Other Images</h2>
-
             {[...Array(6).keys()].map((index) => {
               return (
                 <div key={"imageDiv" + index}>
@@ -122,7 +129,7 @@ export default function EditProfile(props) {
                   </div>
                 </div>
               );
-            })}
+            })}{" "}
           </div>
 
           <div id="editProfileParameters">
@@ -222,6 +229,78 @@ export default function EditProfile(props) {
                 accept=".docx, .txt, .pdf, .doc"
               />
             </div>
+
+            {props.resume.length > 0 ? (
+              <div className="attributeSelection">
+                <a id="currentResume" href={props.resume} download>
+                  {" "}
+                  Download current resume
+                </a>
+              </div>
+            ) : (
+              <></>
+            )}
+
+            {["sectors", "positions", "locations"].map((element, index) => {
+              const firstUppercase =
+                element.charAt(0).toUpperCase() + element.slice(1);
+              const baseInterest = props.currentUser;
+              const basicInterest = element.slice(0, -1);
+              const parameterArray = [
+                baseInterest.interested_sectors,
+                baseInterest.interested_positions,
+                baseInterest.interested_locations,
+              ];
+              return (
+                <div key={"interestWrapper" + index}>
+                  <div className="attributeSelection interestDiv">
+                    <div className="abelFont">
+                      {firstUppercase} of Interest:
+                    </div>
+                    <div className="chosenInterest">
+                      {parameterArray[index].map((interest, idx) => {
+                        return (
+                          <p
+                            key={"chosen" + firstUppercase + idx}
+                            className="chosenInterestBox"
+                            onClick={() => {
+                              props.handleRemove(idx, "interested_" + element);
+                            }}
+                          >
+                            {interest}
+                          </p>
+                        );
+                      })}{" "}
+                    </div>
+                  </div>
+
+                  <div className="attributeSelection">
+                    <div className="abelFont">Add a new {basicInterest}:</div>
+                    <input
+                      id={"new" + firstUppercase}
+                      className="textInput"
+                      type="text"
+                      placeholder={`Enter ${basicInterest}...`}
+                    />
+                    <span>
+                      <AddIcon
+                        onClick={() => {
+                          props.handleAdd(
+                            "new" + firstUppercase,
+                            "interested_" + element
+                          );
+                        }}
+                        className="addIcon"
+                        sx={{
+                          backgroundColor: props.deepPurple[500],
+                          fontSize: 25,
+                        }}
+                      />
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
 

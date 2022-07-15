@@ -115,6 +115,7 @@
   color: white;
   font-size: x-large;
   font-family: "Abel";
+  cursor: pointer;
 }
 .personalLink:hover {
   opacity: 70%;

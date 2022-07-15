@@ -27,6 +27,7 @@ export default function App() {
   let [currentUser, setCurrentUser] = useState(0);
   let [profileImage, setProfileImage] = useState("");
   let [extraImages, setExtras] = useState([]);
+  let [resume, setResume] = useState("");
 
   function handleMatch() {}
 
@@ -87,7 +88,9 @@ export default function App() {
         window.location.replace("/edit_profile");
       })
       .catch((error) => {
-        messageElement.innerHTML = error.response.data.error.message;
+        if (error.code == "ERR_BAD_REQUEST")
+          messageElement.innerHTML = error.response.data.error.message;
+        else messageElement.innerHTML = "Error signing up. Please try again!";
         messageElement.style.color = "red";
       });
   }
@@ -118,38 +121,35 @@ export default function App() {
     window.location.replace("/edit_profile");
   }
 
-  async function storeFile(single, file, headers, destination) {
+  function handleAdd(itemId, field) {
+    const newItem = document.getElementById(itemId).value;
+    let user = { ...currentUser };
+    if (!user[field].includes(newItem.toLowerCase()))
+      user[field].push(newItem.toLowerCase());
+    setCurrentUser(user);
+  }
+
+  function handleRemove(index, field) {
+    let user = { ...currentUser };
+    user[field].splice(index, 1);
+    setCurrentUser(user);
+  }
+
+  async function storeFile(file, extension, headers, destination) {
     const messageElement = document.getElementById("saveStatus");
     let newForm = new FormData();
+    const body = {
+      userId: currentUser._id,
+      destination: destination,
+      extension: extension,
+    };
+    newForm.append("data", JSON.stringify(body));
+    newForm.append("file", file);
+    console.log(extension);
     axios
-      .get(`${apiURL}/get_user`, headers)
-      .then((response) => {
-        const body = {
-          userId: response.data._id,
-          destination: destination,
-          multiple: !single,
-          count: 0,
-        };
-        newForm.append("data", JSON.stringify(body));
-        if (single) {
-          newForm.append("file", file);
-        } else {
-          for (let i = 0; i < file.length; i++) {
-            newForm.append("files", file[i]);
-          }
-        }
-        axios
-          .post(
-            `${apiURL}/upload_${single ? "single" : "multiple"}`,
-            newForm,
-            headers
-          )
-          .then(() => {})
-          .catch(() => {
-            messageElement.innerHTML =
-              "Account update failed. Please try again!";
-            messageElement.style.color = "red";
-          });
+      .post(`${apiURL}/upload_single`, newForm, headers)
+      .then(() => {
+        return;
       })
       .catch(() => {
         messageElement.innerHTML = "Account update failed. Please try again!";
@@ -188,7 +188,7 @@ export default function App() {
       other_pictures.push(currentPictureFile);
     }
 
-    const body = {
+    let body = {
       age: age,
       email: email,
       password: password,
@@ -198,46 +198,79 @@ export default function App() {
       about: about,
       other_link: site,
       linkedin: linkedin,
+      interested_sectors: currentUser.interested_sectors,
+      interested_locations: currentUser.interested_locations,
+      interested_positions: currentUser.interested_positions,
     };
 
     let errorHappened = false;
-    if (profilePicture) {
+    if (password.length < 10) {
+      messageElement.innerHTML = "Password is less than 10 characters!";
+      messageElement.style.color = "red";
+      errorHappened = true;
+    }
+
+    if (!errorHappened) {
+      await axios
+        .get(`${apiURL}/get_user`, headers)
+        .then((response) => {
+          setCurrentUser(response.data);
+        })
+        .catch(() => {
+          messageElement.innerHTML = "Account update failed. Please try again!";
+          messageElement.style.color = "red";
+          errorHappened = true;
+        });
+    }
+
+    if (!errorHappened) {
+      await axios
+        .post(`${apiURL}/check_user`, { email: email }, headers)
+        .then((response) => {
+          setCurrentUser(response.data);
+        })
+        .catch((error) => {
+          if (error.code == "ERR_BAD_REQUEST")
+            messageElement.innerHTML = error.response.data.error.message;
+          else
+            messageElement.innerHTML =
+              "Error updating profile. Please try again!";
+          messageElement.style.color = "red";
+          errorHappened = true;
+        });
+    }
+
+    if (!errorHappened && profilePicture) {
       try {
-        storeFile(true, profilePicture, headers, profilePath);
+        const extension = "." + profilePicture.name.split(".")[1];
+        await storeFile(profilePicture, extension, headers, profilePath);
         body["profile_picture"] = profilePicture.name.split(".")[1];
       } catch {
         errorHappened = true;
       }
     }
-    if (resume) {
+    if (!errorHappened && resume) {
       try {
-        storeFile(true, resume, headers, resumePath);
+        const extension = "." + resume.name.split(".")[1];
+        await storeFile(resume, extension, headers, resumePath);
         body["resume"] = resume.name.split(".")[1];
       } catch {
         errorHappened = true;
       }
     }
 
-    let addElements = [];
-    let nonZero = false;
-    other_pictures.forEach((element, index) => {
-      if (element) {
-        addElements.push(element.name.split(".")[1]);
-        nonZero = true;
-      } else {
-        addElements.push(userPictures[index]);
-      }
-    });
-
-    if (nonZero) {
-      try {
-        storeFile(false, other_pictures, headers, othersPath);
-      } catch {
-        errorHappened = true;
-      }
-    }
-
     if (!errorHappened) {
+      let addElements = [];
+      other_pictures.forEach((element, index) => {
+        if (element) {
+          const extension =
+            "_" + (index + 1) + "." + element.name.split(".")[1];
+          storeFile(element, extension, headers, othersPath);
+          addElements.push(element.name.split(".")[1]);
+        } else {
+          addElements.push(userPictures[index]);
+        }
+      });
       body["other_pictures"] = addElements;
       axios
         .post(`${apiURL}/change_profile`, body, headers)
@@ -245,7 +278,7 @@ export default function App() {
           localStorage.setItem("userToken", response.data);
           messageElement.innerHTML = "Profile successfully changed!";
           messageElement.style.color = "green";
-          //window.location.replace("/profile")
+          window.location.replace("/profile");
         })
         .catch(() => {
           messageElement.innerHTML = "Account update failed. Please try again!";
@@ -260,14 +293,17 @@ export default function App() {
 
   function handleLogout() {
     const messageElement = document.getElementById("logoutStatus");
+    const userToken = localStorage.getItem("userToken");
+    if (userToken.length == 0) {
+      window.location.replace("/login");
+    }
     const headers = {
       headers: {
-        authorization: localStorage.getItem("userToken"),
+        authorization: userToken,
       },
     };
-
     axios
-      .post(`${apiURL}/logout`, headers)
+      .post(`${apiURL}/logout`, {}, headers)
       .then(() => {
         messageElement.innerHTML = "Logging out...";
         messageElement.style.color = "green";
@@ -281,8 +317,28 @@ export default function App() {
   }
 
   function handleDelete() {
-    // localStorage.clear()
-    // window.location.replace("/welcome")
+    const messageElement = document.getElementById("logoutStatus");
+    const userToken = localStorage.getItem("userToken");
+    if (userToken.length == 0) {
+      window.location.replace("/login");
+    }
+    const headers = {
+      headers: {
+        authorization: userToken,
+      },
+    };
+    axios
+      .post(`${apiURL}/delete`, {}, headers)
+      .then(() => {
+        messageElement.innerHTML = "Deleting account...";
+        messageElement.style.color = "green";
+        localStorage.clear();
+        window.location.replace("/welcome");
+      })
+      .catch(() => {
+        messageElement.innerHTML = "Error deleting account. Please try again!";
+        messageElement.style.color = "red";
+      });
   }
 
   function handleChangeImage(event, targetElement) {
@@ -373,6 +429,8 @@ export default function App() {
                   redTheme={redTheme}
                   blueTheme={blueTheme}
                   handleDelete={handleDelete}
+                  resume={resume}
+                  setResume={setResume}
                 />
               </>
             }
@@ -384,6 +442,9 @@ export default function App() {
               <>
                 {navbar}
                 <EditProfile
+                  handleRemove={handleRemove}
+                  handleAdd={handleAdd}
+                  deepPurple={deepPurple}
                   extraImages={extraImages}
                   setExtras={setExtras}
                   profileImage={profileImage}
@@ -396,6 +457,8 @@ export default function App() {
                   redTheme={redTheme}
                   blueTheme={blueTheme}
                   handleChangeImage={handleChangeImage}
+                  resume={resume}
+                  setResume={setResume}
                 />
               </>
             }

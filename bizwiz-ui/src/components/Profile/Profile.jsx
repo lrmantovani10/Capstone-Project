@@ -27,6 +27,13 @@ export default function Profile(props) {
             } else {
               props.setProfileImage(basePath + "profiles/default.png");
             }
+            if (user.resume.length > 0) {
+              props.setResume(
+                basePath + "resumes/" + user._id + "." + user.resume
+              );
+            } else {
+              props.setResume("");
+            }
             let newExtras = [];
             user.other_pictures.map((element, index) => {
               if (element.length > 0) {
@@ -104,20 +111,45 @@ export default function Profile(props) {
                 ></iframe>
 
                 <div id="currentLinks">
-                  <a
-                    href={props.currentUser.resume_link}
-                    target="_blank"
-                    className="personalLink"
-                  >
-                    Resume
-                  </a>
-                  <a
-                    href={props.currentUser.other_link}
-                    target="_blank"
-                    className="personalLink"
-                  >
-                    Personal Website
-                  </a>
+                  {props.resume.length > 0 ? (
+                    <a
+                      href={props.resume}
+                      target="_blank"
+                      className="personalLink"
+                      download
+                    >
+                      Resume
+                    </a>
+                  ) : (
+                    <a
+                      className="personalLink"
+                      onClick={() =>
+                        alert("Edit your profile to add a resume!")
+                      }
+                    >
+                      Resume
+                    </a>
+                  )}
+                  {props.currentUser.other_link.length > 0 ? (
+                    <a
+                      href={props.currentUser.other_link}
+                      target="_blank"
+                      className="personalLink"
+                    >
+                      Personal Website
+                    </a>
+                  ) : (
+                    <a
+                      className="personalLink"
+                      onClick={() =>
+                        alert(
+                          "Edit your profile to add a personal website link!"
+                        )
+                      }
+                    >
+                      Personal Website
+                    </a>
+                  )}
                 </div>
               </div>
             </div>

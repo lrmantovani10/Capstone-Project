@@ -2,13 +2,17 @@
   display: flex;
   flex-direction: column;
   text-align: center;
+  width:100%;
+  height:100%;
 }
 #horizontalColumns {
   display: flex;
   flex-direction: row;
+  justify-content: center;
   width: 100vw;
-  gap: 2%;
   height: 60vh;
+  gap: 2%;
+  margin-top: 2%;
 }
 #editProfileImages {
   display: flex;
@@ -22,7 +26,7 @@
   display: flex;
   flex-direction: column;
   text-align: center;
-  width: 50%;
+  width: 30%;
   overflow: scroll;
 }
 #editProfileHeader {
@@ -39,8 +43,8 @@
   width: 100vw;
   justify-content: center;
   gap: 3%;
-  margin-bottom: 2%;
-  margin-top: 2%;
+  margin-bottom: 1%;
+  margin-top: 4%;
 }
 #saveStatus {
   margin-bottom: 1%;
@@ -73,6 +77,56 @@
 #resumeChange {
   background-color: transparent;
   color: white;
+}
+#currentResume{
+  margin-top: 2%;
+  text-decoration: none;
+  justify-content: left;
+  color:white;
+  font-family: "Abel";
+}
+#currentResume:hover{
+  opacity: 70%;
+}
+#newSector{
+  width:50%;
+  color:white;
+}
+::placeholder{
+  color: white;
+}
+.interestDiv{
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+}
+.chosenInterest{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  color:white;
+}
+.chosenInterestBox{
+  border: 1px solid white;
+  text-align: center;
+  border-radius: 10%;
+  padding: 4px;
+  width:100%;
+  flex: 1 0 25%;
+  margin-right: 2%;
+  cursor: pointer;
+}
+.chosenInterestBox:hover{
+  background-color: rgb(235, 67, 67);
+}
+.addIcon{
+  color:white;
+  border-radius: 20%;
+  cursor: pointer;
+}
+.addIcon:hover{
+  opacity: 70%;
 }
 #ageChange {
   width: 10%;
