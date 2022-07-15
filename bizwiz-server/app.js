@@ -25,15 +25,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const bodyData = JSON.parse(req.body.data);
-    if (bodyData.multiple) {
-      bodyData.count += 1;
-      req.body.data = JSON.stringify(bodyData);
-    }
-    const filename =
-      bodyData.userId +
-      ((bodyData.multiple ? "_" + bodyData.count : "") +
-        "." +
-        file.originalname.split(".")[1]);
+    const filename = bodyData.userId + bodyData.extension;
     cb(null, filename);
   },
 });
@@ -75,7 +67,7 @@ app.post("/signup", async (request, response, next) => {
     const profileData = await Profiles.getProfileId(requestBody.email);
     if (!profileData) {
       await Profiles.createProfile(requestBody);
-      const token = jwt.sign({ email: profileData.email }, mySecretKey);
+      const token = jwt.sign({ email: requestBody.email }, mySecretKey);
       response.status(200).send(token);
     } else {
       next(new BadRequestError("Email already associated with an account!"));
@@ -107,11 +99,22 @@ app.post("/login", async (request, response, next) => {
 app.use(ensureToken);
 
 app.post("/logout", async (request, response, next) => {
-  jwt.verify(request.token, mySecretKey, async function (error, data) {
+  jwt.verify(request.token, mySecretKey, async function (error) {
     if (error) {
       next(new ForbiddenError("Bad Token!"));
     } else {
       await Profiles.logout();
+      response.status(200).send();
+    }
+  });
+});
+
+app.post("/delete", async (request, response, next) => {
+  jwt.verify(request.token, mySecretKey, async function (error, data) {
+    if (error) {
+      next(new ForbiddenError("Bad Token!"));
+    } else {
+      await Profiles.delete(data.email);
       response.status(200).send();
     }
   });
@@ -128,23 +131,24 @@ app.get("/get_user", async (request, response, next) => {
   });
 });
 
+app.post("/check_user", async (request, response, next) => {
+  jwt.verify(request.token, mySecretKey, async function (error, data) {
+    if (error) {
+      next(new ForbiddenError("Bad Token!"));
+    } else {
+      const userData = await Profiles.getProfileId(request.body.email);
+      if (userData && userData.email != data.email) {
+        next(new ForbiddenError("Email already associated with an account!"));
+      } else {
+        response.status(200).send(userData);
+      }
+    }
+  });
+});
+
 app.post(
   "/upload_single",
   upload.single("file"),
-  async (request, response, next) => {
-    jwt.verify(request.token, mySecretKey, async function (error) {
-      if (error) {
-        next(new ForbiddenError("Bad Token!"));
-      } else {
-        response.status(200).send();
-      }
-    });
-  }
-);
-
-app.post(
-  "/upload_multiple",
-  upload.array("files", 6),
   async (request, response, next) => {
     jwt.verify(request.token, mySecretKey, async function (error) {
       if (error) {

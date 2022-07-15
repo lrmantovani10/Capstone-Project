@@ -71,6 +71,12 @@ class Profiles {
       }
     );
   }
+  static async delete(email) {
+    await mongoClient.connect();
+    const database = mongoClient.db("UserData");
+    const profiles = database.collection("Profiles");
+    await profiles.deleteOne({ email: email });
+  }
   static async logout() {
     await mongoClient.close();
   }
