@@ -1,0 +1,149 @@
+#editProfile {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+#horizontalColumns {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100vw;
+  height: 60vh;
+  gap: 2%;
+  margin-top: 2%;
+}
+#editProfileImages {
+  display: flex;
+  flex-direction: column;
+  gap: 10%;
+  width: 50%;
+  overflow: scroll;
+  align-items: center;
+}
+#editProfileParameters {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  width: 30%;
+  overflow: scroll;
+}
+#editProfileHeader {
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+.abelFont {
+  font-family: "Abel";
+  color: white;
+}
+#actionButtons {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  justify-content: center;
+  gap: 3%;
+  margin-bottom: 1%;
+  margin-top: 4%;
+}
+#saveStatus {
+  margin-bottom: 1%;
+}
+.editProfileButton {
+  width: 300px;
+  height: 50px;
+}
+.attributeSelection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: left;
+  gap: 20px;
+  margin-bottom: 5%;
+}
+.textInput {
+  text-align: center;
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+}
+#aboutChange {
+  width: 250px;
+  height: 100px;
+  background-color: transparent;
+  color: white;
+  border: 1px solid white;
+}
+#resumeChange {
+  background-color: transparent;
+  color: white;
+}
+#currentResume {
+  margin-top: 2%;
+  text-decoration: none;
+  justify-content: left;
+  color: white;
+  font-family: "Abel";
+}
+#currentResume:hover {
+  opacity: 70%;
+}
+#experienceChange {
+  background-color: transparent;
+}
+#newSector {
+  width: 50%;
+  color: white;
+}
+::placeholder {
+  color: white;
+}
+.interestDiv {
+  margin-top: 30px;
+  display: flex;
+  flex-direction: column;
+}
+.chosenInterest {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: white;
+}
+.chosenInterestBox {
+  border: 1px solid white;
+  text-align: center;
+  border-radius: 10%;
+  padding: 4px;
+  width: 100%;
+  flex: 1 0 25%;
+  margin-right: 2%;
+  cursor: pointer;
+}
+.chosenInterestBox:hover {
+  background-color: rgb(235, 67, 67);
+}
+.addIcon {
+  color: white;
+  border-radius: 20%;
+  cursor: pointer;
+}
+.addIcon:hover {
+  opacity: 70%;
+}
+#ageChange {
+  width: 10%;
+  text-align: center;
+}
+.picPreview {
+  width: 400px;
+  height: 350px;
+  border-radius: 50%;
+  margin-bottom: 5%;
+}
+img {
+  color: white;
+}
+input {
+  color: white;
+}

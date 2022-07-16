@@ -1,0 +1,18 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.nav {
+  font-family: "Abel";
+}
+
+.nav-link {
+  color: white;
+  font-size: x-large;
+}
+
+.nav-link:hover {
+  opacity: 80%;
+  color: grey;
+}
