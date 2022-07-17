@@ -6,7 +6,6 @@ import Error from "../Error/Error";
 import Button from "@mui/material/Button";
 import { ThemeProvider } from "@mui/material";
 export default function Profile(props) {
-  const basePath = "uploads/";
   useEffect(() => {
     try {
       const userToken = localStorage.getItem("userToken");
@@ -22,15 +21,13 @@ export default function Profile(props) {
             const user = response.data;
             if (user.profile_picture.length > 0) {
               props.setProfileImage(
-                basePath + "profiles/" + user._id + "." + user.profile_picture
+                props.profilesPath + user._id + "." + user.profile_picture
               );
             } else {
-              props.setProfileImage(basePath + "profiles/default.png");
+              props.setProfileImage(props.profilesPath + "default.png");
             }
             if (user.type == 0 && user.resume.length > 0) {
-              props.setResume(
-                basePath + "resumes/" + user._id + "." + user.resume
-              );
+              props.setResume(props.resumesPath + user._id + "." + user.resume);
             } else {
               props.setResume("");
             }
@@ -38,8 +35,7 @@ export default function Profile(props) {
             user.other_pictures.map((element, index) => {
               if (element.length > 0) {
                 newExtras.push(
-                  basePath +
-                    "others/" +
+                  props.othersPath +
                     user._id +
                     "_" +
                     (index + 1) +
@@ -47,13 +43,13 @@ export default function Profile(props) {
                     element
                 );
               } else {
-                newExtras.push(basePath + "others/default.png");
+                newExtras.push(props.othersPath + "default.png");
               }
             });
             props.setExtras(newExtras);
             props.setCurrentUser(user);
           })
-          .catch((error) => {
+          .catch(() => {
             props.setCurrentUser("error");
           });
       } else {
@@ -66,7 +62,7 @@ export default function Profile(props) {
 
   if (props.currentUser == "error") {
     return <Error />;
-  } else if (props.currentUser != 0) {
+  } else if (props.currentUser != "") {
     return (
       <div className="profilePage">
         <div className="profileHeader">
@@ -84,7 +80,14 @@ export default function Profile(props) {
           <p id="subheader">{props.currentUser.email}</p>
 
           <div className="swipingBasic">
-            <img id="profileImage" src={props.profileImage} />
+            <img
+              id="profileImage"
+              src={
+                props.profileImage.length > 0
+                  ? props.profileImage
+                  : props.profilePath + "default.png"
+              }
+            />
             <div className="secondItem">
               <div>
                 <h2 className="abelFont">Intro</h2>

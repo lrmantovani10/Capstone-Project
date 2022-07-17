@@ -28,6 +28,36 @@ export default function SwipingPage(props) {
           .get(`${props.apiURL}/get_profiles`, headers)
           .then((response) => {
             props.setProfiles(response.data);
+            const user = response.data[response.data.length - 1];
+            if (user.profile_picture.length > 0) {
+              props.setProfileImage(
+                props.profilesPath + user._id + "." + user.profile_picture
+              );
+            } else {
+              props.setProfileImage(props.profilesPath + "default.png");
+            }
+            if (user.type == 0 && user.resume.length > 0) {
+              props.setResume(props.resumesPath + user._id + "." + user.resume);
+            } else {
+              props.setResume("");
+            }
+            let newExtras = [];
+            user.other_pictures.map((element, index) => {
+              if (element.length > 0) {
+                newExtras.push(
+                  props.othersPath +
+                    user._id +
+                    "_" +
+                    (index + 1) +
+                    "." +
+                    element
+                );
+              } else {
+                newExtras.push(props.othersPath + "default.png");
+              }
+            });
+            props.setExtras(newExtras);
+            props.setProfile(user);
           })
           .catch(() => {
             props.setProfiles(["error"]);
@@ -38,153 +68,106 @@ export default function SwipingPage(props) {
     } catch {
       window.location.replace("/login");
     }
-  }, [props.currentUser]);
+  }, []);
 
   if (props.profiles.length > 0 && props.profiles[0] == "error") {
     return <Error />;
-  } else if (props.profiles.length > 0 && props.currentUser == 1) {
+  } else if (props.profiles.length > 0 && props.currentUser !== "") {
     return (
       <div className="swipingGeneral">
-        <div className="swipingProfile" id="randomKey">
+        <div className="swipingProfile">
           <h1>
-            {props.profiles[props.profiles.length - 1].name} |{" "}
-            {props.profiles[props.profiles.length - 1].age}
+            {props.profile.name}
+            {props.currentUser == 0 ? "" : "| " + props.profile.age}
           </h1>
           <div className="swipingBasic">
             <img
-              id="profileImage"
-              src={props.profiles[props.profiles.length - 1].picture_url}
+              id="swipingImage"
+              src={
+                props.profileImage.length > 0
+                  ? props.profileImage
+                  : props.profilesPath + "default.png"
+              }
             />
             <div className="aboutMe">
               <h2>Intro</h2>
-              <p className="myIntro">
-                {props.profiles[props.profiles.length - 1].about}
-              </p>
+              <p className="profileIntro">{props.profile.about}</p>
+              <div id="profileSector">
+                {props.profile.sector.length > 0 ? (
+                  props.currentUser == 1 ? (
+                    props.currentUser.occupation +
+                    " in the " +
+                    props.currentUser.sector +
+                    " sector"
+                  ) : (
+                    props.profile.sector + " sector"
+                  )
+                ) : (
+                  <></>
+                )}
+                {props.profile.location.length > 0 ? (
+                  " | " + props.profile.location
+                ) : (
+                  <></>
+                )}
+              </div>
             </div>
           </div>
 
           <div className="workPictures">
             <div className="pictureHorizontal">
-              {props.profiles[props.profiles.length - 1].other_pictures.map(
-                (index, picture) => {
-                  return (
-                    <img
-                      alt={"professional memory picture " + (index + 1)}
-                      className="workPicture"
-                      src={picture}
-                    ></img>
-                  );
-                }
-              )}
+              {props.extraImages.map((picture, index) => {
+                return (
+                  <img
+                    alt={"professional memory picture " + (index + 1)}
+                    key={"professionalMemory" + (index + 1)}
+                    className="workPicture"
+                    src={
+                      picture.length > 0
+                        ? picture
+                        : props.othersPath + "default.png"
+                    }
+                  ></img>
+                );
+              })}
             </div>
           </div>
 
           <div className="externals">
-            <a target="_blank" className="qualification">
-              {props.profiles[props.profiles.length - 1].occupation}
-            </a>
-            <a
-              target="_blank"
-              href={props.profiles[props.profiles.length - 1].linkedin}
-              className="qualification"
-            >
-              LinkedIn
-            </a>
-            <a
-              target="_blank"
-              href={props.profiles[props.profiles.length - 1].resume_link}
-              className="qualification"
-            >
-              Resume
-            </a>
-            <a
-              target="_blank"
-              href={props.profiles[props.profiles.length - 1].other_link}
-              className="qualification"
-            >
-              Website
-            </a>
-          </div>
-        </div>
-        <div className="buttonChoice">
-          <ThemeProvider theme={props.purpleTheme}>
-            <Button
-              onClick={() => props.handleReject()}
-              variant="outlined"
-              style={{
-                backgroundColor: "white",
-                marginTop: "30px",
-                width: "150px",
-                height: "40px",
-                borderRadius: "5%",
-              }}
-            >
-              Reject
-            </Button>
-            <Button
-              onClick={() => props.handleMatch()}
-              variant="contained"
-              style={{
-                marginTop: "30px",
-                width: "150px",
-                height: "40px",
-                borderRadius: "5%",
-              }}
-            >
-              Match
-            </Button>
-          </ThemeProvider>
-        </div>
-      </div>
-    );
-  } else if (props.profiles.length > 0 && props.currentUser == 0) {
-    return (
-      <div className="swipingGeneral">
-        <div className="swipingProfile" id="randomKey">
-          <h1>
-            {props.profiles[props.profiles.length - 1].name} | Years:{" "}
-            {props.profiles[props.profiles.length - 1].interested_years}
-          </h1>
-          <div className="swipingBasic">
-            <img
-              id="profileImage"
-              src={props.profiles[props.profiles.length - 1].picture_url}
-            />
-            <div className="aboutMe">
-              <h2>Intro</h2>
-              <p className="myIntro">
-                {props.profiles[props.profiles.length - 1].about}
-              </p>
-            </div>
-          </div>
-
-          <div className="workPictures">
-            <div className="pictureHorizontal">
-              {props.profiles[props.profiles.length - 1].other_pictures.map(
-                (index, picture) => {
-                  return (
-                    <img
-                      alt={"professional memory picture " + (index + 1)}
-                      className="workPicture"
-                      src={picture}
-                    ></img>
-                  );
-                }
-              )}
-            </div>
-          </div>
-
-          <div className="externals">
-            <a target="_blank" className="qualification">
-              {props.profiles[props.profiles.length - 1].sector}
-            </a>
-            <a
-              target="_blank"
-              href={props.profiles[props.profiles.length - 1].other_link}
-              className="qualification"
-            >
-              Website
-            </a>
+            {props.currentUser == 1 && props.profile.resume.length > 0 ? (
+              <a
+                href={props.currentResume}
+                target="_blank"
+                className="qualification"
+                download
+              >
+                Resume
+              </a>
+            ) : (
+              <></>
+            )}
+            {props.profile.other_link.length > 0 ? (
+              <a
+                target="_blank"
+                href={props.profile.other_link}
+                className="qualification"
+              >
+                Website
+              </a>
+            ) : (
+              <></>
+            )}
+            {props.profile.linkedin.length > 0 ? (
+              <a
+                target="_blank"
+                href={props.profile.linkedin}
+                className="qualification"
+              >
+                LinkedIn
+              </a>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
         <div className="buttonChoice">
@@ -220,9 +203,11 @@ export default function SwipingPage(props) {
     );
   } else {
     return (
-      <div>
-        No potential matches! Broaden filters or come back later for more!
-      </div>
+      <Error
+        message={
+          "No potential matches! Broaden filters or come back later for more!"
+        }
+      />
     );
   }
 }

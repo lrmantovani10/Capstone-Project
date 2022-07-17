@@ -8,8 +8,6 @@ import AddIcon from "@mui/icons-material/Add";
 import { ThemeProvider } from "@mui/material";
 
 export default function EditProfile(props) {
-  const basePath = "uploads/";
-
   function calibrateValue(e) {
     let years = e.value;
     {
@@ -36,26 +34,23 @@ export default function EditProfile(props) {
             const user = response.data;
             if (user.profile_picture.length > 0) {
               props.setProfileImage(
-                basePath + "profiles/" + user._id + "." + user.profile_picture
+                props.profilesPath + user._id + "." + user.profile_picture
               );
             } else {
-              props.setProfileImage(basePath + "profiles/default.png");
+              props.setProfileImage(props.profilesPath + "default.png");
             }
 
             if (user.type == 0 && user.resume.length > 0) {
-              props.setResume(
-                basePath + "resumes/" + user._id + "." + user.resume
-              );
+              props.setResume(props.resumesPath + user._id + "." + user.resume);
             } else {
-              props.setResume(basePath + "");
+              props.setResume(props.resumesPath + "");
             }
 
             let newExtras = [];
             user.other_pictures.map((element, index) => {
               if (element.length > 0) {
                 newExtras.push(
-                  basePath +
-                    "others/" +
+                  props.othersPath +
                     user._id +
                     "_" +
                     (index + 1) +
@@ -63,7 +58,7 @@ export default function EditProfile(props) {
                     element
                 );
               } else {
-                newExtras.push(basePath + "others/default.png");
+                newExtras.push(props.othersPath + "default.png");
               }
             });
 
@@ -83,7 +78,7 @@ export default function EditProfile(props) {
 
   if (props.currentUser == "error") {
     return <Error />;
-  } else if (props.currentUser !== 0) {
+  } else if (props.currentUser !== "") {
     return (
       <div id="editProfile">
         <h1 id="editProfileHeader" className="abelFont">

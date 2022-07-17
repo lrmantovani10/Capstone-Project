@@ -23,8 +23,13 @@ export default function App() {
     palette: { primary: { main: lightBlue[500], contrastText: "#ffffff" } },
   });
   const apiURL = "http://localhost:3001";
+  const basePath = "uploads/";
+  const profilesPath = basePath + "profiles/";
+  const othersPath = basePath + "others/";
+  const resumesPath = basePath + "resumes/";
   let [profiles, setProfiles] = useState([]);
-  let [currentUser, setCurrentUser] = useState(0);
+  let [profile, setProfile] = useState({});
+  let [currentUser, setCurrentUser] = useState("");
   let [profileImage, setProfileImage] = useState("");
   let [extraImages, setExtras] = useState([]);
   let [currentResume, setResume] = useState("");
@@ -167,10 +172,10 @@ export default function App() {
     const linkedin = document.getElementById("linkedinChange").value;
     const profilePicture = document.getElementById("profilePicChange").files[0];
     const messageElement = document.getElementById("saveStatus");
-    const basePath = "../bizwiz-ui/public/uploads/";
-    const profilePath = basePath + "profiles/";
-    const resumePath = basePath + "resumes/";
-    const othersPath = basePath + "others/";
+    const initialPath = "../bizwiz-ui/public/uploads/";
+    const profilePath = initialPath + "profiles/";
+    const resumePath = initialPath + "resumes/";
+    const othersPath = initialPath + "others/";
 
     const headers = {
       headers: {
@@ -267,7 +272,7 @@ export default function App() {
           localStorage.setItem("userToken", response.data);
           messageElement.innerHTML = "Profile successfully changed!";
           messageElement.style.color = "green";
-          window.location.replace("profile")
+          window.location.replace("profile");
         })
         .catch(() => {
           messageElement.innerHTML = "Account update failed. Please try again!";
@@ -365,11 +370,22 @@ export default function App() {
               <>
                 {navbar}
                 <SwipingPage
+                  currentResume={currentResume}
+                  setResume={setResume}
+                  profileImage={profileImage}
+                  setProfileImage={setProfileImage}
+                  extraImages={extraImages}
+                  setExtras={setExtras}
+                  profilesPath={profilesPath}
+                  othersPath={othersPath}
+                  resumesPath={resumesPath}
                   purpleTheme={purpleTheme}
                   handleMatch={handleMatch}
                   handleReject={handleReject}
                   profiles={profiles}
                   setProfiles={setProfiles}
+                  profile={profile}
+                  setProfile={setProfile}
                   apiURL={apiURL}
                   currentUser={currentUser}
                   setCurrentUser={setCurrentUser}
@@ -406,6 +422,10 @@ export default function App() {
               <>
                 {navbar}
                 <Profile
+                  profilesPath={profilesPath}
+                  othersPath={othersPath}
+                  resumesPath={resumesPath}
+                  purpleTheme={purpleTheme}
                   profileImage={profileImage}
                   setProfileImage={setProfileImage}
                   extraImages={extraImages}
@@ -431,6 +451,10 @@ export default function App() {
               <>
                 {navbar}
                 <EditProfile
+                  profilesPath={profilesPath}
+                  othersPath={othersPath}
+                  resumesPath={resumesPath}
+                  purpleTheme={purpleTheme}
                   handleRemove={handleRemove}
                   handleAdd={handleAdd}
                   deepPurple={deepPurple}
