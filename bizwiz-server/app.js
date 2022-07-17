@@ -140,7 +140,7 @@ app.post("/check_user", async (request, response, next) => {
       if (userData && userData.email != data.email) {
         next(new ForbiddenError("Email already associated with an account!"));
       } else {
-        response.status(200).send(userData);
+        response.status(200).send();
       }
     }
   });

@@ -52,7 +52,7 @@ class Profiles {
       newProfile["resume"] = "";
     }
     // Organization
-    else newProfile["interested_years"] = [];
+    else newProfile["interested_years"] = 0;
 
     await profiles.insertOne(newProfile);
   }
