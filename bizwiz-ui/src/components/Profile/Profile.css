@@ -57,15 +57,14 @@
 .currentInterests {
   font-weight: lighter;
   font-size: x-large;
-  max-width: 80%;
-  display: block;
+  display: block
 }
 .interestsDiv {
   display: flex;
   flex-direction: column;
   align-items: center;
   overflow: scroll;
-  height: 230px;
+  max-height:230px;
 }
 .interestList {
   margin-right: 10%;
@@ -102,7 +101,9 @@
   font-family: "Abel";
   font-weight: bold;
 }
-
+#generalInfo{
+  font-weight: 1.5;
+}
 #currentLinks {
   display: flex;
   flex-direction: row;

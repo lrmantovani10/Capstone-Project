@@ -9,6 +9,18 @@ import { ThemeProvider } from "@mui/material";
 
 export default function EditProfile(props) {
   const basePath = "uploads/";
+
+  function calibrateValue(e) {
+    let years = e.value;
+    {
+      years < 0 ? (years = 0) : years > 40 ? (years = 40) : years;
+    }
+    let newUser = {
+      ...props.currentUser,
+    };
+    newUser["interested_years"] = years;
+    props.setCurrentUser(newUser);
+  }
   useEffect(() => {
     try {
       const userToken = localStorage.getItem("userToken");
@@ -30,7 +42,7 @@ export default function EditProfile(props) {
               props.setProfileImage(basePath + "profiles/default.png");
             }
 
-            if (user.resume.length > 0) {
+            if (user.type == 0 && user.resume.length > 0) {
               props.setResume(
                 basePath + "resumes/" + user._id + "." + user.resume
               );
@@ -71,7 +83,7 @@ export default function EditProfile(props) {
 
   if (props.currentUser == "error") {
     return <Error />;
-  } else if (props.currentUser.type == 0) {
+  } else if (props.currentUser !== 0) {
     return (
       <div id="editProfile">
         <h1 id="editProfileHeader" className="abelFont">
@@ -133,15 +145,20 @@ export default function EditProfile(props) {
           </div>
 
           <div id="editProfileParameters">
-            <div className="attributeSelection">
-              <div className="abelFont">Age:</div>
-              <input
-                id="ageChange"
-                className="textInput"
-                type="number"
-                defaultValue={props.currentUser.age}
-              />
-            </div>
+            {props.currentUser.type == 0 ? (
+              <div className="attributeSelection">
+                <div className="abelFont">Age:</div>
+                <input
+                  id="ageChange"
+                  className="textInput"
+                  type="number"
+                  defaultValue={props.currentUser.age}
+                  onChange={calibrateValue}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
 
             <div className="attributeSelection">
               <div className="abelFont">Email:</div>
@@ -149,6 +166,7 @@ export default function EditProfile(props) {
                 id="emailChange"
                 className="textInput"
                 type="email"
+                maxLength="50"
                 defaultValue={props.currentUser.email}
               />
             </div>
@@ -159,6 +177,7 @@ export default function EditProfile(props) {
                 id="passwordChange"
                 className="textInput"
                 type="password"
+                maxLength="50"
                 defaultValue={props.currentUser.password}
               />
             </div>
@@ -169,19 +188,25 @@ export default function EditProfile(props) {
                 id="sectorChange"
                 className="textInput"
                 type="text"
+                maxLength="50"
                 defaultValue={props.currentUser.sector}
               />
             </div>
 
-            <div className="attributeSelection">
-              <div className="abelFont">Position:</div>
-              <input
-                id="occupationChange"
-                className="textInput"
-                type="text"
-                defaultValue={props.currentUser.occupation}
-              />
-            </div>
+            {props.currentUser.type == 0 ? (
+              <div className="attributeSelection">
+                <div className="abelFont">Position:</div>
+                <input
+                  id="occupationChange"
+                  className="textInput"
+                  type="text"
+                  maxLength="50"
+                  defaultValue={props.currentUser.occupation}
+                />
+              </div>
+            ) : (
+              <></>
+            )}
 
             <div className="attributeSelection">
               <div className="abelFont">Location:</div>
@@ -189,6 +214,7 @@ export default function EditProfile(props) {
                 id="locationChange"
                 className="textInput"
                 type="text"
+                maxLength="50"
                 defaultValue={props.currentUser.location}
               />
             </div>
@@ -198,15 +224,21 @@ export default function EditProfile(props) {
               <textarea
                 id="aboutChange"
                 defaultValue={props.currentUser.about}
+                maxLength="300"
               />
             </div>
 
             <div className="attributeSelection">
-              <div className="abelFont">Personal Website URL:</div>
+              {props.currentUser.type == 0 ? (
+                <div className="abelFont">Personal Website URL:</div>
+              ) : (
+                <div className="abelFont">Organization Website:</div>
+              )}
               <input
                 id="websiteChange"
                 className="textInput"
                 type="url"
+                maxLength="50"
                 defaultValue={props.currentUser.other_link}
               />
             </div>
@@ -217,25 +249,47 @@ export default function EditProfile(props) {
                 id="linkedinChange"
                 className="textInput"
                 type="url"
+                maxLength="50"
                 defaultValue={props.currentUser.linkedin}
               />
             </div>
 
-            <div className="attributeSelection">
-              <div className="abelFont">Resume:</div>
-              <input
-                id="resumeChange"
-                type="file"
-                accept=".docx, .txt, .pdf, .doc"
-              />
-            </div>
-
-            {props.resume.length > 0 ? (
+            {props.currentUser.type == 0 ? (
               <div className="attributeSelection">
-                <a id="currentResume" href={props.resume} download>
+                <div className="abelFont">Resume:</div>
+                <input
+                  id="resumeChange"
+                  type="file"
+                  accept=".docx, .txt, .pdf, .doc"
+                />
+              </div>
+            ) : (
+              <></>
+            )}
+
+            {props.currentUser.type == 0 && props.currentResume.length > 0 ? (
+              <div className="attributeSelection">
+                <a id="currentResume" href={props.currentResume} download>
                   {" "}
                   Download current resume
                 </a>
+              </div>
+            ) : (
+              <></>
+            )}
+
+            {props.currentUser.type == 1 ? (
+              <div className="attributeSelection">
+                <div className="abelFont">Years of experience:</div>
+                <input
+                  id="experienceChange"
+                  className="textInput"
+                  type="number"
+                  min="0"
+                  max="40"
+                  defaultValue={props.currentUser.interested_years}
+                  onChange={calibrateValue}
+                />
               </div>
             ) : (
               <></>
@@ -251,6 +305,7 @@ export default function EditProfile(props) {
                 baseInterest.interested_positions,
                 baseInterest.interested_locations,
               ];
+
               return (
                 <div key={"interestWrapper" + index}>
                   <div className="attributeSelection interestDiv">

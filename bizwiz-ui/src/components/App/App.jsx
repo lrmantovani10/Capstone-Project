@@ -27,7 +27,7 @@ export default function App() {
   let [currentUser, setCurrentUser] = useState(0);
   let [profileImage, setProfileImage] = useState("");
   let [extraImages, setExtras] = useState([]);
-  let [resume, setResume] = useState("");
+  let [currentResume, setResume] = useState("");
 
   function handleMatch() {}
 
@@ -145,7 +145,7 @@ export default function App() {
     };
     newForm.append("data", JSON.stringify(body));
     newForm.append("file", file);
-    console.log(extension);
+
     axios
       .post(`${apiURL}/upload_single`, newForm, headers)
       .then(() => {
@@ -158,16 +158,13 @@ export default function App() {
   }
 
   async function handleSave(userPictures) {
-    const age = document.getElementById("ageChange").value;
     const email = document.getElementById("emailChange").value;
     const password = document.getElementById("passwordChange").value;
     const sector = document.getElementById("sectorChange").value;
-    const position = document.getElementById("occupationChange").value;
     const location = document.getElementById("locationChange").value;
     const about = document.getElementById("aboutChange").value;
     const site = document.getElementById("websiteChange").value;
     const linkedin = document.getElementById("linkedinChange").value;
-    const resume = document.getElementById("resumeChange").files[0];
     const profilePicture = document.getElementById("profilePicChange").files[0];
     const messageElement = document.getElementById("saveStatus");
     const basePath = "../bizwiz-ui/public/uploads/";
@@ -189,11 +186,9 @@ export default function App() {
     }
 
     let body = {
-      age: age,
       email: email,
       password: password,
       sector: sector,
-      occupation: position,
       location: location,
       about: about,
       other_link: site,
@@ -202,6 +197,15 @@ export default function App() {
       interested_locations: currentUser.interested_locations,
       interested_positions: currentUser.interested_positions,
     };
+
+    if (currentUser.type == 0) {
+      body["age"] = document.getElementById("ageChange").value;
+      body["occupation"] = document.getElementById("occupationChange").value;
+      body["resume"] = document.getElementById("resumeChange").files[0];
+    } else {
+      const years = document.getElementById("experienceChange").value;
+      body["interested_years"] = years;
+    }
 
     let errorHappened = false;
     if (password.length < 10) {
@@ -212,23 +216,8 @@ export default function App() {
 
     if (!errorHappened) {
       await axios
-        .get(`${apiURL}/get_user`, headers)
-        .then((response) => {
-          setCurrentUser(response.data);
-        })
-        .catch(() => {
-          messageElement.innerHTML = "Account update failed. Please try again!";
-          messageElement.style.color = "red";
-          errorHappened = true;
-        });
-    }
-
-    if (!errorHappened) {
-      await axios
         .post(`${apiURL}/check_user`, { email: email }, headers)
-        .then((response) => {
-          setCurrentUser(response.data);
-        })
+        .then(() => {})
         .catch((error) => {
           if (error.code == "ERR_BAD_REQUEST")
             messageElement.innerHTML = error.response.data.error.message;
@@ -249,12 +238,12 @@ export default function App() {
         errorHappened = true;
       }
     }
-    if (!errorHappened && resume) {
+    if (!errorHappened && currentUser.type == 0 && currentResume) {
       try {
-        const extension = "." + resume.name.split(".")[1];
-        await storeFile(resume, extension, headers, resumePath);
-        body["resume"] = resume.name.split(".")[1];
-      } catch {
+        const extension = "." + currentResume.split(".")[1];
+        await storeFile(currentResume, extension, headers, resumePath);
+        body["resume"] = currentResume.split(".")[1];
+      } catch (error) {
         errorHappened = true;
       }
     }
@@ -278,7 +267,7 @@ export default function App() {
           localStorage.setItem("userToken", response.data);
           messageElement.innerHTML = "Profile successfully changed!";
           messageElement.style.color = "green";
-          window.location.replace("/profile");
+          window.location.replace("profile")
         })
         .catch(() => {
           messageElement.innerHTML = "Account update failed. Please try again!";
@@ -429,7 +418,7 @@ export default function App() {
                   redTheme={redTheme}
                   blueTheme={blueTheme}
                   handleDelete={handleDelete}
-                  resume={resume}
+                  currentResume={currentResume}
                   setResume={setResume}
                 />
               </>
@@ -457,7 +446,7 @@ export default function App() {
                   redTheme={redTheme}
                   blueTheme={blueTheme}
                   handleChangeImage={handleChangeImage}
-                  resume={resume}
+                  currentResume={currentResume}
                   setResume={setResume}
                 />
               </>

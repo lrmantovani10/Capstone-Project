@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: column;
   text-align: center;
-  width:100%;
-  height:100%;
+  width: 100%;
+  height: 100%;
 }
 #horizontalColumns {
   display: flex;
@@ -59,7 +59,7 @@
   align-items: center;
   justify-content: left;
   gap: 20px;
-  margin-bottom: 3%;
+  margin-bottom: 5%;
 }
 .textInput {
   text-align: center;
@@ -78,54 +78,57 @@
   background-color: transparent;
   color: white;
 }
-#currentResume{
+#currentResume {
   margin-top: 2%;
   text-decoration: none;
   justify-content: left;
-  color:white;
+  color: white;
   font-family: "Abel";
 }
-#currentResume:hover{
+#currentResume:hover {
   opacity: 70%;
 }
-#newSector{
-  width:50%;
-  color:white;
+#experienceChange {
+  background-color: transparent;
 }
-::placeholder{
+#newSector {
+  width: 50%;
   color: white;
 }
-.interestDiv{
+::placeholder {
+  color: white;
+}
+.interestDiv {
   margin-top: 30px;
   display: flex;
   flex-direction: column;
 }
-.chosenInterest{
+.chosenInterest {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 10px;
-  color:white;
+  color: white;
 }
-.chosenInterestBox{
+.chosenInterestBox {
   border: 1px solid white;
   text-align: center;
   border-radius: 10%;
   padding: 4px;
-  width:100%;
+  width: 100%;
   flex: 1 0 25%;
   margin-right: 2%;
   cursor: pointer;
 }
-.chosenInterestBox:hover{
+.chosenInterestBox:hover {
   background-color: rgb(235, 67, 67);
 }
-.addIcon{
-  color:white;
+.addIcon {
+  color: white;
   border-radius: 20%;
   cursor: pointer;
 }
-.addIcon:hover{
+.addIcon:hover {
   opacity: 70%;
 }
 #ageChange {

@@ -27,7 +27,7 @@ export default function Profile(props) {
             } else {
               props.setProfileImage(basePath + "profiles/default.png");
             }
-            if (user.resume.length > 0) {
+            if (user.type == 0 && user.resume.length > 0) {
               props.setResume(
                 basePath + "resumes/" + user._id + "." + user.resume
               );
@@ -54,7 +54,6 @@ export default function Profile(props) {
             props.setCurrentUser(user);
           })
           .catch((error) => {
-            console.log(error);
             props.setCurrentUser("error");
           });
       } else {
@@ -67,7 +66,7 @@ export default function Profile(props) {
 
   if (props.currentUser == "error") {
     return <Error />;
-  } else if (props.currentUser.type == 0) {
+  } else if (props.currentUser != 0) {
     return (
       <div className="profilePage">
         <div className="profileHeader">
@@ -90,19 +89,36 @@ export default function Profile(props) {
               <div>
                 <h2 className="abelFont">Intro</h2>
                 <p className="myIntro">{props.currentUser.about}</p>
-                <p className="myIntro">
-                  {props.currentUser.occupation} in the{" "}
-                  {props.currentUser.sector} sector
+                <p className="myIntro" id="generalInfo">
+                  {props.currentUser.sector.length > 0 ? (
+                    props.currentUser.type == 0 ? (
+                      props.currentUser.occupation +
+                      " in the " +
+                      props.currentUser.sector +
+                      " sector 🎉"
+                    ) : (
+                      "In the " +
+                      props.currentUser.sector +
+                      " sector looking for hires with " +
+                      props.currentUser.interested_years +
+                      "+ years of experience"
+                    )
+                  ) : (
+                    <></>
+                  )}
                 </p>
               </div>
 
               <div id="currentInfo" className="abelFont">
-                <div>
-                  {props.currentUser.age} year-old
-                  <span> </span>living in <span> </span>
-                  {props.currentUser.location}📍
-                </div>
-
+                {props.currentUser.type == 0 ? (
+                  <div>
+                    {props.currentUser.age} year-old
+                    <span> </span>living in <span> </span>
+                    {props.currentUser.location}📍
+                  </div>
+                ) : (
+                  <div>Located in {props.currentUser.location}📍</div>
+                )}
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50695.7145465034!2d-122.17036949424246!3d37.425712997784714!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb07b9dba1c39%3A0xe1ff55235f576cf!2sPalo%20Alto%2C%20CA!5e0!3m2!1sen!2sus!4v1657561721738!5m2!1sen!2sus"
                   id="userLocation"
@@ -111,24 +127,28 @@ export default function Profile(props) {
                 ></iframe>
 
                 <div id="currentLinks">
-                  {props.resume.length > 0 ? (
-                    <a
-                      href={props.resume}
-                      target="_blank"
-                      className="personalLink"
-                      download
-                    >
-                      Resume
-                    </a>
+                  {props.currentUser.type == 0 ? (
+                    props.currentResume.length > 0 ? (
+                      <a
+                        href={props.currentResume}
+                        target="_blank"
+                        className="personalLink"
+                        download
+                      >
+                        Resume
+                      </a>
+                    ) : (
+                      <a
+                        className="personalLink"
+                        onClick={() =>
+                          alert("Edit your profile to add a resume!")
+                        }
+                      >
+                        Resume
+                      </a>
+                    )
                   ) : (
-                    <a
-                      className="personalLink"
-                      onClick={() =>
-                        alert("Edit your profile to add a resume!")
-                      }
-                    >
-                      Resume
-                    </a>
+                    <></>
                   )}
                   {props.currentUser.other_link.length > 0 ? (
                     <a
@@ -136,7 +156,7 @@ export default function Profile(props) {
                       target="_blank"
                       className="personalLink"
                     >
-                      Personal Website
+                      Website
                     </a>
                   ) : (
                     <a
@@ -147,7 +167,7 @@ export default function Profile(props) {
                         )
                       }
                     >
-                      Personal Website
+                      Website
                     </a>
                   )}
                 </div>
