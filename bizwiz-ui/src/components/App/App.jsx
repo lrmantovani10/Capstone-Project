@@ -34,33 +34,29 @@ export default function App() {
   let [extraImages, setExtras] = useState([]);
   let [currentResume, setResume] = useState("");
 
-  function updateParameters(newProfiles) {
-    setProfiles(newProfiles);
-    if (newProfiles.length > 0) {
-      const user = newProfiles[newProfiles.length - 1];
-      if (user.profile_picture.length > 0) {
-        setProfileImage(profilesPath + user._id + "." + user.profile_picture);
-      } else {
-        setProfileImage(profilesPath + "default.png");
-      }
-      if (user.type == 0 && user.resume.length > 0) {
-        setResume(resumesPath + user._id + "." + user.resume);
-      } else {
-        setResume("");
-      }
-      let newExtras = [];
-      user.other_pictures.map((element, index) => {
-        if (element.length > 0) {
-          newExtras.push(
-            othersPath + user._id + "_" + (index + 1) + "." + element
-          );
-        } else {
-          newExtras.push(othersPath + "default.png");
-        }
-      });
-      setExtras(newExtras);
-      setProfile(user);
+  function updateParameters(user, setFunction) {
+    if (user.profile_picture.length > 0) {
+      setProfileImage(profilesPath + user._id + "." + user.profile_picture);
+    } else {
+      setProfileImage(profilesPath + "default.png");
     }
+    if (user.type == 0 && user.resume.length > 0) {
+      setResume(resumesPath + user._id + "." + user.resume);
+    } else {
+      setResume("");
+    }
+    let newExtras = [];
+    user.other_pictures.map((element, index) => {
+      if (element.length > 0) {
+        newExtras.push(
+          othersPath + user._id + "_" + (index + 1) + "." + element
+        );
+      } else {
+        newExtras.push(othersPath + "default.png");
+      }
+    });
+    setExtras(newExtras);
+    setFunction(user);
   }
 
   function handleSwipe(type, userEmail) {
@@ -435,10 +431,11 @@ export default function App() {
                   handleSwipe={handleSwipe}
                   profiles={profiles}
                   setProfiles={setProfiles}
-                  profile={profile}
-                  apiURL={apiURL}
                   currentUser={currentUser}
                   setCurrentUser={setCurrentUser}
+                  setProfile={setProfile}
+                  profile={profile}
+                  apiURL={apiURL}
                 />
               </>
             }
@@ -472,6 +469,7 @@ export default function App() {
               <>
                 {navbar}
                 <Profile
+                  updateParameters={updateParameters}
                   profilesPath={profilesPath}
                   othersPath={othersPath}
                   resumesPath={resumesPath}
@@ -501,6 +499,7 @@ export default function App() {
               <>
                 {navbar}
                 <EditProfile
+                  updateParameters={updateParameters}
                   profilesPath={profilesPath}
                   othersPath={othersPath}
                   resumesPath={resumesPath}
@@ -509,9 +508,7 @@ export default function App() {
                   handleAdd={handleAdd}
                   deepPurple={deepPurple}
                   extraImages={extraImages}
-                  setExtras={setExtras}
                   profileImage={profileImage}
-                  setProfileImage={setProfileImage}
                   handleSave={handleSave}
                   handleDiscard={handleDiscard}
                   apiURL={apiURL}
@@ -521,7 +518,6 @@ export default function App() {
                   blueTheme={blueTheme}
                   handleChangeImage={handleChangeImage}
                   currentResume={currentResume}
-                  setResume={setResume}
                 />
               </>
             }

@@ -31,41 +31,10 @@ export default function EditProfile(props) {
         axios
           .get(`${props.apiURL}/get_user`, headers)
           .then((response) => {
-            const user = response.data;
-            if (user.profile_picture.length > 0) {
-              props.setProfileImage(
-                props.profilesPath + user._id + "." + user.profile_picture
-              );
-            } else {
-              props.setProfileImage(props.profilesPath + "default.png");
-            }
-
-            if (user.type == 0 && user.resume.length > 0) {
-              props.setResume(props.resumesPath + user._id + "." + user.resume);
-            } else {
-              props.setResume(props.resumesPath + "");
-            }
-
-            let newExtras = [];
-            user.other_pictures.map((element, index) => {
-              if (element.length > 0) {
-                newExtras.push(
-                  props.othersPath +
-                    user._id +
-                    "_" +
-                    (index + 1) +
-                    "." +
-                    element
-                );
-              } else {
-                newExtras.push(props.othersPath + "default.png");
-              }
-            });
-
-            props.setExtras(newExtras);
-            props.setCurrentUser(user);
+            props.updateParameters(response.data, props.setCurrentUser);
           })
-          .catch(() => {
+          .catch((error) => {
+            console.log(error)
             props.setCurrentUser("error");
           });
       } else {

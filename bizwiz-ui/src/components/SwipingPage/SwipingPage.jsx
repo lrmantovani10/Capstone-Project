@@ -27,7 +27,13 @@ export default function SwipingPage(props) {
         axios
           .get(`${props.apiURL}/get_profiles`, headers)
           .then((response) => {
-            props.updateParameters(response.data)
+            props.setProfiles(response.data);
+            if (response.data.length > 0) {
+              props.updateParameters(
+                response.data[response.data.length - 1],
+                props.setProfile
+              );
+            }
           })
           .catch(() => {
             props.setProfiles(["error"]);
@@ -43,7 +49,6 @@ export default function SwipingPage(props) {
   if (props.profiles.length > 0 && props.profiles[0] == "error") {
     return <Error />;
   } else if (props.profiles.length > 0 && props.currentUser !== "") {
-    console.log(props.profile)
     return (
       <div className="swipingGeneral">
         <div className="swipingProfile">
