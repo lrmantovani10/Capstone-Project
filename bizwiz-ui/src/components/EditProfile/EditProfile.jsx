@@ -65,7 +65,7 @@ export default function EditProfile(props) {
             props.setExtras(newExtras);
             props.setCurrentUser(user);
           })
-          .catch((error) => {
+          .catch(() => {
             props.setCurrentUser("error");
           });
       } else {
@@ -273,22 +273,18 @@ export default function EditProfile(props) {
               <></>
             )}
 
-            {props.currentUser.type == 1 ? (
-              <div className="attributeSelection">
-                <div className="abelFont">Years of experience:</div>
-                <input
-                  id="experienceChange"
-                  className="textInput"
-                  type="number"
-                  min="0"
-                  max="40"
-                  defaultValue={props.currentUser.interested_years}
-                  onChange={calibrateValue}
-                />
-              </div>
-            ) : (
-              <></>
-            )}
+            <div className="attributeSelection">
+              <div className="abelFont">Years of Experience:</div>
+              <input
+                id="experienceChange"
+                className="textInput"
+                type="number"
+                min="0"
+                max="40"
+                defaultValue={props.currentUser.interested_years}
+                onChange={calibrateValue}
+              />
+            </div>
 
             {["sectors", "positions", "locations"].map((element, index) => {
               const firstUppercase =

@@ -54,9 +54,10 @@ const upload = multer({
 });
 
 function selectPotentials(userData) {
-  // Matching algorithm -- for now, only different account type
+  let allProfiles = userData.profilesSwiped.concat(userData.profilesLiked);
   let results = {
     type: { $ne: userData.type },
+    _id: { $nin: allProfiles },
   };
   return results;
 }

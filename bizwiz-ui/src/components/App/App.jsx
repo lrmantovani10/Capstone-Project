@@ -34,13 +34,68 @@ export default function App() {
   let [extraImages, setExtras] = useState([]);
   let [currentResume, setResume] = useState("");
 
-  function handleMatch() {}
+  function updateParameters(newProfiles) {
+    setProfiles(newProfiles);
+    if (newProfiles.length > 0) {
+      const user = newProfiles[newProfiles.length - 1];
+      if (user.profile_picture.length > 0) {
+        setProfileImage(profilesPath + user._id + "." + user.profile_picture);
+      } else {
+        setProfileImage(profilesPath + "default.png");
+      }
+      if (user.type == 0 && user.resume.length > 0) {
+        setResume(resumesPath + user._id + "." + user.resume);
+      } else {
+        setResume("");
+      }
+      let newExtras = [];
+      user.other_pictures.map((element, index) => {
+        if (element.length > 0) {
+          newExtras.push(
+            othersPath + user._id + "_" + (index + 1) + "." + element
+          );
+        } else {
+          newExtras.push(othersPath + "default.png");
+        }
+      });
+      setExtras(newExtras);
+      setProfile(user);
+    }
+  }
 
-  function handleReject() {
+  function handleSwipe(type, userEmail) {
     let profileCopy = [...profiles];
     let swipedProfile = profileCopy.pop();
-    setProfiles(profileCopy);
-    // Update database with profiles swaped
+    const messageElement = document.querySelector("#matchingResponse");
+    let body = {
+      email: userEmail,
+    };
+    if (type == 0) {
+      body["swipedProfile"] = swipedProfile._id;
+    } else {
+      body["likedProfile"] = swipedProfile._id;
+      body["otherEmail"] = profile.email;
+    }
+    const headers = {
+      headers: {
+        authorization: localStorage.getItem("userToken"),
+      },
+    };
+    axios
+      .post(`${apiURL}/change_profile`, body, headers)
+      .then((response) => {
+        localStorage.setItem("userToken", response.data);
+
+        // notify of match
+
+        updateParameters(profileCopy);
+        messageElement.innerHTML = "";
+      })
+      .catch(() => {
+        messageElement.innerHTML =
+          "Failed to swipe on profile. Please try again!";
+        messageElement.style.color = "red";
+      });
   }
 
   function handleRegister() {
@@ -172,6 +227,7 @@ export default function App() {
     const linkedin = document.getElementById("linkedinChange").value;
     const profilePicture = document.getElementById("profilePicChange").files[0];
     const messageElement = document.getElementById("saveStatus");
+    const interested_years = document.getElementById("experienceChange").value;
     const initialPath = "../bizwiz-ui/public/uploads/";
     const profilePath = initialPath + "profiles/";
     const resumePath = initialPath + "resumes/";
@@ -198,6 +254,7 @@ export default function App() {
       about: about,
       other_link: site,
       linkedin: linkedin,
+      interested_years: interested_years,
       interested_sectors: currentUser.interested_sectors,
       interested_locations: currentUser.interested_locations,
       interested_positions: currentUser.interested_positions,
@@ -207,9 +264,6 @@ export default function App() {
       body["age"] = document.getElementById("ageChange").value;
       body["occupation"] = document.getElementById("occupationChange").value;
       body["resume"] = document.getElementById("resumeChange").files[0];
-    } else {
-      const years = document.getElementById("experienceChange").value;
-      body["interested_years"] = years;
     }
 
     let errorHappened = false;
@@ -370,22 +424,18 @@ export default function App() {
               <>
                 {navbar}
                 <SwipingPage
+                  updateParameters={updateParameters}
                   currentResume={currentResume}
-                  setResume={setResume}
                   profileImage={profileImage}
-                  setProfileImage={setProfileImage}
                   extraImages={extraImages}
-                  setExtras={setExtras}
                   profilesPath={profilesPath}
                   othersPath={othersPath}
                   resumesPath={resumesPath}
                   purpleTheme={purpleTheme}
-                  handleMatch={handleMatch}
-                  handleReject={handleReject}
+                  handleSwipe={handleSwipe}
                   profiles={profiles}
                   setProfiles={setProfiles}
                   profile={profile}
-                  setProfile={setProfile}
                   apiURL={apiURL}
                   currentUser={currentUser}
                   setCurrentUser={setCurrentUser}

@@ -31,6 +31,11 @@
   height: 200px;
 }
 
+#matchingResponse{
+  padding-top: 15px;
+  padding-bottom: 5px;
+}
+
 .aboutMe {
   display: flex;
   flex-direction: column;
@@ -46,10 +51,11 @@
   font-weight: lighter;
 }
 
-#profileSector{
+#profileSector {
   font-family: "Abel";
 }
-h1, h2{
+h1,
+h2 {
   font-family: "Abel";
 }
 .externals {

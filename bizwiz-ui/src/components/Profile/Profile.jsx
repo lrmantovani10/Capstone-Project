@@ -98,7 +98,9 @@ export default function Profile(props) {
                       props.currentUser.occupation +
                       " in the " +
                       props.currentUser.sector +
-                      " sector 🎉"
+                      " sector  with " +
+                      props.currentUser.interested_years +
+                      " years of experience"
                     ) : (
                       "In the " +
                       props.currentUser.sector +

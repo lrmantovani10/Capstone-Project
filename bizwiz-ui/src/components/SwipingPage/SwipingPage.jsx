@@ -19,7 +19,7 @@ export default function SwipingPage(props) {
         axios
           .get(`${props.apiURL}/get_user`, headers)
           .then((response) => {
-            props.setCurrentUser(response.data.type);
+            props.setCurrentUser(response.data);
           })
           .catch(() => {
             props.setProfiles(["error"]);
@@ -27,37 +27,7 @@ export default function SwipingPage(props) {
         axios
           .get(`${props.apiURL}/get_profiles`, headers)
           .then((response) => {
-            props.setProfiles(response.data);
-            const user = response.data[response.data.length - 1];
-            if (user.profile_picture.length > 0) {
-              props.setProfileImage(
-                props.profilesPath + user._id + "." + user.profile_picture
-              );
-            } else {
-              props.setProfileImage(props.profilesPath + "default.png");
-            }
-            if (user.type == 0 && user.resume.length > 0) {
-              props.setResume(props.resumesPath + user._id + "." + user.resume);
-            } else {
-              props.setResume("");
-            }
-            let newExtras = [];
-            user.other_pictures.map((element, index) => {
-              if (element.length > 0) {
-                newExtras.push(
-                  props.othersPath +
-                    user._id +
-                    "_" +
-                    (index + 1) +
-                    "." +
-                    element
-                );
-              } else {
-                newExtras.push(props.othersPath + "default.png");
-              }
-            });
-            props.setExtras(newExtras);
-            props.setProfile(user);
+            props.updateParameters(response.data)
           })
           .catch(() => {
             props.setProfiles(["error"]);
@@ -73,12 +43,13 @@ export default function SwipingPage(props) {
   if (props.profiles.length > 0 && props.profiles[0] == "error") {
     return <Error />;
   } else if (props.profiles.length > 0 && props.currentUser !== "") {
+    console.log(props.profile)
     return (
       <div className="swipingGeneral">
         <div className="swipingProfile">
           <h1>
             {props.profile.name}
-            {props.currentUser == 0 ? "" : "| " + props.profile.age}
+            {props.currentUser.type == 0 ? "" : "| " + props.profile.age}
           </h1>
           <div className="swipingBasic">
             <img
@@ -94,10 +65,10 @@ export default function SwipingPage(props) {
               <p className="profileIntro">{props.profile.about}</p>
               <div id="profileSector">
                 {props.profile.sector.length > 0 ? (
-                  props.currentUser == 1 ? (
-                    props.currentUser.occupation +
+                  props.currentUser.type == 1 ? (
+                    props.profile.occupation +
                     " in the " +
-                    props.currentUser.sector +
+                    props.profile.sector +
                     " sector"
                   ) : (
                     props.profile.sector + " sector"
@@ -134,7 +105,7 @@ export default function SwipingPage(props) {
           </div>
 
           <div className="externals">
-            {props.currentUser == 1 && props.profile.resume.length > 0 ? (
+            {props.currentUser.type == 1 && props.profile.resume.length > 0 ? (
               <a
                 href={props.currentResume}
                 target="_blank"
@@ -173,7 +144,7 @@ export default function SwipingPage(props) {
         <div className="buttonChoice">
           <ThemeProvider theme={props.purpleTheme}>
             <Button
-              onClick={() => props.handleReject()}
+              onClick={() => props.handleSwipe(0, props.currentUser.email)}
               variant="outlined"
               style={{
                 backgroundColor: "white",
@@ -186,7 +157,7 @@ export default function SwipingPage(props) {
               Reject
             </Button>
             <Button
-              onClick={() => props.handleMatch()}
+              onClick={() => props.handleSwipe(1, props.currentUser.email)}
               variant="contained"
               style={{
                 marginTop: "30px",
@@ -199,6 +170,7 @@ export default function SwipingPage(props) {
             </Button>
           </ThemeProvider>
         </div>
+        <div id="matchingResponse"></div>
       </div>
     );
   } else {
