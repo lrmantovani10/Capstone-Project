@@ -57,13 +57,13 @@ function selectPotentials(userData) {
   let allProfiles = userData.profilesSwiped.concat(userData.profilesLiked);
   let results = {
     type: { $ne: userData.type },
-    _id: { $nin: allProfiles },
-    interested_sectors: {$in: userData.interested_sectors},
-    interested_positions: {$in: userData.interested_positions},
-    interested_locations: {$in: userData.interested_locations}
+    // _id: { $nin: allProfiles },
+    // interested_sectors: {$in: userData.interested_sectors},
+    // interested_positions: {$in: userData.interested_positions},
+    // interested_locations: {$in: userData.interested_locations}
   };
   if (userData.type == 1) {
-    results["interested_years"] = { $ge: userData.interested_years };
+    results["interested_years"] = { $gte: userData.interested_years };
   }
 
   return results;

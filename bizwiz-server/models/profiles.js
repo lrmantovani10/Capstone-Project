@@ -15,7 +15,7 @@ class Profiles {
     await mongoClient.connect();
     const database = mongoClient.db("UserData");
     const profiles = database.collection("Profiles");
-    let profileRetrieved = profiles.findOne({ _id: new ObjectId(profileId)});
+    let profileRetrieved = profiles.findOne({ _id: new ObjectId(profileId) });
     return profileRetrieved;
   }
   static async getProfiles(criteria) {
@@ -51,7 +51,7 @@ class Profiles {
     };
 
     if (profileData.type == 0) {
-      newProfile["age"] = "";
+      newProfile["age"] = 16;
       newProfile["occupation"] = "";
       newProfile["resume"] = "";
     }
@@ -70,6 +70,34 @@ class Profiles {
   static async getMatches(profileId) {
     const currentUser = await this.getProfileEmail(profileId);
     return currentUser.matches;
+  }
+  static async removeMatch(firstEmail, secondProfile) {
+    await mongoClient.connect();
+    const database = mongoClient.db("UserData");
+    const profiles = database.collection("Profiles");
+    const firstUser = await this.getProfileEmail(firstEmail);
+    const firstObject = firstUser._id;
+    const secondObject = new ObjectId(secondProfile);
+    const firstBody = {
+      $pull: {
+        profilesLiked: secondObject,
+        matches: secondObject,
+      },
+      $push: {
+        profilesSwiped: secondObject,
+      },
+    };
+    const secondBody = {
+      $pull: {
+        profilesLiked: firstObject,
+        matches: firstObject,
+      },
+      $push: {
+        profilesSwiped: firstObject,
+      },
+    };
+    await profiles.updateOne({ _id: firstObject }, firstBody);
+    await profiles.updateOne({ _id: secondObject }, secondBody);
   }
   static async changeProfile(email, userParameters) {
     await mongoClient.connect();

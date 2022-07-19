@@ -95,6 +95,62 @@ export default function App() {
       });
   }
 
+  async function getMatches() {
+    const userToken = localStorage.getItem("userToken");
+    if (userToken.length > 0) {
+      const headers = {
+        headers: {
+          authorization: userToken,
+        },
+      };
+      axios
+        .get(`${apiURL}/get_user`, headers)
+        .then(async (userResponse) => {
+          setCurrentUser(userResponse.data);
+          await axios
+            .get(`${apiURL}/matches`, headers)
+            .then(async (response) => {
+              let rawMatches = response.data;
+              rawMatches.forEach(async (element) => {
+                await axios
+                  .get(`${apiURL}/matches/` + element, headers)
+                  .then((response) => {
+                    setMatches([...matches, response.data.user]);
+                  });
+              });
+            })
+            .catch(() => {
+              setMatches("error");
+            });
+        })
+        .catch(() => {
+          setMatches("error");
+        });
+    } else {
+      window.location.replace("/login");
+    }
+  }
+
+  async function handleEndMatch(secondId) {
+    const body = {
+      secondProfile: secondId,
+    };
+    const headers = {
+      headers: {
+        authorization: localStorage.getItem("userToken"),
+      },
+    };
+    await axios
+      .post(`${apiURL}/matches/remove_match`, body, headers)
+      .then(async (response) => {
+        localStorage.setItem("userToken", response.data);
+        window.location.replace("/matches");
+      })
+      .catch(() => {
+        setMatches(["error"]);
+      });
+  }
+
   function handleRegister() {
     const name = document.querySelector("#nameInput").value;
     const email = document.querySelector("#emailInput").value;
@@ -530,9 +586,12 @@ export default function App() {
               <>
                 {navbar}
                 <Matches
-                apiURL={apiURL}
-                matches={matches}
-                setMatches={setMatches} />
+                  handleEndMatch={handleEndMatch}
+                  currentUser={currentUser}
+                  getMatches={getMatches}
+                  profilePath={profilesPath}
+                  matches={matches}
+                />
               </>
             }
           />

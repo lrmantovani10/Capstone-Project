@@ -1,38 +1,12 @@
 import "./Matches.css";
 import { useEffect } from "react";
-import axios from "axios";
+import "@fontsource/abel";
+import CloseIcon from "@mui/icons-material/Close";
+import Error from "../Error/Error";
 export default function Matches(props) {
   useEffect(() => {
     try {
-      const userToken = localStorage.getItem("userToken");
-      if (userToken.length > 0) {
-        const headers = {
-          headers: {
-            authorization: userToken,
-          },
-        };
-        axios
-          .get(`${props.apiURL}/matches`, headers)
-          .then((response) => {
-            let rawMatches = response.data;
-            let dataMatches = [];
-            rawMatches.forEach(async (element) => {
-              await axios
-                .get(`${props.apiURL}/matches/` + element, headers)
-                .then((response) => {
-                  dataMatches.push(response.data.user);
-                });
-            });
-            console.log(dataMatches);
-            props.setMatches([...dataMatches]);
-            console.log(props.matches);
-          })
-          .catch(() => {
-            props.setMatches("error");
-          });
-      } else {
-        window.location.replace("/login");
-      }
+      props.getMatches();
     } catch {
       window.location.replace("/login");
     }
@@ -42,12 +16,52 @@ export default function Matches(props) {
   } else if (props.matches.length > 0) {
     return (
       <div id="matchesDiv">
-        {props.matches.map((element) => {
-          return <div key={"match" + index}>element.name</div>;
+        {props.matches.map((element, index) => {
+          return (
+            <div key={"match" + index} className="card mb-3 matchIndividual">
+              <div className="row no-gutters">
+                <div className="col-md-4">
+                  <img
+                    src={
+                      element.profile_picture.length > 0
+                        ? props.profilePath +
+                          element._id +
+                          "." +
+                          element.profile_picture
+                        : props.profilePath + "default.png"
+                    }
+                    className="card-img matchPicture"
+                    alt={"picture of " + element.name}
+                  />
+                </div>
+                <div className="col-md-8">
+                  <div className="card-body">
+                    <div className="matchHeader">
+                      <CloseIcon
+                        className="endMatch"
+                        onClick={() => props.handleEndMatch(element._id)}
+                      />
+                    </div>
+                    <h4 className="card-title matchName">
+                      {element.name} |{" "}
+                      {props.currentUser.type == 0
+                        ? (element.interested_years + "+ ")
+                        : element.age}
+                    </h4>
+
+                    <p className="card-text matchAbout">{element.about}</p>
+                    <p className="card-text">
+                      <span className="card-text">Email: {element.email}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
         })}
       </div>
     );
   } else {
-    <Error message={"No matches so far! Keep swiping!"} />;
+    return <Error message={"No matches so far! Keep swiping!"} />;
   }
 }

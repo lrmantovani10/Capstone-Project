@@ -19,7 +19,7 @@
   flex-direction: column;
   gap: 10%;
   width: 50%;
-  overflow: scroll;
+  overflow:scroll;
   align-items: center;
 }
 #editProfileParameters {

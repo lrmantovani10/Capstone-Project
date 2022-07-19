@@ -1,3 +1,36 @@
-#matchesDiv{
-    color:white;
+#matchesDiv {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.matchIndividual {
+  width: 60%;
+  margin-top: 2%;
+  background-color: transparent;
+  border-color: white;
+}
+.matchPicture {
+  width: 250px;
+  height: 300px;
+}
+.matchName {
+  font-family: "Abel";
+  text-align: center;
+  font-size: xx-large;
+}
+.matchAbout {
+  font-weight: lighter;
+  font-size: large;
+}
+.endMatch {
+  cursor: pointer;
+}
+.endMatch:hover {
+  opacity: 70%;
+}
+.matchHeader {
+  width: 100%;
+  display: flex;
+  justify-content: right;
 }
