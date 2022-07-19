@@ -1,3 +1,4 @@
+const e = require("cors");
 const { MongoClient, ObjectId } = require("mongodb");
 const { mongoUrl } = require("../authentication");
 const mongoClient = new MongoClient(mongoUrl);
@@ -51,10 +52,13 @@ class Profiles {
     await profiles.insertOne(newProfile);
   }
   static includesElement(array, comparator) {
+    let conditional = false;
     array.forEach((e) => {
-      if (e == comparator) return true;
+      if (e.toString() == comparator) {
+        conditional = true;
+      }
     });
-    return false;
+    return conditional;
   }
   static async getMatches(profileId) {
     const currentUser = await this.getProfileId(profileId);
@@ -65,12 +69,11 @@ class Profiles {
     const database = mongoClient.db("UserData");
     const profiles = database.collection("Profiles");
     const newSwipe = userParameters["swipedProfile"];
-    const swipeObject = new ObjectId(newSwipe);
     const newLike = userParameters["likedProfile"];
-    const likeObject = new ObjectId(newLike);
     const thisProfile = await this.getProfileId(email);
     let updateBody = {};
     if (newSwipe) {
+      const swipeObject = new ObjectId(newSwipe);
       delete userParameters["swipedProfile"];
       let containsProfile = this.includesElement(
         thisProfile.profilesSwiped,
@@ -78,25 +81,35 @@ class Profiles {
       );
       if (!containsProfile) updateBody.$push = { profilesSwiped: swipeObject };
     } else if (newLike) {
+      const likeObject = new ObjectId(newLike);
       delete userParameters["likedProfile"];
-      let containsProfile = this.includesElement(
-        thisProfile.profilesLiked,
-        newLike
-      );
-      if (!containsProfile) updateBody.$push = { profilesLiked: likeObject };
-      const otherEmail = userParameters["otherEmail"];
-      delete userParameters["otherEmail"];
-      const otherProfile = await this.getProfileId(otherEmail);
-      const thisObject = new ObjectId(thisProfile._id);
-
-      let otherLikes = this.includesElement(
-        otherProfile.profilesLiked,
-        thisObject
-      );
-      let otherMatches = this.includesElement(otherProfile.matches, thisObject);
-      if (otherLikes && !otherMatches) {
-        updateBody.$push.matches = new ObjectId(otherProfile._id);
-        this.changeProfile(otherEmail, { likedProfile: thisProfile._id });
+      if (userParameters["referral"]) {
+        updateBody["$push"] = {
+          matches: likeObject,
+        };
+      } else {
+        let containsProfile = this.includesElement(
+          thisProfile.profilesLiked,
+          newLike
+        );
+        if (!containsProfile) updateBody.$push = { profilesLiked: likeObject };
+        const otherEmail = userParameters["otherEmail"];
+        delete userParameters["otherEmail"];
+        const otherProfile = await this.getProfileId(otherEmail);
+        const thisObject = thisProfile._id;
+        const thisId = thisObject.toString();
+        let otherLikes = this.includesElement(
+          otherProfile.profilesLiked,
+          thisId
+        );
+        let otherMatches = this.includesElement(otherProfile.matches, thisId);
+        if (otherLikes && !otherMatches) {
+          updateBody.$push.matches = otherProfile._id;
+          this.changeProfile(otherEmail, {
+            likedProfile: thisId,
+            referral: true,
+          });
+        }
       }
     }
 

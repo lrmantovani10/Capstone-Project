@@ -175,7 +175,6 @@ export default function SwipingPage(props) {
             </Button>
           </ThemeProvider>
         </div>
-        <div id="matchingResponse"></div>
       </div>
     );
   } else {

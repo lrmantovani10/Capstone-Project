@@ -35,34 +35,36 @@ export default function App() {
   let [currentResume, setResume] = useState("");
 
   function updateParameters(user, setFunction) {
-    if (user.profile_picture.length > 0) {
-      setProfileImage(profilesPath + user._id + "." + user.profile_picture);
-    } else {
-      setProfileImage(profilesPath + "default.png");
-    }
-    if (user.type == 0 && user.resume.length > 0) {
-      setResume(resumesPath + user._id + "." + user.resume);
-    } else {
-      setResume("");
-    }
-    let newExtras = [];
-    user.other_pictures.map((element, index) => {
-      if (element.length > 0) {
-        newExtras.push(
-          othersPath + user._id + "_" + (index + 1) + "." + element
-        );
+    if (user) {
+      if (user.profile_picture.length > 0) {
+        setProfileImage(profilesPath + user._id + "." + user.profile_picture);
       } else {
-        newExtras.push(othersPath + "default.png");
+        setProfileImage(profilesPath + "default.png");
       }
-    });
-    setExtras(newExtras);
-    setFunction(user);
+      if (user.type == 0 && user.resume.length > 0) {
+        setResume(resumesPath + user._id + "." + user.resume);
+      } else {
+        setResume("");
+      }
+      let newExtras = [];
+      user.other_pictures.map((element, index) => {
+        if (element.length > 0) {
+          newExtras.push(
+            othersPath + user._id + "_" + (index + 1) + "." + element
+          );
+        } else {
+          newExtras.push(othersPath + "default.png");
+        }
+      });
+
+      setExtras(newExtras);
+      setFunction(user);
+    }
   }
 
   function handleSwipe(type, userEmail) {
     let profileCopy = [...profiles];
     let swipedProfile = profileCopy.pop();
-    const messageElement = document.querySelector("#matchingResponse");
     let body = {
       email: userEmail,
     };
@@ -81,16 +83,14 @@ export default function App() {
       .post(`${apiURL}/change_profile`, body, headers)
       .then((response) => {
         localStorage.setItem("userToken", response.data);
-
-        // notify of match
-
-        updateParameters(profileCopy);
-        messageElement.innerHTML = "";
+        if(profile.profilesLiked.includes(currentUser._id)){
+          alert("You matched with " + profile.name + "! 🎉")
+        }
+        setProfiles(profileCopy);
+        updateParameters(profileCopy[profileCopy.length - 1], setProfile);
       })
       .catch(() => {
-        messageElement.innerHTML =
-          "Failed to swipe on profile. Please try again!";
-        messageElement.style.color = "red";
+        setProfiles(["error"]);
       });
   }
 
