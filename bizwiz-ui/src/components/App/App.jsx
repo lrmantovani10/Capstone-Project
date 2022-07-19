@@ -33,6 +33,7 @@ export default function App() {
   let [profileImage, setProfileImage] = useState("");
   let [extraImages, setExtras] = useState([]);
   let [currentResume, setResume] = useState("");
+  let [matches, setMatches] = useState([]);
 
   function updateParameters(user, setFunction) {
     if (user) {
@@ -83,8 +84,8 @@ export default function App() {
       .post(`${apiURL}/change_profile`, body, headers)
       .then((response) => {
         localStorage.setItem("userToken", response.data);
-        if(profile.profilesLiked.includes(currentUser._id)){
-          alert("You matched with " + profile.name + "! 🎉")
+        if (profile.profilesLiked.includes(currentUser._id)) {
+          alert("You matched with " + profile.name + "! 🎉");
         }
         setProfiles(profileCopy);
         updateParameters(profileCopy[profileCopy.length - 1], setProfile);
@@ -528,7 +529,10 @@ export default function App() {
             element={
               <>
                 {navbar}
-                <Matches />
+                <Matches
+                apiURL={apiURL}
+                matches={matches}
+                setMatches={setMatches} />
               </>
             }
           />

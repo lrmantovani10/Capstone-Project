@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken");
 const { mySecretKey, ensureToken } = require("../authentication");
 const { ForbiddenError } = require("../utils/errors");
 
-router.get("/", ensureToken, async (request, response, next) => {
+router.use(ensureToken)
+router.get("/", async (request, response, next) => {
   jwt.verify(request.token, mySecretKey, async function (error, data) {
     if (error) {
       next(new ForbiddenError("Bad Token!"));
@@ -16,15 +17,15 @@ router.get("/", ensureToken, async (request, response, next) => {
   });
 });
 
-router.get("/:profileId", ensureToken, (request, response, next) => {
+router.get("/:profileId", async (request, response, next) => {
   let profileId = request.params.profileId;
-  try {
-    response.status(200).send({
-      profile: Profiles.getProfileId(profileId),
-    });
-  } catch (err) {
-    next(err);
-  }
+  jwt.verify(request.token, mySecretKey, async function (error) {
+    if (error) {
+      next(new ForbiddenError("Bad Token!"));
+    } else {
+      const userData = await Profiles.getProfileId(profileId);
+      response.status(200).send({user:userData});
+    }
+  });
 });
-
 module.exports = router;

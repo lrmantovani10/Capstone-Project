@@ -58,14 +58,21 @@ function selectPotentials(userData) {
   let results = {
     type: { $ne: userData.type },
     _id: { $nin: allProfiles },
+    interested_sectors: {$in: userData.interested_sectors},
+    interested_positions: {$in: userData.interested_positions},
+    interested_locations: {$in: userData.interested_locations}
   };
+  if (userData.type == 1) {
+    results["interested_years"] = { $ge: userData.interested_years };
+  }
+
   return results;
 }
 
 app.post("/signup", async (request, response, next) => {
   const requestBody = request.body;
   try {
-    const profileData = await Profiles.getProfileId(requestBody.email);
+    const profileData = await Profiles.getProfileEmail(requestBody.email);
     if (!profileData) {
       await Profiles.createProfile(requestBody);
       const token = jwt.sign({ email: requestBody.email }, mySecretKey);
@@ -80,7 +87,7 @@ app.post("/signup", async (request, response, next) => {
 
 app.post("/login", async (request, response, next) => {
   const requestBody = request.body;
-  const profileData = await Profiles.getProfileId(requestBody.email);
+  const profileData = await Profiles.getProfileEmail(requestBody.email);
   const token = jwt.sign({ email: profileData.email }, mySecretKey);
   try {
     if (!profileData) {
@@ -126,7 +133,7 @@ app.get("/get_user", async (request, response, next) => {
     if (error) {
       next(new ForbiddenError("Bad Token!"));
     } else {
-      const userData = await Profiles.getProfileId(data.email);
+      const userData = await Profiles.getProfileEmail(data.email);
       response.status(200).send(userData);
     }
   });
@@ -137,7 +144,7 @@ app.post("/check_user", async (request, response, next) => {
     if (error) {
       next(new ForbiddenError("Bad Token!"));
     } else {
-      const userData = await Profiles.getProfileId(request.body.email);
+      const userData = await Profiles.getProfileEmail(request.body.email);
       if (userData && userData.email != data.email) {
         next(new ForbiddenError("Email already associated with an account!"));
       } else {
@@ -179,7 +186,7 @@ app.get("/get_profiles", async (request, response, next) => {
     if (error) {
       next(new ForbiddenError("Bad Token!"));
     } else {
-      const userData = await Profiles.getProfileId(data.email);
+      const userData = await Profiles.getProfileEmail(data.email);
       const profiles = await Profiles.getProfiles(selectPotentials(userData));
       response.status(200).send(profiles);
     }

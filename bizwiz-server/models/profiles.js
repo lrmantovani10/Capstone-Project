@@ -4,11 +4,18 @@ const { mongoUrl } = require("../authentication");
 const mongoClient = new MongoClient(mongoUrl);
 
 class Profiles {
+  static async getProfileEmail(profileEmail) {
+    await mongoClient.connect();
+    const database = mongoClient.db("UserData");
+    const profiles = database.collection("Profiles");
+    let profileRetrieved = profiles.findOne({ email: profileEmail });
+    return profileRetrieved;
+  }
   static async getProfileId(profileId) {
     await mongoClient.connect();
     const database = mongoClient.db("UserData");
     const profiles = database.collection("Profiles");
-    let profileRetrieved = profiles.findOne({ email: profileId });
+    let profileRetrieved = profiles.findOne({ _id: new ObjectId(profileId)});
     return profileRetrieved;
   }
   static async getProfiles(criteria) {
@@ -61,7 +68,7 @@ class Profiles {
     return conditional;
   }
   static async getMatches(profileId) {
-    const currentUser = await this.getProfileId(profileId);
+    const currentUser = await this.getProfileEmail(profileId);
     return currentUser.matches;
   }
   static async changeProfile(email, userParameters) {
@@ -70,7 +77,7 @@ class Profiles {
     const profiles = database.collection("Profiles");
     const newSwipe = userParameters["swipedProfile"];
     const newLike = userParameters["likedProfile"];
-    const thisProfile = await this.getProfileId(email);
+    const thisProfile = await this.getProfileEmail(email);
     let updateBody = {};
     if (newSwipe) {
       const swipeObject = new ObjectId(newSwipe);
@@ -95,7 +102,7 @@ class Profiles {
         if (!containsProfile) updateBody.$push = { profilesLiked: likeObject };
         const otherEmail = userParameters["otherEmail"];
         delete userParameters["otherEmail"];
-        const otherProfile = await this.getProfileId(otherEmail);
+        const otherProfile = await this.getProfileEmail(otherEmail);
         const thisObject = thisProfile._id;
         const thisId = thisObject.toString();
         let otherLikes = this.includesElement(
