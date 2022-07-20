@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import "@fontsource/abel";
 import CloseIcon from "@mui/icons-material/Close";
 import Error from "../Error/Error";
+import { Button } from "@mui/material";
+import { ThemeProvider } from "@emotion/react";
 export default function Matches(props) {
   useEffect(() => {
     try {
@@ -45,7 +47,7 @@ export default function Matches(props) {
                     <h4 className="card-title matchName">
                       {element.name} |{" "}
                       {props.currentUser.type == 0
-                        ? (element.interested_years + "+ ")
+                        ? element.interested_years + "+ "
                         : element.age}
                     </h4>
 
@@ -53,6 +55,18 @@ export default function Matches(props) {
                     <p className="card-text">
                       <span className="card-text">Email: {element.email}</span>
                     </p>
+                    <p className="card-text">
+                      <span className="card-text">
+                        Location: {element.location}
+                      </span>
+                    </p>
+                    <div id="messageButtonDiv">
+                      <ThemeProvider theme={props.purpleTheme}>
+                        <Button id="messageButton" variant="contained">
+                          Message
+                        </Button>
+                      </ThemeProvider>
+                    </div>
                   </div>
                 </div>
               </div>

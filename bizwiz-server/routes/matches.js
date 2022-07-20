@@ -34,10 +34,7 @@ router.post("/remove_match", async (request, response, next) => {
     if (error) {
       next(new ForbiddenError("Bad Token!"));
     } else {
-      await Profiles.removeMatch(
-        data.email,
-        request.body.secondProfile
-      );
+      await Profiles.removeMatch(data.email, request.body.secondProfile);
       const token = jwt.sign({ email: data.email }, mySecretKey);
       response.status(200).send(token);
     }

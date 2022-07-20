@@ -586,6 +586,7 @@ export default function App() {
               <>
                 {navbar}
                 <Matches
+                  purpleTheme={purpleTheme}
                   handleEndMatch={handleEndMatch}
                   currentUser={currentUser}
                   getMatches={getMatches}
