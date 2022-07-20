@@ -2,11 +2,12 @@ import "./Matches.css";
 import { useEffect } from "react";
 import "@fontsource/abel";
 import CloseIcon from "@mui/icons-material/Close";
-import Error from "../Error/Error";
+import Message from "../Message/Message";
 import { Button } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 export default function Matches(props) {
   useEffect(() => {
+    props.setTemporaryMessage("Loading...")
     try {
       props.getMatches();
     } catch {
@@ -14,7 +15,7 @@ export default function Matches(props) {
     }
   }, []);
   if (props.matches == "error") {
-    return <Error />;
+    return <Message />;
   } else if (props.matches.length > 0) {
     return (
       <div id="matchesDiv">
@@ -76,6 +77,6 @@ export default function Matches(props) {
       </div>
     );
   } else {
-    return <Error message={"No matches so far! Keep swiping!"} />;
+    return <Message message={props.temporaryMessage} />;
   }
 }

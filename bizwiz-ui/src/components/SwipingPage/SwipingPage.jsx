@@ -4,10 +4,11 @@ import Button from "@mui/material/Button";
 import { ThemeProvider } from "@mui/material/styles";
 import { useEffect } from "react";
 import axios from "axios";
-import Error from "../Error/Error";
+import Message from "../Message/Message";
 
 export default function SwipingPage(props) {
   useEffect(() => {
+    props.setTemporaryMessage("Loading...")
     try {
       const userToken = localStorage.getItem("userToken");
       if (userToken.length > 0) {
@@ -34,6 +35,9 @@ export default function SwipingPage(props) {
                 props.setProfile
               );
             }
+            else{
+                props.setTemporaryMessage("No potential matches! Broaden filters or come back later for more!")
+            }
           })
           .catch(() => {
             props.setProfiles(["error"]);
@@ -47,14 +51,15 @@ export default function SwipingPage(props) {
   }, []);
 
   if (props.profiles.length > 0 && props.profiles[0] == "error") {
-    return <Error />;
+    return <Message />;
   } else if (props.profiles.length > 0 && props.currentUser !== "") {
     return (
       <div className="swipingGeneral">
         <div className="swipingProfile">
           <h1>
+            {" "}
             {props.profile.name}
-            {props.currentUser.type == 0 ? "" : "| " + props.profile.age}
+            {props.currentUser.type == 0 ? "" : "| " + props.profile.age}{" "}
           </h1>
           <div className="swipingBasic">
             <img
@@ -85,7 +90,7 @@ export default function SwipingPage(props) {
                   " | " + props.profile.location
                 ) : (
                   <></>
-                )}
+                )}{" "}
               </div>
             </div>
           </div>
@@ -105,7 +110,7 @@ export default function SwipingPage(props) {
                     }
                   ></img>
                 );
-              })}
+              })}{" "}
             </div>
           </div>
 
@@ -143,7 +148,7 @@ export default function SwipingPage(props) {
               </a>
             ) : (
               <></>
-            )}
+            )}{" "}
           </div>
         </div>
         <div className="buttonChoice">
@@ -177,11 +182,12 @@ export default function SwipingPage(props) {
         </div>
       </div>
     );
-  } else {
+  } 
+  else {
     return (
-      <Error
+      <Message
         message={
-          "No potential matches! Broaden filters or come back later for more!"
+          props.temporaryMessage
         }
       />
     );

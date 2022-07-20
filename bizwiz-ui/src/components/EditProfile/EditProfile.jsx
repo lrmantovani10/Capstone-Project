@@ -1,6 +1,6 @@
 import "./EditProfile.css";
 import { useEffect } from "react";
-import Error from "../Error/Error";
+import Message from "../Message/Message";
 import axios from "axios";
 import "@fontsource/abel";
 import Button from "@mui/material/Button";
@@ -20,6 +20,7 @@ export default function EditProfile(props) {
     props.setCurrentUser(newUser);
   }
   useEffect(() => {
+    props.setCurrentUser("Loading");
     try {
       const userToken = localStorage.getItem("userToken");
       if (userToken.length > 0) {
@@ -45,8 +46,10 @@ export default function EditProfile(props) {
     }
   }, []);
 
-  if (props.currentUser == "error") {
-    return <Error />;
+  if (props.currentUser == "Loading") {
+    return <Message message={"Loading..."} />;
+  } else if (props.currentUser == "error") {
+    return <Message />;
   } else if (props.currentUser !== "") {
     return (
       <div id="editProfile">
@@ -219,7 +222,6 @@ export default function EditProfile(props) {
               ) : (
                 <></>
               )}
-
               {props.currentUser.type == 0 && props.currentResume.length > 0 ? (
                 <div className="attributeSelection">
                   <a id="currentResume" href={props.currentResume} download>
@@ -229,7 +231,7 @@ export default function EditProfile(props) {
                 </div>
               ) : (
                 <></>
-              )}
+              )}{" "}
             </div>
           </div>
 
@@ -283,7 +285,8 @@ export default function EditProfile(props) {
                   <div key={"interestWrapper" + index}>
                     <div className="attributeSelection interestDiv">
                       <div className="abelFont">
-                        {firstUppercase} of Interest
+                        {firstUppercase}
+                        of Interest
                       </div>
                       <div className="chosenInterest">
                         {parameterArray[index].map((interest, idx) => {
@@ -298,7 +301,7 @@ export default function EditProfile(props) {
                                 );
                               }}
                             >
-                              {interest}
+                              {interest}{" "}
                             </p>
                           );
                         })}{" "}
@@ -306,7 +309,7 @@ export default function EditProfile(props) {
                     </div>
                   </div>
                 );
-              })}
+              })}{" "}
             </div>
             <div className="interestGrid">
               {["sectors", "positions", "locations"].map((element, index) => {
@@ -342,7 +345,7 @@ export default function EditProfile(props) {
                     </div>
                   </div>
                 );
-              })}
+              })}{" "}
             </div>
           </div>
         </div>

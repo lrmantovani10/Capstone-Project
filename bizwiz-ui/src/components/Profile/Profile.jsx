@@ -2,11 +2,12 @@ import "./Profile.css";
 import { useEffect } from "react";
 import axios from "axios";
 import "@fontsource/abel";
-import Error from "../Error/Error";
+import Message from "../Message/Message";
 import Button from "@mui/material/Button";
 import { ThemeProvider } from "@mui/material";
 export default function Profile(props) {
   useEffect(() => {
+    props.setCurrentUser("Loading");
     try {
       const userToken = localStorage.getItem("userToken");
       if (userToken.length > 0) {
@@ -31,8 +32,10 @@ export default function Profile(props) {
     }
   }, []);
 
-  if (props.currentUser == "error") {
-    return <Error />;
+  if (props.currentUser == "Loading") {
+    return <Message message={"Loading..."} />;
+  } else if (props.currentUser == "error") {
+    return <Message />;
   } else if (props.currentUser != "") {
     return (
       <div className="profilePage">
@@ -81,15 +84,18 @@ export default function Profile(props) {
                     )
                   ) : (
                     <></>
-                  )}
+                  )}{" "}
                 </p>
               </div>
 
               <div id="currentInfo" className="abelFont whiteAbel">
                 {props.currentUser.type == 0 ? (
                   <div>
-                    {props.currentUser.age} year-old
-                    <span> </span>living in <span> </span>
+                    {" "}
+                    {props.currentUser.age}
+                    year-old
+                    <span></span>living in
+                    <span></span>
                     {props.currentUser.location}📍
                   </div>
                 ) : (
@@ -145,7 +151,7 @@ export default function Profile(props) {
                     >
                       Website
                     </a>
-                  )}
+                  )}{" "}
                 </div>
               </div>
             </div>
@@ -174,7 +180,7 @@ export default function Profile(props) {
                       />
                     );
                   }
-                })}
+                })}{" "}
               </div>
             </div>
           </div>
@@ -188,11 +194,11 @@ export default function Profile(props) {
                     (element, index) => {
                       return (
                         <p className="interestElement" key={"sector" + index}>
-                          {element}
+                          {element}{" "}
                         </p>
                       );
                     }
-                  )}
+                  )}{" "}
                 </div>
               </div>
 
@@ -203,11 +209,11 @@ export default function Profile(props) {
                     (element, index) => {
                       return (
                         <p className="interestElement" key={"position" + index}>
-                          {element}
+                          {element}{" "}
                         </p>
                       );
                     }
-                  )}
+                  )}{" "}
                 </div>
               </div>
 
@@ -218,11 +224,11 @@ export default function Profile(props) {
                     (element, index) => {
                       return (
                         <p className="interestElement" key={"location" + index}>
-                          {element}
+                          {element}{" "}
                         </p>
                       );
                     }
-                  )}
+                  )}{" "}
                 </div>
               </div>
             </div>

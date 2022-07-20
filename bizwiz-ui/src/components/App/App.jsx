@@ -34,6 +34,7 @@ export default function App() {
   let [extraImages, setExtras] = useState([]);
   let [currentResume, setResume] = useState("");
   let [matches, setMatches] = useState([]);
+  let [temporaryMessage, setTemporaryMessage] = useState("Loading...");
 
   function updateParameters(user, setFunction) {
     if (user) {
@@ -111,11 +112,15 @@ export default function App() {
             .get(`${apiURL}/matches`, headers)
             .then(async (response) => {
               let rawMatches = response.data;
-              rawMatches.forEach(async (element) => {
+              await rawMatches.forEach(async (element) => {
                 await axios
                   .get(`${apiURL}/matches/` + element, headers)
                   .then((response) => {
                     setMatches([...matches, response.data.user]);
+                  })
+                  .finally(() => {
+                    if (matches.length == 0)
+                      setTemporaryMessage("No matches so far! Keep swiping!");
                   });
               });
             })
@@ -477,6 +482,8 @@ export default function App() {
               <>
                 {navbar}
                 <SwipingPage
+                  temporaryMessage={temporaryMessage}
+                  setTemporaryMessage={setTemporaryMessage}
                   updateParameters={updateParameters}
                   currentResume={currentResume}
                   profileImage={profileImage}
@@ -586,6 +593,8 @@ export default function App() {
               <>
                 {navbar}
                 <Matches
+                  temporaryMessage={temporaryMessage}
+                  setTemporaryMessage={setTemporaryMessage}
                   purpleTheme={purpleTheme}
                   handleEndMatch={handleEndMatch}
                   currentUser={currentUser}

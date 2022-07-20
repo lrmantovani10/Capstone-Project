@@ -1,0 +1,10 @@
+.mainMessage {
+  width:100vw;
+  height:60vh;
+  color: white;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: xx-large;
+}
