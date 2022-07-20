@@ -14,3 +14,6 @@ Repo containing code for Lucas Mantovani's Meta University capstone project.
 * Week 7: integrate with Messenger API on Matches page
 * Week 8: Stretch features (check Google Doc), fix bugs
 * Week 9: Finish stretch features, fix bugs
+
+- 07/20: 1 week ahead (week 7 work in week 6)
+- August 10th: fully functional prototype with scenarios for the demo (dry run)
