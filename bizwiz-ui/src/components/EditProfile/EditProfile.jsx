@@ -34,7 +34,7 @@ export default function EditProfile(props) {
             props.updateParameters(response.data, props.setCurrentUser);
           })
           .catch((error) => {
-            console.log(error)
+            console.log(error);
             props.setCurrentUser("error");
           });
       } else {
@@ -50,20 +50,19 @@ export default function EditProfile(props) {
   } else if (props.currentUser !== "") {
     return (
       <div id="editProfile">
-        <h1 id="editProfileHeader" className="abelFont">
+        <h1 id="editProfileHeader" className="abelFont whiteAbel">
           {props.currentUser.name}{" "}
         </h1>
 
-        <div id="horizontalColumns">
-          <div id="editProfileImages">
-            <h2 id="editImageHeader" className="abelFont">
+        <div id="verticalColumns">
+          <div id="profileImageHeader">
+            <h4 id="editImageHeader" className="abelFont whiteAbel">
               Profile Image
-            </h2>
+            </h4>
             <div className="imageAlign">
               <img
                 id="profilePicPreview"
                 src={props.profileImage}
-                className="picPreview"
                 alt="profile picture preview"
               />
               <div className="attributeSelection" id="editProfileImage">
@@ -77,10 +76,168 @@ export default function EditProfile(props) {
                 />
               </div>
             </div>
-            <h2 className="abelFont">Other Images</h2>
+          </div>
+          <h2 className="abelFont whiteAbel othersHeader">Basic Info</h2>
+
+          <div id="editProfileParameters">
+            <div className="parameterGrid">
+              <div className="attributeSelection">
+                <div className="abelFont">Email</div>
+                <input
+                  id="emailChange"
+                  className="textInput"
+                  type="email"
+                  maxLength="50"
+                  defaultValue={props.currentUser.email}
+                />
+              </div>
+
+              <div className="attributeSelection">
+                <div className="abelFont">Password</div>
+                <input
+                  id="passwordChange"
+                  className="textInput"
+                  type="password"
+                  maxLength="50"
+                  defaultValue={props.currentUser.password}
+                />
+              </div>
+
+              {props.currentUser.type == 0 ? (
+                <div className="attributeSelection">
+                  <div className="abelFont">Age</div>
+                  <input
+                    id="ageChange"
+                    className="textInput"
+                    type="number"
+                    min="18"
+                    max="110"
+                    defaultValue={props.currentUser.age}
+                    onChange={calibrateValue}
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
+
+              <div className="attributeSelection">
+                <div className="abelFont">Sector</div>
+                <input
+                  id="sectorChange"
+                  className="textInput"
+                  type="text"
+                  maxLength="50"
+                  defaultValue={props.currentUser.sector}
+                />
+              </div>
+
+              {props.currentUser.type == 0 ? (
+                <div className="attributeSelection">
+                  <div className="abelFont">Position</div>
+                  <input
+                    id="occupationChange"
+                    className="textInput"
+                    type="text"
+                    maxLength="50"
+                    defaultValue={props.currentUser.occupation}
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
+
+              <div className="attributeSelection">
+                <div className="abelFont">Years of Experience</div>
+                <input
+                  id="experienceChange"
+                  className="textInput"
+                  type="number"
+                  min="0"
+                  max="40"
+                  defaultValue={props.currentUser.interested_years}
+                  onChange={calibrateValue}
+                />
+              </div>
+
+              <div className="attributeSelection">
+                {props.currentUser.type == 0 ? (
+                  <div className="abelFont">Personal Website URL</div>
+                ) : (
+                  <div className="abelFont">Organization Website</div>
+                )}
+                <input
+                  id="websiteChange"
+                  className="textInput"
+                  type="url"
+                  maxLength="50"
+                  defaultValue={props.currentUser.other_link}
+                />
+              </div>
+
+              <div className="attributeSelection">
+                <div className="abelFont">LinkedIn URL</div>
+                <input
+                  id="linkedinChange"
+                  className="textInput"
+                  type="url"
+                  maxLength="50"
+                  defaultValue={props.currentUser.linkedin}
+                />
+              </div>
+
+              <div className="attributeSelection">
+                <div className="abelFont">Location</div>
+                <input
+                  id="locationChange"
+                  className="textInput"
+                  type="text"
+                  maxLength="50"
+                  defaultValue={props.currentUser.location}
+                />
+              </div>
+            </div>
+
+            <div className="attributeSelection">
+              <div className="abelFont">Intro</div>
+              <textarea
+                id="aboutChange"
+                defaultValue={props.currentUser.about}
+                maxLength="300"
+              />
+            </div>
+
+            <div id="resumeActions">
+              {props.currentUser.type == 0 ? (
+                <div className="attributeSelection" id="resumeAlign">
+                  <div className="abelFont">Resume:</div>
+                  <input
+                    id="resumeChange"
+                    type="file"
+                    accept=".docx, .txt, .pdf, .doc"
+                  />
+                </div>
+              ) : (
+                <></>
+              )}
+
+              {props.currentUser.type == 0 && props.currentResume.length > 0 ? (
+                <div className="attributeSelection">
+                  <a id="currentResume" href={props.currentResume} download>
+                    {" "}
+                    Download current resume
+                  </a>
+                </div>
+              ) : (
+                <></>
+              )}
+            </div>
+          </div>
+
+          <h2 className="abelFont whiteAbel othersHeader">Other Images</h2>
+          <div id="editProfileImages" className="parameterGrid">
             {[...Array(6).keys()].map((index) => {
               return (
-                <div key={"imageDiv" + index}>
+                <div key={"imageDiv" + index} className="imageContainer">
                   <img
                     key={"additionalChangeImage" + index}
                     id={"editPicture" + index}
@@ -97,6 +254,7 @@ export default function EditProfile(props) {
                       id={"imageInput" + index}
                       key={"inputImage" + index}
                       type="file"
+                      className="addImageInput"
                       accept=".png, .jpeg, .jpg"
                       onChange={(event) =>
                         props.handleChangeImage(event, "editPicture" + index)
@@ -108,214 +266,84 @@ export default function EditProfile(props) {
             })}{" "}
           </div>
 
-          <div id="editProfileParameters">
-            {props.currentUser.type == 0 ? (
-              <div className="attributeSelection">
-                <div className="abelFont">Age:</div>
-                <input
-                  id="ageChange"
-                  className="textInput"
-                  type="number"
-                  defaultValue={props.currentUser.age}
-                  onChange={calibrateValue}
-                />
-              </div>
-            ) : (
-              <></>
-            )}
+          <h2 className="abelFont whiteAbel othersHeader">Interests</h2>
 
-            <div className="attributeSelection">
-              <div className="abelFont">Email:</div>
-              <input
-                id="emailChange"
-                className="textInput"
-                type="email"
-                maxLength="50"
-                defaultValue={props.currentUser.email}
-              />
-            </div>
-
-            <div className="attributeSelection">
-              <div className="abelFont">Password:</div>
-              <input
-                id="passwordChange"
-                className="textInput"
-                type="password"
-                maxLength="50"
-                defaultValue={props.currentUser.password}
-              />
-            </div>
-
-            <div className="attributeSelection">
-              <div className="abelFont">Sector:</div>
-              <input
-                id="sectorChange"
-                className="textInput"
-                type="text"
-                maxLength="50"
-                defaultValue={props.currentUser.sector}
-              />
-            </div>
-
-            {props.currentUser.type == 0 ? (
-              <div className="attributeSelection">
-                <div className="abelFont">Position:</div>
-                <input
-                  id="occupationChange"
-                  className="textInput"
-                  type="text"
-                  maxLength="50"
-                  defaultValue={props.currentUser.occupation}
-                />
-              </div>
-            ) : (
-              <></>
-            )}
-
-            <div className="attributeSelection">
-              <div className="abelFont">Location:</div>
-              <input
-                id="locationChange"
-                className="textInput"
-                type="text"
-                maxLength="50"
-                defaultValue={props.currentUser.location}
-              />
-            </div>
-
-            <div className="attributeSelection">
-              <div className="abelFont">Intro:</div>
-              <textarea
-                id="aboutChange"
-                defaultValue={props.currentUser.about}
-                maxLength="300"
-              />
-            </div>
-
-            <div className="attributeSelection">
-              {props.currentUser.type == 0 ? (
-                <div className="abelFont">Personal Website URL:</div>
-              ) : (
-                <div className="abelFont">Organization Website:</div>
-              )}
-              <input
-                id="websiteChange"
-                className="textInput"
-                type="url"
-                maxLength="50"
-                defaultValue={props.currentUser.other_link}
-              />
-            </div>
-
-            <div className="attributeSelection">
-              <div className="abelFont">LinkedIn URL:</div>
-              <input
-                id="linkedinChange"
-                className="textInput"
-                type="url"
-                maxLength="50"
-                defaultValue={props.currentUser.linkedin}
-              />
-            </div>
-
-            {props.currentUser.type == 0 ? (
-              <div className="attributeSelection">
-                <div className="abelFont">Resume:</div>
-                <input
-                  id="resumeChange"
-                  type="file"
-                  accept=".docx, .txt, .pdf, .doc"
-                />
-              </div>
-            ) : (
-              <></>
-            )}
-
-            {props.currentUser.type == 0 && props.currentResume.length > 0 ? (
-              <div className="attributeSelection">
-                <a id="currentResume" href={props.currentResume} download>
-                  {" "}
-                  Download current resume
-                </a>
-              </div>
-            ) : (
-              <></>
-            )}
-
-            <div className="attributeSelection">
-              <div className="abelFont">Years of Experience:</div>
-              <input
-                id="experienceChange"
-                className="textInput"
-                type="number"
-                min="0"
-                max="40"
-                defaultValue={props.currentUser.interested_years}
-                onChange={calibrateValue}
-              />
-            </div>
-
-            {["sectors", "positions", "locations"].map((element, index) => {
-              const firstUppercase =
-                element.charAt(0).toUpperCase() + element.slice(1);
-              const baseInterest = props.currentUser;
-              const basicInterest = element.slice(0, -1);
-              const parameterArray = [
-                baseInterest.interested_sectors,
-                baseInterest.interested_positions,
-                baseInterest.interested_locations,
-              ];
-
-              return (
-                <div key={"interestWrapper" + index}>
-                  <div className="attributeSelection interestDiv">
-                    <div className="abelFont">
-                      {firstUppercase} of Interest:
-                    </div>
-                    <div className="chosenInterest">
-                      {parameterArray[index].map((interest, idx) => {
-                        return (
-                          <p
-                            key={"chosen" + firstUppercase + idx}
-                            className="chosenInterestBox"
-                            onClick={() => {
-                              props.handleRemove(idx, "interested_" + element);
-                            }}
-                          >
-                            {interest}
-                          </p>
-                        );
-                      })}{" "}
+          <div id="interestFlex">
+            <div className="interestGrid">
+              {["sectors", "positions", "locations"].map((element, index) => {
+                const firstUppercase =
+                  element.charAt(0).toUpperCase() + element.slice(1);
+                const baseInterest = props.currentUser;
+                const parameterArray = [
+                  baseInterest.interested_sectors,
+                  baseInterest.interested_positions,
+                  baseInterest.interested_locations,
+                ];
+                return (
+                  <div key={"interestWrapper" + index}>
+                    <div className="attributeSelection interestDiv">
+                      <div className="abelFont">
+                        {firstUppercase} of Interest
+                      </div>
+                      <div className="chosenInterest">
+                        {parameterArray[index].map((interest, idx) => {
+                          return (
+                            <p
+                              key={"chosen" + firstUppercase + idx}
+                              className="chosenInterestBox"
+                              onClick={() => {
+                                props.handleRemove(
+                                  idx,
+                                  "interested_" + element
+                                );
+                              }}
+                            >
+                              {interest}
+                            </p>
+                          );
+                        })}{" "}
+                      </div>
                     </div>
                   </div>
-
+                );
+              })}
+            </div>
+            <div className="interestGrid">
+              {["sectors", "positions", "locations"].map((element, index) => {
+                const firstUppercase =
+                  element.charAt(0).toUpperCase() + element.slice(1);
+                const baseInterest = props.currentUser;
+                const basicInterest = element.slice(0, -1);
+                return (
                   <div className="attributeSelection">
                     <div className="abelFont">Add a new {basicInterest}:</div>
-                    <input
-                      id={"new" + firstUppercase}
-                      className="textInput"
-                      type="text"
-                      placeholder={`Enter ${basicInterest}...`}
-                    />
-                    <span>
-                      <AddIcon
-                        onClick={() => {
-                          props.handleAdd(
-                            "new" + firstUppercase,
-                            "interested_" + element
-                          );
-                        }}
-                        className="addIcon"
-                        sx={{
-                          backgroundColor: props.deepPurple[500],
-                          fontSize: 25,
-                        }}
+                    <div id="buttonSelection">
+                      <input
+                        id={"new" + firstUppercase}
+                        className="textInput"
+                        type="text"
+                        placeholder={`Enter ${basicInterest}...`}
                       />
-                    </span>
+                      <span>
+                        <AddIcon
+                          onClick={() => {
+                            props.handleAdd(
+                              "new" + firstUppercase,
+                              "interested_" + element
+                            );
+                          }}
+                          className="addIcon"
+                          sx={{
+                            backgroundColor: props.deepPurple[500],
+                            fontSize: 25,
+                          }}
+                        />
+                      </span>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
 

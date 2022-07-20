@@ -5,28 +5,45 @@
   width: 100%;
   height: 100%;
 }
-#horizontalColumns {
+#verticalColumns {
   display: flex;
-  flex-direction: row;
-  justify-content: center;
   width: 100vw;
-  height: 60vh;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 2%;
   margin-top: 2%;
 }
 #editProfileImages {
-  display: flex;
-  flex-direction: column;
-  gap: 10%;
-  width: 50%;
-  overflow:scroll;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 30px;
+  width: 100%;
+  overflow: scroll;
   align-items: center;
+  margin-bottom: 90px;
+  overflow: scroll;
 }
 #editProfileParameters {
   display: flex;
   flex-direction: column;
   text-align: center;
-  width: 30%;
+  align-items: center;
+  justify-content: center;
+  width: 900px;
+  overflow: scroll;
+  margin-bottom: 70px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+.parameterGrid {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
   overflow: scroll;
 }
 #editProfileHeader {
@@ -35,6 +52,9 @@
 }
 .abelFont {
   font-family: "Abel";
+  color: purple;
+}
+.whiteAbel {
   color: white;
 }
 #actionButtons {
@@ -55,48 +75,49 @@
 }
 .attributeSelection {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: left;
-  gap: 20px;
+  gap: 5px;
   margin-bottom: 5%;
 }
 .textInput {
   text-align: center;
   background-color: transparent;
-  color: white;
-  border: 1px solid white;
+  color: purple;
+  border: 1px solid purple;
 }
 #aboutChange {
-  width: 250px;
-  height: 100px;
+  width: 400px;
+  height: 150px;
   background-color: transparent;
-  color: white;
-  border: 1px solid white;
+  color: purple;
+  border: 1px solid purple;
 }
 #resumeChange {
   background-color: transparent;
-  color: white;
+  color: purple;
 }
 #currentResume {
   margin-top: 2%;
   text-decoration: none;
   justify-content: left;
-  color: white;
+  color: purple;
   font-family: "Abel";
 }
 #currentResume:hover {
   opacity: 70%;
 }
 #experienceChange {
+  width: 150px;
   background-color: transparent;
 }
 #newSector {
   width: 50%;
-  color: white;
+  color: purple;
 }
 ::placeholder {
-  color: white;
+  color: purple;
 }
 .interestDiv {
   margin-top: 30px;
@@ -108,19 +129,21 @@
   flex-direction: row;
   flex-wrap: wrap;
   gap: 10px;
-  color: white;
+  color: purple;
 }
 .chosenInterestBox {
-  border: 1px solid white;
+  border: 1px solid purple;
   text-align: center;
-  border-radius: 10%;
+  border-radius: 5px;
   padding: 4px;
-  width: 100%;
+  max-width: 300px;
+  overflow: scroll;
   flex: 1 0 25%;
   margin-right: 2%;
   cursor: pointer;
 }
 .chosenInterestBox:hover {
+  color: white;
   background-color: rgb(235, 67, 67);
 }
 .addIcon {
@@ -132,18 +155,77 @@
   opacity: 70%;
 }
 #ageChange {
-  width: 10%;
+  width: 150px;
   text-align: center;
 }
 .picPreview {
-  width: 400px;
-  height: 350px;
+  width: 200px;
+  height: 170px;
   border-radius: 50%;
   margin-bottom: 5%;
+}
+#profilePicPreview{
+  width:500px;
+  height:600px;
+  border: 5px solid white;
+  padding: 10px;
+  border-radius: 20px;
+  margin-bottom: 20px;
 }
 img {
   color: white;
 }
 input {
   color: white;
+}
+.addImageInput{
+  color:purple
+}
+#profileImageHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10%;
+  width: 100%;
+  margin-bottom: 50px;
+}
+
+#resumeActions {
+  display: grid;
+  grid-template-columns: auto auto;
+  overflow: scroll;
+}
+#resumeAlign{
+  display: flex;
+  flex-direction: row;
+  gap:20px;
+}
+#interestFlex{
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  max-width: 90%;
+  overflow: scroll;
+}
+.interestGrid{
+  display: grid;
+  grid-template-columns: auto auto auto;
+  gap: 40px;
+  overflow: scroll;
+}
+#buttonSelection{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.othersHeader{
+  margin-bottom: 30px;
+}
+.imageContainer{
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  padding: 20px;
 }

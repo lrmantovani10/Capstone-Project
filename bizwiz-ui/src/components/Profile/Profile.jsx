@@ -47,7 +47,7 @@ export default function Profile(props) {
             </Button>
           </ThemeProvider>
 
-          <h1 className="abelFont">{props.currentUser.name}</h1>
+          <h1 className="abelFont whiteAbel">{props.currentUser.name}</h1>
           <p id="subheader">{props.currentUser.email}</p>
 
           <div className="swipingBasic">
@@ -61,7 +61,7 @@ export default function Profile(props) {
             />
             <div className="secondItem">
               <div>
-                <h2 className="abelFont">Intro</h2>
+                <h2 className="abelFont whiteAbel">Intro</h2>
                 <p className="myIntro">{props.currentUser.about}</p>
                 <p className="myIntro" id="generalInfo">
                   {props.currentUser.sector.length > 0 ? (
@@ -85,7 +85,7 @@ export default function Profile(props) {
                 </p>
               </div>
 
-              <div id="currentInfo" className="abelFont">
+              <div id="currentInfo" className="abelFont whiteAbel">
                 {props.currentUser.type == 0 ? (
                   <div>
                     {props.currentUser.age} year-old
@@ -182,7 +182,7 @@ export default function Profile(props) {
           <div className="profileFooter">
             <div className="swipingBasic">
               <div className="interestsDiv">
-                <h3 className="abelFont">Sectors of Interest</h3>
+                <h3 className="abelFont whiteAbel">Sectors of Interest</h3>
                 <div className="currentInterests">
                   {props.currentUser.interested_sectors.map(
                     (element, index) => {
@@ -197,7 +197,7 @@ export default function Profile(props) {
               </div>
 
               <div className="interestsDiv">
-                <h3 className="abelFont">Positions of Interest</h3>
+                <h3 className="abelFont whiteAbel">Positions of Interest</h3>
                 <div className="currentInterests">
                   {props.currentUser.interested_positions.map(
                     (element, index) => {
@@ -212,7 +212,7 @@ export default function Profile(props) {
               </div>
 
               <div className="interestsDiv">
-                <h3 className="abelFont">Locations of Interest</h3>
+                <h3 className="abelFont whiteAbel">Locations of Interest</h3>
                 <div className="currentInterests">
                   {props.currentUser.interested_locations.map(
                     (element, index) => {

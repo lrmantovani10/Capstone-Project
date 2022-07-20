@@ -10,8 +10,8 @@
 }
 #profileImage {
   width: 400px;
-  height: 400px;
-  border-radius: 50%;
+  height: 500px;
+  border-radius: 20px;
   border: 2px solid white;
 }
 #subImage {
@@ -38,6 +38,7 @@
   flex-direction: column;
   margin-right: 4%;
   text-align: left;
+  max-width: 700px;
   gap: 30px;
 }
 .myIntro {
@@ -102,6 +103,9 @@
 .abelFont {
   font-family: "Abel";
   font-weight: bold;
+}
+.whiteAbel{
+  color:white;
 }
 #generalInfo{
   font-weight: 1.5;
