@@ -36,6 +36,7 @@ export default function App() {
   let [currentResume, setResume] = useState("");
   let [matches, setMatches] = useState([]);
   let [temporaryMessage, setTemporaryMessage] = useState("Loading...");
+  let [currentChannel, setCurrentChannel] = useState("");
 
   function updateParameters(user, setFunction) {
     if (user) {
@@ -182,10 +183,11 @@ export default function App() {
     await axios
       .post(`${apiURL}/matches/manage_chat`, body, headers, body, headers)
       .then((response) => {
-        console.log(response);
+        setCurrentChannel(response.data);
+        window.location.replace("/chat")
       })
       .catch((error) => {
-        console.log(error);
+        setMatches("error")
       });
   }
 

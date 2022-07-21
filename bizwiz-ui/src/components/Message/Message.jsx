@@ -5,7 +5,7 @@ export default function Message(props) {
     <div className="mainMessage">
       {props.message
         ? props.message
-        : "There was an error loading the page. Please try again!"}
+        : "An error occurred. Please try again!"}
       {(props.message && !props.message.includes("Loading..."))?
         <img id="glassImage" src={Glasses}/>:
         <></>}    
