@@ -12,6 +12,7 @@ import Login from "../Login/Login";
 import Profile from "../Profile/Profile";
 import Matches from "../Matches/Matches";
 import EditProfile from "../EditProfile/EditProfile";
+import Chat from "../Chat/Chat";
 import { useState } from "react";
 
 export default function App() {
@@ -153,6 +154,38 @@ export default function App() {
       })
       .catch(() => {
         setMatches(["error"]);
+      });
+  }
+
+  async function handleChat(firstId, secondId, firstName, secondName) {
+    let ids = [firstId, secondId];
+    ids.sort();
+    let chatName, channelUrl;
+    if (ids[0] == firstId) {
+      chatName = firstName + " | " + secondName;
+      channelUrl = firstId + secondId;
+    } else {
+      chatName = secondName + " | " + firstName;
+      channelUrl = secondId + firstId;
+    }
+    const headers = {
+      headers: {
+        authorization: localStorage.getItem("userToken"),
+      },
+    };
+    const body = {
+      name: chatName,
+      channel_url: channelUrl,
+      is_distinct: true,
+      user_ids: ids,
+    };
+    await axios
+      .post(`${apiURL}/matches/manage_chat`, body, headers, body, headers)
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((error) => {
+        console.log(error);
       });
   }
 
@@ -528,6 +561,23 @@ export default function App() {
           />
 
           <Route
+            path="/chat"
+            element={
+              <>
+                {navbar}
+                <Chat
+                  profileImage={profileImage}
+                  currentUser={currentUser}
+                  setCurrentUser={setCurrentUser}
+                  apiURL={apiURL}
+                  updateParameters={updateParameters}
+                  profilesPath={profilesPath}
+                />
+              </>
+            }
+          />
+
+          <Route
             path="/profile"
             element={
               <>
@@ -598,8 +648,9 @@ export default function App() {
                   purpleTheme={purpleTheme}
                   handleEndMatch={handleEndMatch}
                   currentUser={currentUser}
+                  handleChat={handleChat}
                   getMatches={getMatches}
-                  profilePath={profilesPath}
+                  profilesPath={profilesPath}
                   matches={matches}
                 />
               </>

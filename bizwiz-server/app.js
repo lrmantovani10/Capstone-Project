@@ -70,8 +70,8 @@ function selectPotentials(userData) {
 }
 
 app.post("/signup", async (request, response, next) => {
-  const requestBody = request.body;
   try {
+    const requestBody = request.body;
     const profileData = await Profiles.getProfileEmail(requestBody.email);
     if (!profileData) {
       await Profiles.createProfile(requestBody);
@@ -86,10 +86,10 @@ app.post("/signup", async (request, response, next) => {
 });
 
 app.post("/login", async (request, response, next) => {
-  const requestBody = request.body;
-  const profileData = await Profiles.getProfileEmail(requestBody.email);
-  const token = jwt.sign({ email: profileData.email }, mySecretKey);
   try {
+    const requestBody = request.body;
+    const profileData = await Profiles.getProfileEmail(requestBody.email);
+    const token = jwt.sign({ email: profileData.email }, mySecretKey);
     if (!profileData) {
       next(new NotFoundError("Account doesn't exist!"));
     } else {
@@ -107,90 +107,118 @@ app.post("/login", async (request, response, next) => {
 app.use(ensureToken);
 
 app.post("/logout", async (request, response, next) => {
-  jwt.verify(request.token, mySecretKey, async function (error) {
-    if (error) {
-      next(new ForbiddenError("Bad Token!"));
-    } else {
-      await Profiles.logout();
-      response.status(200).send();
-    }
-  });
+  try {
+    jwt.verify(request.token, mySecretKey, async function (error) {
+      if (error) {
+        next(new ForbiddenError("Bad Token!"));
+      } else {
+        await Profiles.logout();
+        response.status(200).send();
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.post("/delete", async (request, response, next) => {
-  jwt.verify(request.token, mySecretKey, async function (error, data) {
-    if (error) {
-      next(new ForbiddenError("Bad Token!"));
-    } else {
-      await Profiles.delete(data.email);
-      response.status(200).send();
-    }
-  });
+  try {
+    jwt.verify(request.token, mySecretKey, async function (error, data) {
+      if (error) {
+        next(new ForbiddenError("Bad Token!"));
+      } else {
+        await Profiles.delete(data.email);
+        response.status(200).send();
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get("/get_user", async (request, response, next) => {
-  jwt.verify(request.token, mySecretKey, async function (error, data) {
-    if (error) {
-      next(new ForbiddenError("Bad Token!"));
-    } else {
-      const userData = await Profiles.getProfileEmail(data.email);
-      response.status(200).send(userData);
-    }
-  });
+  try {
+    jwt.verify(request.token, mySecretKey, async function (error, data) {
+      if (error) {
+        next(new ForbiddenError("Bad Token!"));
+      } else {
+        const userData = await Profiles.getProfileEmail(data.email);
+        response.status(200).send(userData);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.post("/check_user", async (request, response, next) => {
-  jwt.verify(request.token, mySecretKey, async function (error, data) {
-    if (error) {
-      next(new ForbiddenError("Bad Token!"));
-    } else {
-      const userData = await Profiles.getProfileEmail(request.body.email);
-      if (userData && userData.email != data.email) {
-        next(new ForbiddenError("Email already associated with an account!"));
+  try {
+    jwt.verify(request.token, mySecretKey, async function (error, data) {
+      if (error) {
+        next(new ForbiddenError("Bad Token!"));
       } else {
-        response.status(200).send();
+        const userData = await Profiles.getProfileEmail(request.body.email);
+        if (userData && userData.email != data.email) {
+          next(new ForbiddenError("Email already associated with an account!"));
+        } else {
+          response.status(200).send();
+        }
       }
-    }
-  });
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.post(
   "/upload_single",
   upload.single("file"),
   async (request, response, next) => {
-    jwt.verify(request.token, mySecretKey, async function (error) {
-      if (error) {
-        next(new ForbiddenError("Bad Token!"));
-      } else {
-        response.status(200).send();
-      }
-    });
+    try {
+      jwt.verify(request.token, mySecretKey, async function (error) {
+        if (error) {
+          next(new ForbiddenError("Bad Token!"));
+        } else {
+          response.status(200).send();
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
   }
 );
 
 app.post("/change_profile", async (request, response, next) => {
-  jwt.verify(request.token, mySecretKey, async function (error, data) {
-    if (error) {
-      next(new ForbiddenError("Bad Token!"));
-    } else {
-      const userParameters = request.body;
-      await Profiles.changeProfile(data.email, userParameters);
-      const token = jwt.sign({ email: userParameters.email }, mySecretKey);
-      response.status(200).send(token);
-    }
-  });
+  try {
+    jwt.verify(request.token, mySecretKey, async function (error, data) {
+      if (error) {
+        next(new ForbiddenError("Bad Token!"));
+      } else {
+        const userParameters = request.body;
+        await Profiles.changeProfile(data.email, userParameters);
+        const token = jwt.sign({ email: userParameters.email }, mySecretKey);
+        response.status(200).send(token);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.get("/get_profiles", async (request, response, next) => {
-  jwt.verify(request.token, mySecretKey, async function (error, data) {
-    if (error) {
-      next(new ForbiddenError("Bad Token!"));
-    } else {
-      const userData = await Profiles.getProfileEmail(data.email);
-      const profiles = await Profiles.getProfiles(selectPotentials(userData));
-      response.status(200).send(profiles);
-    }
-  });
+  try {
+    jwt.verify(request.token, mySecretKey, async function (error, data) {
+      if (error) {
+        next(new ForbiddenError("Bad Token!"));
+      } else {
+        const userData = await Profiles.getProfileEmail(data.email);
+        const profiles = await Profiles.getProfiles(selectPotentials(userData));
+        response.status(200).send(profiles);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 app.use((req, res, next) => {

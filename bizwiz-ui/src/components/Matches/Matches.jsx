@@ -7,7 +7,7 @@ import { Button } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 export default function Matches(props) {
   useEffect(() => {
-    props.setTemporaryMessage("Loading...")
+    props.setTemporaryMessage("Loading...");
     try {
       props.getMatches();
     } catch {
@@ -27,11 +27,11 @@ export default function Matches(props) {
                   <img
                     src={
                       element.profile_picture.length > 0
-                        ? props.profilePath +
+                        ? props.profilesPath +
                           element._id +
                           "." +
                           element.profile_picture
-                        : props.profilePath + "default.png"
+                        : props.profilesPath + "default.png"
                     }
                     className="card-img matchPicture"
                     alt={"picture of " + element.name}
@@ -63,7 +63,18 @@ export default function Matches(props) {
                     </p>
                     <div id="messageButtonDiv">
                       <ThemeProvider theme={props.purpleTheme}>
-                        <Button id="messageButton" variant="contained">
+                        <Button
+                          id="messageButton"
+                          variant="contained"
+                          onClick={() =>
+                            props.handleChat(
+                              element._id,
+                              props.currentUser._id,
+                              element.name,
+                              props.currentUser.name
+                            )
+                          }
+                        >
                           Message
                         </Button>
                       </ThemeProvider>

@@ -9,6 +9,7 @@
     "@fontsource/arvo": "^4.5.5",
     "@mui/icons-material": "^5.8.4",
     "@mui/material": "^5.8.6",
+    "@sendbird/uikit-react": "^3.0.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
