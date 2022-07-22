@@ -16,4 +16,5 @@ Repo containing code for Lucas Mantovani's Meta University capstone project.
 * Week 9: Finish stretch features, fix bugs
 
 - 07/20: 1 week ahead (week 7 work in week 6)
+- 07/21: Finished chat feature.
 - August 10th: fully functional prototype with scenarios for the demo (dry run)
