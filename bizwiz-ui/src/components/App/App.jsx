@@ -12,7 +12,6 @@ import Login from "../Login/Login";
 import Profile from "../Profile/Profile";
 import Matches from "../Matches/Matches";
 import EditProfile from "../EditProfile/EditProfile";
-import Chat from "../Chat/Chat";
 import { useState } from "react";
 
 export default function App() {
@@ -28,6 +27,8 @@ export default function App() {
   const profilesPath = basePath + "profiles/";
   const othersPath = basePath + "others/";
   const resumesPath = basePath + "resumes/";
+  const applicationId = "B2469C49-EFAA-4BD1-85D5-58B376D9337F";
+
   let [profiles, setProfiles] = useState([]);
   let [profile, setProfile] = useState({});
   let [currentUser, setCurrentUser] = useState("");
@@ -37,6 +38,7 @@ export default function App() {
   let [matches, setMatches] = useState([]);
   let [temporaryMessage, setTemporaryMessage] = useState("Loading...");
   let [currentChannel, setCurrentChannel] = useState("");
+  let [chatting, setChatting] = useState(false);
 
   function updateParameters(user, setFunction) {
     if (user) {
@@ -119,6 +121,7 @@ export default function App() {
                   .get(`${apiURL}/matches/` + element, headers)
                   .then((response) => {
                     setMatches([...matches, response.data.user]);
+                    setChatting(false);
                   })
                   .finally(() => {
                     if (matches.length == 0)
@@ -139,23 +142,25 @@ export default function App() {
   }
 
   async function handleEndMatch(secondId) {
-    const body = {
-      secondProfile: secondId,
-    };
-    const headers = {
-      headers: {
-        authorization: localStorage.getItem("userToken"),
-      },
-    };
-    await axios
-      .post(`${apiURL}/matches/remove_match`, body, headers)
-      .then(async (response) => {
-        localStorage.setItem("userToken", response.data);
-        window.location.replace("/matches");
-      })
-      .catch(() => {
-        setMatches(["error"]);
-      });
+    if (confirm("Are you sure you want to remove this match?")) {
+      const body = {
+        secondProfile: secondId,
+      };
+      const headers = {
+        headers: {
+          authorization: localStorage.getItem("userToken"),
+        },
+      };
+      await axios
+        .post(`${apiURL}/matches/remove_match`, body, headers)
+        .then(async (response) => {
+          localStorage.setItem("userToken", response.data);
+          window.location.replace("/matches");
+        })
+        .catch(() => {
+          setMatches(["error"]);
+        });
+    }
   }
 
   async function handleChat(firstId, secondId, firstName, secondName) {
@@ -184,10 +189,10 @@ export default function App() {
       .post(`${apiURL}/matches/manage_chat`, body, headers, body, headers)
       .then((response) => {
         setCurrentChannel(response.data);
-        window.location.replace("/chat")
+        setChatting(true);
       })
       .catch((error) => {
-        setMatches("error")
+        setMatches(error);
       });
   }
 
@@ -563,23 +568,6 @@ export default function App() {
           />
 
           <Route
-            path="/chat"
-            element={
-              <>
-                {navbar}
-                <Chat
-                  profileImage={profileImage}
-                  currentUser={currentUser}
-                  setCurrentUser={setCurrentUser}
-                  apiURL={apiURL}
-                  updateParameters={updateParameters}
-                  profilesPath={profilesPath}
-                />
-              </>
-            }
-          />
-
-          <Route
             path="/profile"
             element={
               <>
@@ -645,6 +633,11 @@ export default function App() {
               <>
                 {navbar}
                 <Matches
+                  apiURL={apiURL}
+                  setCurrentUser={setCurrentUser}
+                  applicationId={applicationId}
+                  currentChannel={currentChannel}
+                  chatting={chatting}
                   temporaryMessage={temporaryMessage}
                   setTemporaryMessage={setTemporaryMessage}
                   purpleTheme={purpleTheme}
@@ -654,6 +647,7 @@ export default function App() {
                   getMatches={getMatches}
                   profilesPath={profilesPath}
                   matches={matches}
+                  setMatches={setMatches}
                 />
               </>
             }

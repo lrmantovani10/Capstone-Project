@@ -13,7 +13,7 @@
 .matchPicture {
   width: 250px;
   height: 300px;
-  padding:10px;
+  padding: 10px;
   border-radius: 20px;
 }
 .matchName {
@@ -24,6 +24,13 @@
 .matchAbout {
   font-weight: lighter;
   font-size: large;
+}
+#companyWebsite{
+  text-decoration: none;
+  color:white;
+}
+#companyWebsite:hover{
+  opacity:70%;
 }
 .endMatch {
   cursor: pointer;
@@ -43,6 +50,13 @@
   justify-content: center;
   margin-top: 5%;
 }
-#messageButton{
-  width:40%;
+#messageButton {
+  width: 40%;
+}
+.App {
+  width: 100vw;
+  height: 90vh;
+}
+.sendbird-image-renderer__image{
+  cursor: auto;
 }
