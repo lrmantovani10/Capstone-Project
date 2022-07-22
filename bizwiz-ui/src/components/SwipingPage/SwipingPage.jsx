@@ -8,7 +8,7 @@ import Message from "../Message/Message";
 
 export default function SwipingPage(props) {
   useEffect(() => {
-    props.setTemporaryMessage("Loading...")
+    props.setTemporaryMessage("Loading...");
     try {
       const userToken = localStorage.getItem("userToken");
       if (userToken.length > 0) {
@@ -25,23 +25,7 @@ export default function SwipingPage(props) {
           .catch(() => {
             props.setProfiles(["error"]);
           });
-        axios
-          .get(`${props.apiURL}/get_profiles`, headers)
-          .then((response) => {
-            props.setProfiles(response.data);
-            if (response.data.length > 0) {
-              props.updateParameters(
-                response.data[response.data.length - 1],
-                props.setProfile
-              );
-            }
-            else{
-                props.setTemporaryMessage("No potential matches! Broaden filters or come back later for more!")
-            }
-          })
-          .catch(() => {
-            props.setProfiles(["error"]);
-          });
+        props.getSwipes();
       } else {
         window.location.replace("/login");
       }
@@ -182,14 +166,7 @@ export default function SwipingPage(props) {
         </div>
       </div>
     );
-  } 
-  else {
-    return (
-      <Message
-        message={
-          props.temporaryMessage
-        }
-      />
-    );
+  } else {
+    return <Message message={props.temporaryMessage} />;
   }
 }

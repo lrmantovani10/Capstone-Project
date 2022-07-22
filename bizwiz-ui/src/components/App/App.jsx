@@ -39,6 +39,7 @@ export default function App() {
   let [temporaryMessage, setTemporaryMessage] = useState("Loading...");
   let [currentChannel, setCurrentChannel] = useState("");
   let [chatting, setChatting] = useState(false);
+  let [swipeCount, setSwipeCount] = useState(1);
 
   function updateParameters(user, setFunction) {
     if (user) {
@@ -68,9 +69,38 @@ export default function App() {
     }
   }
 
-  function handleSwipe(type, userEmail) {
+
+  async function getSwipes() {
+    const userToken = localStorage.getItem("userToken");
+    const headers = {
+      headers: {
+        authorization: userToken,
+      },
+    };
+
+    axios
+      .get(`${apiURL}/get_profiles`, headers)
+      .then((response) => {
+        setProfiles(response.data);
+        if (response.data.length > 0) {
+          updateParameters(response.data[response.data.length - 1], setProfile);
+        } else {
+          setTemporaryMessage(
+            "No potential matches! Broaden filters or come back later for more!"
+          );
+        }
+      })
+      .catch(() => {
+        setProfiles(["error"]);
+      });
+  }
+
+  async function handleSwipe(type, userEmail) {
     let profileCopy = [...profiles];
     let swipedProfile = profileCopy.pop();
+    if(profileCopy.length == 0){
+      setTemporaryMessage("Loading...")
+    }
     let body = {
       email: userEmail,
     };
@@ -85,7 +115,7 @@ export default function App() {
         authorization: localStorage.getItem("userToken"),
       },
     };
-    axios
+    await axios
       .post(`${apiURL}/change_profile`, body, headers)
       .then((response) => {
         localStorage.setItem("userToken", response.data);
@@ -98,6 +128,13 @@ export default function App() {
       .catch(() => {
         setProfiles(["error"]);
       });
+      if(swipeCount == 20){
+        await getSwipes()
+        setSwipeCount(1)
+      }
+      else{
+        setSwipeCount(swipeCount + 1)
+      }
   }
 
   async function getMatches() {
@@ -108,7 +145,7 @@ export default function App() {
           authorization: userToken,
         },
       };
-      axios
+      await axios
         .get(`${apiURL}/get_user`, headers)
         .then(async (userResponse) => {
           setCurrentUser(userResponse.data);
@@ -522,6 +559,7 @@ export default function App() {
               <>
                 {navbar}
                 <SwipingPage
+                  getSwipes={getSwipes}
                   temporaryMessage={temporaryMessage}
                   setTemporaryMessage={setTemporaryMessage}
                   updateParameters={updateParameters}

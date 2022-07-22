@@ -22,7 +22,7 @@ class Profiles {
     await mongoClient.connect();
     const database = mongoClient.db("UserData");
     const profiles = database.collection("Profiles");
-    let profilesRetrieved = profiles.find(criteria).toArray();
+    let profilesRetrieved = await profiles.find(criteria).limit(20).toArray();
     return profilesRetrieved;
   }
   static async createProfile(profileData) {
