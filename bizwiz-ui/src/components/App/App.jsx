@@ -438,7 +438,7 @@ export default function App() {
       setMessageColor("red");
       setMessage("Password is less than 10 characters!");
     } else {
-      await Promise.allSettled([
+      await Promise.all([
         checkUser(email, headers),
         storeFile(profilePicture, headers, profilePath, "profile_picture"),
         storeFile(userResume, headers, resumePath, "resume"),
