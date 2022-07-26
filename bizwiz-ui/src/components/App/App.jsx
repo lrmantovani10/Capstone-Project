@@ -351,6 +351,7 @@ export default function App() {
           setMessageColor("red");
           throw new Error(error);
         });
+      Promise.resolve();
     }
   }
 
@@ -362,7 +363,9 @@ export default function App() {
           setMessage(error.response.data.error.message);
         else setMessage("Error updating profile. Please try again!");
         setMessageColor("red");
+        throw new Error(error);
       });
+    Promise.resolve();
   }
 
   async function storeExtraPictures(files, headers, othersPath) {
@@ -371,6 +374,7 @@ export default function App() {
       await storeFile(file, headers, othersPath, "other_pictures_" + index);
       index++;
     }
+    Promise.resolve();
   }
 
   async function changeProfile(body, headers) {
@@ -379,10 +383,12 @@ export default function App() {
       .then((response) => {
         localStorage.setItem("userToken", response.data);
       })
-      .catch(() => {
+      .catch((error) => {
         setMessage("Account update failed. Please try again!");
         setMessageColor("red");
+        throw new Error(error);
       });
+    Promise.resolve();
   }
 
   async function handleSave() {
