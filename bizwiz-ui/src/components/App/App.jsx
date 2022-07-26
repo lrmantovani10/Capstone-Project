@@ -324,73 +324,65 @@ export default function App() {
     setCurrentUser(user);
   }
 
-  async function storeFile(file, extension, headers, destination, category) {
-    let newForm = new FormData();
-    const body = {
-      userId: currentUser._id,
-      userEmail: currentUser.email,
-      destination: destination,
-      extension: extension,
-      category: category,
-    };
+  async function storeFile(file, headers, destination, category) {
+    if (file) {
+      let newForm = new FormData();
+      const extension = "." + file.name.split(".")[1];
+      const body = {
+        userId: currentUser._id,
+        userEmail: currentUser.email,
+        destination: destination,
+        extension: extension,
+        category: category,
+      };
 
-    if (file.size / 1000000 > 12) {
-      setMessage("File size can't be over 12MB! Please try again!");
-      setMessageColor("red");
-      throw new Error("File size can't be over 12MB! Please try again!");
-    }
-    newForm.append("data", JSON.stringify(body));
-    newForm.append("file", file);
-
-    await axios
-      .post(`${apiURL}/upload_single`, newForm, headers)
-      .then(() => {
-        return;
-      })
-      .catch((error) => {
-        setMessage("Account update failed. Please try again!");
+      if (file.size / 1000000 > 12) {
+        setMessage("File size can't be over 12MB! Please try again!");
         setMessageColor("red");
-        throw new Error(error);
+        throw new Error("File size can't be over 12MB! Please try again!");
+      }
+      newForm.append("data", JSON.stringify(body));
+      newForm.append("file", file);
+
+      await axios
+        .post(`${apiURL}/upload_single`, newForm, headers)
+        .catch((error) => {
+          setMessage("Account update failed. Please try again!");
+          setMessageColor("red");
+          throw new Error(error);
+        });
+    }
+  }
+
+  async function checkUser(email, headers) {
+    await axios
+      .post(`${apiURL}/check_user`, { email: email }, headers)
+      .catch((error) => {
+        if (error.code == "ERR_BAD_REQUEST")
+          setMessage(error.response.data.error.message);
+        else setMessage("Error updating profile. Please try again!");
+        setMessageColor("red");
       });
   }
 
-  async function storeFiles(files, headers, destination, category) {
-    for (let index = 0; index < files.length; index++) {
-      if (files[index]) {
-        await storeFile(
-          files[index],
-          files[index].name.split(".")[1],
-          headers,
-          destination,
-          category + index
-        );
-      }
+  async function storeExtraPictures(files, headers, othersPath) {
+    let index = 0;
+    for (const file of files) {
+      await storeFile(file, headers, othersPath, "other_pictures_" + index);
+      index++;
     }
   }
 
-  async function saveFile(mainFile, headers, filePath, fileType) {
-    try {
-      const extension = "." + mainFile.name.split(".")[1];
-      await storeFile(
-        mainFile,
-        extension,
-        headers,
-        filePath,
-        fileType
-      );
-    } catch {
-      return true;
-    }
-    return false;
-  }
-
-  async function saveFiles(other_pictures, headers, othersPath) {
-    try {
-      await storeFiles(other_pictures, headers, othersPath, "other_pictures_");
-    } catch {
-      return true;
-    }
-    return false;
+  async function changeProfile(body, headers) {
+    await axios
+      .post(`${apiURL}/change_profile`, body, headers)
+      .then((response) => {
+        localStorage.setItem("userToken", response.data);
+      })
+      .catch(() => {
+        setMessage("Account update failed. Please try again!");
+        setMessageColor("red");
+      });
   }
 
   async function handleSave() {
@@ -442,56 +434,22 @@ export default function App() {
       userResume = document.getElementById("resumeChange").files[0];
     }
 
-    let errorHappened = false;
     if (password.length < 10) {
       setMessageColor("red");
       setMessage("Password is less than 10 characters!");
-      errorHappened = true;
-    }
-
-    if (!errorHappened) {
-      await axios
-        .post(`${apiURL}/check_user`, { email: email }, headers)
-        .then(() => {})
-        .catch((error) => {
-          if (error.code == "ERR_BAD_REQUEST")
-            setMessage(error.response.data.error.message);
-          else setMessage("Error updating profile. Please try again!");
-          setMessageColor("red");
-          errorHappened = true;
-        });
-    }
-
-    if (!errorHappened && profilePicture) {
-      const result = await saveFile(profilePicture, headers, profilePath, "profile_picture");
-      errorHappened = result;
-    }
-    if (!errorHappened && currentUser.type == 0 && userResume) {
-      const result = await saveFile(userResume, headers, resumePath, "resume");
-      errorHappened = result;
-    }
-
-    if (!errorHappened) {
-      const result = await saveFiles(other_pictures, headers, othersPath);
-      errorHappened = result;
-    }
-
-    if (!errorHappened) {
-      await axios
-        .post(`${apiURL}/change_profile`, body, headers)
-        .then((response) => {
-          setMessage("Profile successfully changed!");
+    } else {
+      await Promise.allSettled([
+        checkUser(email, headers),
+        storeFile(profilePicture, headers, profilePath, "profile_picture"),
+        storeFile(userResume, headers, resumePath, "resume"),
+        storeExtraPictures(other_pictures, headers, othersPath),
+      ]).then(async () => {
+        await changeProfile(body, headers).then(() => {
+          setMessage("Account successfully updated!");
           setMessageColor("green");
-          localStorage.setItem("userToken", response.data);
           window.location.replace("profile");
-        })
-        .catch(() => {
-          setMessage("Account update failed. Please try again!");
-          setMessageColor("red");
         });
-    } else if (message.length == 0) {
-      setMessage("Account update failed. Please try again!");
-      setMessageColor("red");
+      });
     }
   }
 

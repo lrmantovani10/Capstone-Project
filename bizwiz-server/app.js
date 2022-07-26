@@ -156,12 +156,11 @@ app.get("/get_user", async (request, response, next) => {
         for (let i = 0; i < fileElements.length; i++) {
           if (Object.keys(userData[fileElements[i]]).length != 0) {
             const fileType = userData[fileElements[i]].contentType;
-
             const decodedFile =
               userData[fileElements[i]].file.toString("base64");
             userData[
               fileElements[i]
-            ] = `data:${fileType}/${fileType};base64,${decodedFile}`;
+            ] = `data:${fileType};base64,${decodedFile}`;
           }
         }
         for (let i = 0; i < 6; i++) {
@@ -237,7 +236,8 @@ app.post(
         }
       });
     } catch (error) {
-      next(error);
+      console.log(error)
+      //next(error);
     }
   }
 );

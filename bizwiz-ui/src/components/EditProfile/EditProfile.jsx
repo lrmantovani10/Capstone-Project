@@ -382,5 +382,5 @@ export default function EditProfile(props) {
         </div>
       </div>
     );
-  }
+  } 
 }
