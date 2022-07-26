@@ -13,6 +13,7 @@ import Profile from "../Profile/Profile";
 import Matches from "../Matches/Matches";
 import EditProfile from "../EditProfile/EditProfile";
 import { useState } from "react";
+import SelectInput from "@mui/material/Select/SelectInput";
 
 export default function App() {
   const purpleTheme = createTheme({
@@ -32,7 +33,7 @@ export default function App() {
   let [profiles, setProfiles] = useState([]);
   let [profile, setProfile] = useState({});
   let [currentUser, setCurrentUser] = useState("");
-  let [profileImage, setProfileImage] = useState("");
+  let [profileImage, setProfileImage] = useState({});
   let [extraImages, setExtras] = useState([]);
   let [currentResume, setResume] = useState("");
   let [matches, setMatches] = useState([]);
@@ -40,35 +41,35 @@ export default function App() {
   let [currentChannel, setCurrentChannel] = useState("");
   let [chatting, setChatting] = useState(false);
   let [swipeCount, setSwipeCount] = useState(1);
+  let [message, setMessage] = useState("");
+  let [messageColor, setMessageColor] = useState("white");
 
   function updateParameters(user, setFunction) {
     if (user) {
-      if (user.profile_picture.length > 0) {
-        setProfileImage(profilesPath + user._id + "." + user.profile_picture);
+      if (Object.keys(user.profile_picture).length > 0) {
+        setProfileImage(user.profile_picture);
       } else {
         setProfileImage(profilesPath + "default.png");
       }
-      if (user.type == 0 && user.resume.length > 0) {
-        setResume(resumesPath + user._id + "." + user.resume);
+      if (user.type == 0 && Object.keys(user.resume).length > 0) {
+        setResume(user.resume);
       } else {
-        setResume("");
+        setResume({});
       }
       let newExtras = [];
-      user.other_pictures.map((element, index) => {
-        if (element.length > 0) {
-          newExtras.push(
-            othersPath + user._id + "_" + (index + 1) + "." + element
-          );
+      console.log(user);
+      for (let i = 0; i < 6; i++) {
+        if (user["other_pictures_" + i].length > 0) {
+          newExtras.push(user["other_pictures_" + i]);
         } else {
           newExtras.push(othersPath + "default.png");
         }
-      });
+      }
 
       setExtras(newExtras);
       setFunction(user);
     }
   }
-
 
   async function getSwipes() {
     const userToken = localStorage.getItem("userToken");
@@ -90,7 +91,8 @@ export default function App() {
           );
         }
       })
-      .catch(() => {
+      .catch((error) => {
+        console.log(error);
         setProfiles(["error"]);
       });
   }
@@ -98,8 +100,8 @@ export default function App() {
   async function handleSwipe(type, userEmail) {
     let profileCopy = [...profiles];
     let swipedProfile = profileCopy.pop();
-    if(profileCopy.length == 0){
-      setTemporaryMessage("Loading...")
+    if (profileCopy.length == 0) {
+      setTemporaryMessage("Loading...");
     }
     let body = {
       email: userEmail,
@@ -128,13 +130,12 @@ export default function App() {
       .catch(() => {
         setProfiles(["error"]);
       });
-      if(swipeCount == 20){
-        await getSwipes()
-        setSwipeCount(1)
-      }
-      else{
-        setSwipeCount(swipeCount + 1)
-      }
+    if (swipeCount == 20) {
+      await getSwipes();
+      setSwipeCount(1);
+    } else {
+      setSwipeCount(swipeCount + 1);
+    }
   }
 
   async function getMatches() {
@@ -153,18 +154,16 @@ export default function App() {
             .get(`${apiURL}/matches`, headers)
             .then(async (response) => {
               let rawMatches = response.data;
-              await rawMatches.forEach(async (element) => {
+              if (rawMatches.length == 0)
+                setTemporaryMessage("No matches so far! Keep swiping!");
+              for (const element in rawMatches) {
                 await axios
                   .get(`${apiURL}/matches/` + element, headers)
                   .then((response) => {
                     setMatches([...matches, response.data.user]);
                     setChatting(false);
-                  })
-                  .finally(() => {
-                    if (matches.length == 0)
-                      setTemporaryMessage("No matches so far! Keep swiping!");
                   });
-              });
+              }
             })
             .catch(() => {
               setMatches("error");
@@ -238,7 +237,6 @@ export default function App() {
     const email = document.querySelector("#emailInput").value;
     const password = document.querySelector("#passwordInput").value;
     const passwordRepeat = document.querySelector("#repeatPasswordInput").value;
-    const messageElement = document.querySelector("#returnResponse");
     const checkboxesType = document.querySelectorAll(".accountTypes");
     const signupBox = document.querySelector("#signupBox").checked;
     let responseMessage = "";
@@ -264,8 +262,8 @@ export default function App() {
       responseMessage = "Passwords don't match!";
     }
     if (responseMessage.length > 0) {
-      messageElement.innerHTML = responseMessage;
-      messageElement.style.color = "red";
+      setMessage(responseMessage);
+      setMessageColor("red");
       return;
     }
 
@@ -277,38 +275,36 @@ export default function App() {
         type: accountType,
       })
       .then((response) => {
-        messageElement.innerHTML = "Account successfully created!";
-        messageElement.style.color = "green";
+        setMessage("Account successfully created!");
+        setMessageColor("green");
         localStorage.setItem("userToken", response.data);
         window.location.replace("/edit_profile");
       })
       .catch((error) => {
         if (error.code == "ERR_BAD_REQUEST")
-          messageElement.innerHTML = error.response.data.error.message;
-        else messageElement.innerHTML = "Error signing up. Please try again!";
-        messageElement.style.color = "red";
+          setMessage(error.response.data.error.message);
+        else setMessage("Error signing up. Please try again!");
+        setMessageColor("red");
       });
   }
 
   function handleLogin() {
     const email = document.querySelector("#loginInput").value;
     const password = document.querySelector("#passInput").value;
-    const messageElement = document.querySelector("#returnResponse");
-
     axios
       .post(`${apiURL}/login`, {
         email: email,
         password: password,
       })
       .then((response) => {
-        messageElement.innerHTML = "Logging in...";
-        messageElement.style.color = "green";
+        setMessage("Logging in...");
+        setMessageColor("green");
         localStorage.setItem("userToken", response.data);
         window.location.replace("/");
       })
       .catch((error) => {
-        messageElement.innerHTML = error.response.data.error.message;
-        messageElement.style.color = "red";
+        setMessage(error.response.data.error.message);
+        setMessageColor("red");
       });
   }
 
@@ -330,29 +326,85 @@ export default function App() {
     setCurrentUser(user);
   }
 
-  async function storeFile(file, extension, headers, destination) {
-    const messageElement = document.getElementById("saveStatus");
+  async function storeFile(file, extension, headers, destination, category) {
     let newForm = new FormData();
     const body = {
       userId: currentUser._id,
+      userEmail: currentUser.email,
       destination: destination,
       extension: extension,
+      category: category,
     };
+
+    if (file.size / 1000000 > 12) {
+      setMessage("File size can't be over 12MB! Please try again!");
+      setMessageColor("red");
+      throw new Error("File size can't be over 12MB! Please try again!");
+    }
     newForm.append("data", JSON.stringify(body));
     newForm.append("file", file);
 
-    axios
+    await axios
       .post(`${apiURL}/upload_single`, newForm, headers)
       .then(() => {
         return;
       })
       .catch(() => {
-        messageElement.innerHTML = "Account update failed. Please try again!";
-        messageElement.style.color = "red";
+        setMessage("Account update failed. Please try again!");
+        setMessageColor("red");
       });
   }
 
-  async function handleSave(userPictures) {
+  async function storeFiles(files, headers, destination, category) {
+    for (let index = 0; index < files.length; index++) {
+      if (files[index]) {
+        await storeFile(
+          files[index],
+          files[index].name.split(".")[1],
+          headers,
+          destination,
+          category + index
+        );
+      }
+    }
+  }
+
+  async function saveProfile(profilePicture, headers, profilePath) {
+    try {
+      const extension = "." + profilePicture.name.split(".")[1];
+      await storeFile(
+        profilePicture,
+        extension,
+        headers,
+        profilePath,
+        "profile_picture"
+      );
+    } catch {
+      return true;
+    }
+    return false;
+  }
+
+  async function saveResume(userResume, headers, resumePath) {
+    try {
+      const extension = "." + userResume.name.split(".")[1];
+      await storeFile(userResume, extension, headers, resumePath, "resume");
+    } catch {
+      return true;
+    }
+    return false;
+  }
+
+  async function savePictures(other_pictures, headers, othersPath) {
+    try {
+      await storeFiles(other_pictures, headers, othersPath, "other_pictures_");
+    } catch {
+      return true;
+    }
+    return false;
+  }
+
+  async function handleSave() {
     const email = document.getElementById("emailChange").value;
     const password = document.getElementById("passwordChange").value;
     const sector = document.getElementById("sectorChange").value;
@@ -361,7 +413,6 @@ export default function App() {
     const site = document.getElementById("websiteChange").value;
     const linkedin = document.getElementById("linkedinChange").value;
     const profilePicture = document.getElementById("profilePicChange").files[0];
-    const messageElement = document.getElementById("saveStatus");
     const interested_years = document.getElementById("experienceChange").value;
     const initialPath = "../bizwiz-ui/public/uploads/";
     const profilePath = initialPath + "profiles/";
@@ -395,16 +446,17 @@ export default function App() {
       interested_positions: currentUser.interested_positions,
     };
 
+    let userResume;
     if (currentUser.type == 0) {
       body["age"] = document.getElementById("ageChange").value;
       body["occupation"] = document.getElementById("occupationChange").value;
-      body["resume"] = document.getElementById("resumeChange").files[0];
+      userResume = document.getElementById("resumeChange").files[0];
     }
 
     let errorHappened = false;
     if (password.length < 10) {
-      messageElement.innerHTML = "Password is less than 10 characters!";
-      messageElement.style.color = "red";
+      setMessageColor("red");
+      setMessage("Password is less than 10 characters!");
       errorHappened = true;
     }
 
@@ -414,59 +466,49 @@ export default function App() {
         .then(() => {})
         .catch((error) => {
           if (error.code == "ERR_BAD_REQUEST")
-            messageElement.innerHTML = error.response.data.error.message;
-          else
-            messageElement.innerHTML =
-              "Error updating profile. Please try again!";
-          messageElement.style.color = "red";
+            setMessage(error.response.data.error.message);
+          else setMessage("Error updating profile. Please try again!");
+          setMessageColor("red");
           errorHappened = true;
         });
     }
 
     if (!errorHappened && profilePicture) {
-      try {
-        const extension = "." + profilePicture.name.split(".")[1];
-        await storeFile(profilePicture, extension, headers, profilePath);
-        body["profile_picture"] = profilePicture.name.split(".")[1];
-      } catch {
+      const result = await saveProfile(profilePicture, headers, profilePath);
+      if (result) {
         errorHappened = true;
       }
     }
-    if (!errorHappened && currentUser.type == 0 && currentResume) {
-      try {
-        const extension = "." + currentResume.split(".")[1];
-        await storeFile(currentResume, extension, headers, resumePath);
-        body["resume"] = currentResume.split(".")[1];
-      } catch (error) {
+    if (!errorHappened && currentUser.type == 0 && userResume) {
+      const result = await saveResume(userResume, headers, resumesPath);
+      if (result) {
         errorHappened = true;
       }
     }
 
     if (!errorHappened) {
-      let addElements = [];
-      other_pictures.forEach((element, index) => {
-        if (element) {
-          const extension =
-            "_" + (index + 1) + "." + element.name.split(".")[1];
-          storeFile(element, extension, headers, othersPath);
-          addElements.push(element.name.split(".")[1]);
-        } else {
-          addElements.push(userPictures[index]);
-        }
-      });
-      body["other_pictures"] = addElements;
-      axios
+      const result = await savePictures(other_pictures, headers, othersPath);
+      if (result) {
+        errorHappened = true;
+      }
+    }
+
+    if (!errorHappened) {
+      await axios
         .post(`${apiURL}/change_profile`, body, headers)
         .then((response) => {
+          setMessage("Profile successfully changed!");
+          setMessageColor("green");
           localStorage.setItem("userToken", response.data);
-          messageElement.innerHTML = "Profile successfully changed!";
-          messageElement.style.color = "green";
           window.location.replace("profile");
         })
         .catch(() => {
-          messageElement.innerHTML = "Account update failed. Please try again!";
-          messageElement.style.color = "red";
+          setMessage("Account update failed. Please try again!");
+          setMessageColor("red");
         });
+    } else if (message.length == 0) {
+      setMessage("Account update failed. Please try again!");
+      setMessageColor("red");
     }
   }
 
@@ -475,7 +517,6 @@ export default function App() {
   }
 
   function handleLogout() {
-    const messageElement = document.getElementById("logoutStatus");
     const userToken = localStorage.getItem("userToken");
     if (userToken.length == 0) {
       window.location.replace("/login");
@@ -488,19 +529,18 @@ export default function App() {
     axios
       .post(`${apiURL}/logout`, {}, headers)
       .then(() => {
-        messageElement.innerHTML = "Logging out...";
-        messageElement.style.color = "green";
+        setMessage("Logging out...");
+        setMessageColor("green");
         localStorage.clear();
         window.location.replace("/login");
       })
       .catch(() => {
-        messageElement.innerHTML = "Error logging out. Please try again!";
-        messageElement.style.color = "red";
+        setMessage("Error logging out. Please try again!");
+        setMessageColor("red");
       });
   }
 
   function handleDelete() {
-    const messageElement = document.getElementById("logoutStatus");
     const userToken = localStorage.getItem("userToken");
     if (userToken.length == 0) {
       window.location.replace("/login");
@@ -513,14 +553,14 @@ export default function App() {
     axios
       .post(`${apiURL}/delete`, {}, headers)
       .then(() => {
-        messageElement.innerHTML = "Deleting account...";
-        messageElement.style.color = "green";
+        setMessage("Deleting account...");
+        setMessageColor("green");
         localStorage.clear();
         window.location.replace("/welcome");
       })
       .catch(() => {
-        messageElement.innerHTML = "Error deleting account. Please try again!";
-        messageElement.style.color = "red";
+        setMessage("Error deleting account. Please try again!");
+        setMessageColor("red");
       });
   }
 
@@ -559,9 +599,8 @@ export default function App() {
               <>
                 {navbar}
                 <SwipingPage
-                  getSwipes={getSwipes}
-                  temporaryMessage={temporaryMessage}
                   setTemporaryMessage={setTemporaryMessage}
+                  getSwipes={getSwipes}
                   updateParameters={updateParameters}
                   currentResume={currentResume}
                   profileImage={profileImage}
@@ -593,6 +632,8 @@ export default function App() {
             element={
               <Signup
                 purpleTheme={purpleTheme}
+                message={profilesPath.message}
+                messageColor={profilesPath.messageColor}
                 handleRegister={handleRegister}
               />
             }
@@ -601,7 +642,12 @@ export default function App() {
           <Route
             path="/login"
             element={
-              <Login purpleTheme={purpleTheme} handleLogin={handleLogin} />
+              <Login
+                message={profilesPath.message}
+                messageColor={profilesPath.messageColor}
+                purpleTheme={purpleTheme}
+                handleLogin={handleLogin}
+              />
             }
           />
 
@@ -611,6 +657,8 @@ export default function App() {
               <>
                 {navbar}
                 <Profile
+                  message={message}
+                  messageColor={messageColor}
                   updateParameters={updateParameters}
                   profilesPath={profilesPath}
                   othersPath={othersPath}
@@ -641,6 +689,10 @@ export default function App() {
               <>
                 {navbar}
                 <EditProfile
+                  message={message}
+                  setMessage={setMessage}
+                  messageColor={messageColor}
+                  setMessageColor={setMessageColor}
                   updateParameters={updateParameters}
                   profilesPath={profilesPath}
                   othersPath={othersPath}

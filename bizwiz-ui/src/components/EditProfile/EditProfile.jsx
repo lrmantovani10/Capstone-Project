@@ -20,30 +20,32 @@ export default function EditProfile(props) {
     props.setCurrentUser(newUser);
   }
   useEffect(() => {
-    props.setCurrentUser("Loading");
-    try {
-      const userToken = localStorage.getItem("userToken");
-      if (userToken.length > 0) {
-        const headers = {
-          headers: {
-            authorization: userToken,
-          },
-        };
-        axios
-          .get(`${props.apiURL}/get_user`, headers)
-          .then((response) => {
-            props.updateParameters(response.data, props.setCurrentUser);
-          })
-          .catch((error) => {
-            console.log(error);
-            props.setCurrentUser("error");
-          });
-      } else {
+    async function fetchData() {
+      try {
+        props.setCurrentUser("Loading");
+        const userToken = localStorage.getItem("userToken");
+        if (userToken.length > 0) {
+          const headers = {
+            headers: {
+              authorization: userToken,
+            },
+          };
+          await axios
+            .get(`${props.apiURL}/get_user`, headers)
+            .then((response) => {
+              props.updateParameters(response.data, props.setCurrentUser);
+            })
+            .catch(() => {
+              props.setCurrentUser("error");
+            });
+        } else {
+          window.location.replace("/login");
+        }
+      } catch {
         window.location.replace("/login");
       }
-    } catch {
-      window.location.replace("/login");
     }
+    fetchData();
   }, []);
 
   if (props.currentUser == "Loading") {
@@ -318,7 +320,10 @@ export default function EditProfile(props) {
                 const baseInterest = props.currentUser;
                 const basicInterest = element.slice(0, -1);
                 return (
-                  <div className="attributeSelection">
+                  <div
+                    className="attributeSelection"
+                    key={"attributeSelect" + index}
+                  >
                     <div className="abelFont">Add a new {basicInterest}:</div>
                     <div id="buttonSelection">
                       <input
@@ -354,7 +359,11 @@ export default function EditProfile(props) {
           <ThemeProvider theme={props.blueTheme}>
             <Button
               variant="contained"
-              onClick={() => props.handleSave(props.currentUser.other_pictures)}
+              onClick={async () => {
+                props.setMessage("Loading...");
+                props.setMessageColor("white");
+                await props.handleSave();
+              }}
               className="editProfileButton"
             >
               Save Changes
@@ -371,7 +380,9 @@ export default function EditProfile(props) {
             </Button>
           </ThemeProvider>
         </div>
-        <div id="saveStatus"></div>
+        <div id="saveStatus" style={{ color: props.messageColor }}>
+          {props.message}
+        </div>
       </div>
     );
   }

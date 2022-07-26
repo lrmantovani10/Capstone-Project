@@ -34,9 +34,14 @@ class Profiles {
       email: profileData.email,
       password: profileData.password,
       type: profileData.type,
-      profile_picture: "",
+      profile_picture: {},
       linkedin: "",
-      other_pictures: ["", "", "", "", "", ""],
+      other_pictures_0: {},
+      other_pictures_1: {},
+      other_pictures_2: {},
+      other_pictures_3: {},
+      other_pictures_4: {},
+      other_pictures_5: {},
       about: "",
       sector: "",
       other_link: "",
@@ -51,9 +56,9 @@ class Profiles {
     };
 
     if (profileData.type == 0) {
-      newProfile["age"] = 16;
+      newProfile["age"] = 18;
       newProfile["occupation"] = "";
-      newProfile["resume"] = "";
+      newProfile["resume"] = {};
     }
 
     await profiles.insertOne(newProfile);
@@ -150,6 +155,7 @@ class Profiles {
 
     updateBody.$set = userParameters;
     await profiles.updateOne({ email: email }, updateBody);
+    return;
   }
   static async delete(email) {
     await mongoClient.connect();

@@ -17,6 +17,7 @@ app.use(express.json());
 app.use("/matches", matches);
 app.use("/uploads", express.static("../bizwiz-ui/public/uploads/"));
 const multer = require("multer");
+const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -33,6 +34,11 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   fileFilter: function (req, file, cb) {
+    if (file.size / 1000000 > 12) {
+      return cb(
+        new BadRequestError("File size can't be over 12MB! Please try again!")
+      );
+    }
     let ext = file.originalname.split(".")[1];
     let bodyData = JSON.parse(req.body.data);
     if (
@@ -142,7 +148,32 @@ app.get("/get_user", async (request, response, next) => {
       if (error) {
         next(new ForbiddenError("Bad Token!"));
       } else {
-        const userData = await Profiles.getProfileEmail(data.email);
+        let userData = await Profiles.getProfileEmail(data.email);
+        const fileElements = ["profile_picture", "resume"];
+        for (let i = 0; i < fileElements.length; i++) {
+          if (Object.keys(userData[fileElements[i]]).length != 0) {
+            const fileType = userData[fileElements[i]].contentType;
+
+            const decodedFile =
+              userData[fileElements[i]].file.toString("base64");
+            userData[
+              fileElements[i]
+            ] = `data:${fileType}/${fileType};base64,${decodedFile}`;
+          }
+        }
+        for (let i = 0; i < 6; i++) {
+          if (Object.keys(userData["other_pictures_" + i]).length != 0) {
+            const fileType = userData["other_pictures_" + i].contentType;
+            const decodedFile =
+              userData["other_pictures_" + i].file.toString("base64");
+            userData[
+              "other_pictures_" + i
+            ] = `data:image/${fileType};base64,${decodedFile}`;
+          }
+          else{
+            userData["other_pictures_"+i] = ""
+          }
+        }
         response.status(200).send(userData);
       }
     });
@@ -179,6 +210,27 @@ app.post(
         if (error) {
           next(new ForbiddenError("Bad Token!"));
         } else {
+          const bodyData = JSON.parse(request.body.data);
+          let currentFile = fs.readFileSync(
+            bodyData.destination + bodyData.userId + bodyData.extension
+          );
+          let encodedFile = currentFile.toString("base64");
+          const fileBuffer = Buffer.from(encodedFile, "base64");
+          let finalFile = {
+            contentType: request.file.mimetype,
+            file: fileBuffer,
+          };
+          let changeBody = {};
+          changeBody[bodyData.category] = finalFile;
+          await Profiles.changeProfile(bodyData.userEmail, changeBody);
+          fs.unlink(
+            bodyData.destination + bodyData.userId + bodyData.extension,
+            (error) => {
+              if (error) {
+                next(error);
+              }
+            }
+          );
           response.status(200).send();
         }
       });

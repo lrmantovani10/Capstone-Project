@@ -259,7 +259,7 @@ export default function Profile(props) {
             </ThemeProvider>
           </div>
         </div>
-        <div id="logoutStatus"></div>
+        <div id="logoutStatus" style={{color:props.messageColor}}>{props.message}</div>
       </div>
     );
   }

@@ -9,7 +9,6 @@ import Message from "../Message/Message";
 import "@sendbird/uikit-react/dist/index.css";
 import ChannelProvider from "@sendbird/uikit-react/SendbirdProvider";
 import Channel from "@sendbird/uikit-react/Channel";
-import MessageSearch from "@sendbird/uikit-react/MessageSearch";
 
 export default function Matches(props) {
   useEffect(() => {
