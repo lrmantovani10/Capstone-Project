@@ -13,7 +13,6 @@ import Profile from "../Profile/Profile";
 import Matches from "../Matches/Matches";
 import EditProfile from "../EditProfile/EditProfile";
 import { useState } from "react";
-import SelectInput from "@mui/material/Select/SelectInput";
 
 export default function App() {
   const purpleTheme = createTheme({
@@ -57,7 +56,7 @@ export default function App() {
         setResume({});
       }
       let newExtras = [];
-      console.log(user);
+
       for (let i = 0; i < 6; i++) {
         if (user["other_pictures_" + i].length > 0) {
           newExtras.push(user["other_pictures_" + i]);
@@ -92,7 +91,6 @@ export default function App() {
         }
       })
       .catch((error) => {
-        console.log(error);
         setProfiles(["error"]);
       });
   }
@@ -349,9 +347,10 @@ export default function App() {
       .then(() => {
         return;
       })
-      .catch(() => {
+      .catch((error) => {
         setMessage("Account update failed. Please try again!");
         setMessageColor("red");
+        throw new Error(error);
       });
   }
 
@@ -369,15 +368,15 @@ export default function App() {
     }
   }
 
-  async function saveProfile(profilePicture, headers, profilePath) {
+  async function saveFile(mainFile, headers, filePath, fileType) {
     try {
-      const extension = "." + profilePicture.name.split(".")[1];
+      const extension = "." + mainFile.name.split(".")[1];
       await storeFile(
-        profilePicture,
+        mainFile,
         extension,
         headers,
-        profilePath,
-        "profile_picture"
+        filePath,
+        fileType
       );
     } catch {
       return true;
@@ -385,17 +384,7 @@ export default function App() {
     return false;
   }
 
-  async function saveResume(userResume, headers, resumePath) {
-    try {
-      const extension = "." + userResume.name.split(".")[1];
-      await storeFile(userResume, extension, headers, resumePath, "resume");
-    } catch {
-      return true;
-    }
-    return false;
-  }
-
-  async function savePictures(other_pictures, headers, othersPath) {
+  async function saveFiles(other_pictures, headers, othersPath) {
     try {
       await storeFiles(other_pictures, headers, othersPath, "other_pictures_");
     } catch {
@@ -474,23 +463,17 @@ export default function App() {
     }
 
     if (!errorHappened && profilePicture) {
-      const result = await saveProfile(profilePicture, headers, profilePath);
-      if (result) {
-        errorHappened = true;
-      }
+      const result = await saveFile(profilePicture, headers, profilePath, "profile_picture");
+      errorHappened = result;
     }
     if (!errorHappened && currentUser.type == 0 && userResume) {
-      const result = await saveResume(userResume, headers, resumesPath);
-      if (result) {
-        errorHappened = true;
-      }
+      const result = await saveFile(userResume, headers, resumePath, "resume");
+      errorHappened = result;
     }
 
     if (!errorHappened) {
-      const result = await savePictures(other_pictures, headers, othersPath);
-      if (result) {
-        errorHappened = true;
-      }
+      const result = await saveFiles(other_pictures, headers, othersPath);
+      errorHappened = result;
     }
 
     if (!errorHappened) {

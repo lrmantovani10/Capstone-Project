@@ -57,6 +57,9 @@ const upload = multer({
     }
     cb(null, true);
   },
+  onError: function (next) {
+    next(error);
+  },
 });
 
 function selectPotentials(userData) {
@@ -169,9 +172,8 @@ app.get("/get_user", async (request, response, next) => {
             userData[
               "other_pictures_" + i
             ] = `data:image/${fileType};base64,${decodedFile}`;
-          }
-          else{
-            userData["other_pictures_"+i] = ""
+          } else {
+            userData["other_pictures_" + i] = "";
           }
         }
         response.status(200).send(userData);
