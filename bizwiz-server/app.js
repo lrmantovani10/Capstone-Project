@@ -1,4 +1,9 @@
-const { mySecretKey, ensureToken } = require("./authentication");
+const {
+  mySecretKey,
+  ensureToken,
+  sendBirdToken,
+  applicationId,
+} = require("./authentication");
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
@@ -132,11 +137,38 @@ app.post("/logout", async (request, response, next) => {
 
 app.post("/delete", async (request, response, next) => {
   try {
-    jwt.verify(request.token, mySecretKey, async function (error, data) {
+    jwt.verify(request.token, mySecretKey, async function (error) {
       if (error) {
         next(new ForbiddenError("Bad Token!"));
       } else {
-        await Profiles.delete(data.email);
+        const headers = {
+          headers: {
+            "Content-Type": "application/json; charset=utf8",
+            "Api-Token": sendBirdToken,
+          },
+        };
+        for (const match of request.body.user.matches) {
+          let ids = [request.body.user._id, match];
+          ids.sort();
+          let channelUrl;
+          if (ids[0] == request.body.user._id) {
+            channelUrl = request.body.user._id + match;
+          } else {
+            channelUrl = match + request.body.user._id;
+          }
+          await axios
+            .delete(
+              `https://api-${applicationId}.sendbird.com/v3/group_channels/${channelUrl}`,
+              {},
+              headers
+            )
+            .catch((error) => {
+              if (!error.message.includes("not found")) {
+                next(new BadRequestError());
+              }
+            });
+        }
+        await Profiles.delete(request.body.user._id);
         response.status(200).send();
       }
     });
@@ -235,9 +267,8 @@ app.post(
           response.status(200).send();
         }
       });
-    } catch (error) {
-      console.log(error)
-      //next(error);
+    } catch {
+      next(error);
     }
   }
 );

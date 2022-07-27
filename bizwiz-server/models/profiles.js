@@ -157,11 +157,15 @@ class Profiles {
     await profiles.updateOne({ email: email }, updateBody);
     return;
   }
-  static async delete(email) {
+  static async delete(id) {
     await mongoClient.connect();
     const database = mongoClient.db("UserData");
     const profiles = database.collection("Profiles");
-    await profiles.deleteOne({ email: email });
+    await profiles.updateMany(
+      {},
+      { $pull: { profilesLiked: _id, profilesSwiped: _id, matches: _id } }
+    );
+    await profiles.deleteOne({ _id: id });
   }
   static async logout() {
     await mongoClient.close();

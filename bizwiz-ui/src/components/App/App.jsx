@@ -220,7 +220,7 @@ export default function App() {
       user_ids: ids,
     };
     await axios
-      .post(`${apiURL}/matches/manage_chat`, body, headers, body, headers)
+      .post(`${apiURL}/matches/manage_chat`, body, headers)
       .then((response) => {
         setCurrentChannel(response.data);
         setChatting(true);
@@ -349,6 +349,7 @@ export default function App() {
         .catch((error) => {
           setMessage("Account update failed. Please try again!");
           setMessageColor("red");
+          Promise.reject();
           throw new Error(error);
         });
       Promise.resolve();
@@ -363,6 +364,7 @@ export default function App() {
           setMessage(error.response.data.error.message);
         else setMessage("Error updating profile. Please try again!");
         setMessageColor("red");
+        Promise.reject();
         throw new Error(error);
       });
     Promise.resolve();
@@ -386,6 +388,7 @@ export default function App() {
       .catch((error) => {
         setMessage("Account update failed. Please try again!");
         setMessageColor("red");
+        Promise.reject();
         throw new Error(error);
       });
     Promise.resolve();
@@ -487,28 +490,30 @@ export default function App() {
       });
   }
 
-  function handleDelete() {
-    const userToken = localStorage.getItem("userToken");
-    if (userToken.length == 0) {
-      window.location.replace("/login");
+  async function handleDelete() {
+    if (confirm("Delete account?")) {
+      const userToken = localStorage.getItem("userToken");
+      if (userToken.length == 0) {
+        window.location.replace("/login");
+      }
+      const headers = {
+        headers: {
+          authorization: userToken,
+        },
+      };
+      await axios
+        .post(`${apiURL}/delete`, { user: currentUser }, headers)
+        .then(() => {
+          setMessage("Deleting account...");
+          setMessageColor("green");
+          localStorage.clear();
+          window.location.replace("/welcome");
+        })
+        .catch(() => {
+          setMessage("Error deleting account. Please try again!");
+          setMessageColor("red");
+        });
     }
-    const headers = {
-      headers: {
-        authorization: userToken,
-      },
-    };
-    axios
-      .post(`${apiURL}/delete`, {}, headers)
-      .then(() => {
-        setMessage("Deleting account...");
-        setMessageColor("green");
-        localStorage.clear();
-        window.location.replace("/welcome");
-      })
-      .catch(() => {
-        setMessage("Error deleting account. Please try again!");
-        setMessageColor("red");
-      });
   }
 
   function handleChangeImage(event, targetElement) {
