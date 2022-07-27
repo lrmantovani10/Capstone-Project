@@ -43,7 +43,7 @@ export default function EditProfile(props) {
     } catch {
       window.location.replace("/login");
     }
-  }, [props.temporaryMessage]);
+  }, []);
 
   if (props.currentUser == "Loading") {
     return <Message message={"Loading..."} />;

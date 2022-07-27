@@ -404,7 +404,7 @@ export default function App() {
     const linkedin = document.getElementById("linkedinChange").value;
     const profilePicture = document.getElementById("profilePicChange").files[0];
     const interested_years = document.getElementById("experienceChange").value;
-    const initialPath = "../bizwiz-ui/public/uploads/";
+    const initialPath = "uploads/";
     const profilePath = initialPath + "profiles/";
     const resumePath = initialPath + "resumes/";
     const othersPath = initialPath + "others/";

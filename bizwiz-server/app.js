@@ -31,7 +31,10 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const bodyData = JSON.parse(req.body.data);
-    const filename = bodyData.userId + bodyData.extension;
+    const filename =
+      bodyData.userId +
+      (bodyData.category.includes("other_pictures") ? bodyData.category : "") +
+      bodyData.extension;
     cb(null, filename);
   },
 });
@@ -245,7 +248,12 @@ app.post(
         } else {
           const bodyData = JSON.parse(request.body.data);
           let currentFile = fs.readFileSync(
-            bodyData.destination + bodyData.userId + bodyData.extension
+            bodyData.destination +
+              bodyData.userId +
+              (bodyData.category.includes("other_pictures")
+                ? bodyData.category
+                : "") +
+              bodyData.extension
           );
           let encodedFile = currentFile.toString("base64");
           const fileBuffer = Buffer.from(encodedFile, "base64");
@@ -257,10 +265,15 @@ app.post(
           changeBody[bodyData.category] = finalFile;
           await Profiles.changeProfile(bodyData.userEmail, changeBody);
           fs.unlink(
-            bodyData.destination + bodyData.userId + bodyData.extension,
+            bodyData.destination +
+              bodyData.userId +
+              (bodyData.category.includes("other_pictures")
+                ? bodyData.category
+                : "") +
+              bodyData.extension,
             (error) => {
               if (error) {
-                next(error);
+                throw new Error("Local file deletion failed!");
               }
             }
           );
