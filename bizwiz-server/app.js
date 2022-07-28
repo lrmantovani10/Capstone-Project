@@ -70,7 +70,7 @@ function selectPotentials(userData) {
   let allProfiles = userData.profilesSwiped.concat(userData.profilesLiked);
   let results = {
     type: { $ne: userData.type },
-    // _id: { $nin: allProfiles },
+    _id: { $nin: allProfiles },
     // interested_sectors: {$in: userData.interested_sectors},
     // interested_positions: {$in: userData.interested_positions},
     // interested_locations: {$in: userData.interested_locations}
@@ -181,30 +181,7 @@ app.get("/get_user", async (request, response, next) => {
       if (error) {
         next(new ForbiddenError("Bad Token!"));
       } else {
-        let userData = await Profiles.getProfileEmail(data.email);
-        let fileElements = ["profile_picture", "resume"];
-        for (let i = 0; i < 6; i++) {
-          fileElements.push("other_pictures_" + i);
-        }
-        const fileArray = await Profiles.readFiles(userData._id);
-        userData["profile_picture"] = "";
-        userData["other_pictures"] = ["", "", "", "", "", ""];
-        if (userData.type == 0) userData["resume"] = "";
-        let includeArray = ["profile_picture", "resume"];
-        for (let i = 0; i < 6; i++) {
-          includeArray.push("other_pictures_" + i);
-        }
-        for (const element of fileArray) {
-          const fileType = element[0];
-          if (includeArray.includes(fileType)) {
-            if (fileType.includes("other_pictures")) {
-              userData["other_pictures"][parseInt(fileType.split("_")[2])] =
-                element[1];
-            } else {
-              userData[fileType] = element[1];
-            }
-          }
-        }
+        const userData = await Profiles.getFiles(0, data.email);
         response.status(200).send(userData);
       }
     });
@@ -286,7 +263,12 @@ app.get("/get_profiles", async (request, response, next) => {
       } else {
         const userData = await Profiles.getProfileEmail(data.email);
         const profiles = await Profiles.getProfiles(selectPotentials(userData));
-        response.status(200).send(profiles);
+        let finalProfiles = [];
+        for (const profile of profiles) {
+          const userData = await Profiles.getFiles(1, profile);
+          finalProfiles.push(userData);
+        }
+        response.status(200).send(finalProfiles);
       }
     });
   } catch (error) {

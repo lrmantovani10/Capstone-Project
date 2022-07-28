@@ -18,26 +18,16 @@ router.get("/", async (request, response, next) => {
         next(new ForbiddenError("Bad Token!"));
       } else {
         const matches = await Profiles.getMatches(data.email);
-        response.status(200).send(matches);
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get("/:profileId", async (request, response, next) => {
-  try {
-    let profileId = request.params.profileId;
-    jwt.verify(request.token, mySecretKey, async function (error) {
-      if (error) {
-        next(new ForbiddenError("Bad Token!"));
-      } else {
-        const userData = await Profiles.getProfileId(profileId);
-        if (!userData) {
-          next("Invalid profile Id!");
+        let finalMatches = [];
+        for (const match of matches) {
+          const matchData = await Profiles.getProfileId(match);
+          if (!matchData) {
+            next("Invalid profile Id!");
+          }
+          const userData = await Profiles.getFiles(1, matchData);
+          finalMatches.push(userData);
         }
-        response.status(200).send({ user: userData });
+        response.status(200).send(finalMatches);
       }
     });
   } catch (error) {
@@ -105,6 +95,7 @@ router.post("/manage_chat", async (req, res, next) => {
             res.status(200).send(response.data.channel_url);
           })
           .catch((error) => {
+            console.log(error)
             next(error);
           });
       }

@@ -83,10 +83,7 @@ export default function Matches(props) {
                     <img
                       src={
                         element.profile_picture.length > 0
-                          ? props.profilesPath +
-                            element._id +
-                            "." +
-                            element.profile_picture
+                          ? element.profile_picture
                           : props.profilesPath + "default.png"
                       }
                       className="card-img matchPicture"

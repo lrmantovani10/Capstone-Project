@@ -182,6 +182,7 @@ class Profiles {
       }
     });
   }
+
   static async readFiles(userId) {
     await mongoClient.connect();
     const database = mongoClient.db(mongoDatabase);
@@ -189,6 +190,7 @@ class Profiles {
     const files = await bucket.find({}).toArray();
     let finalFiles = [];
     let promises = [];
+
     for (const file of files) {
       promises.push(
         new Promise(function (resolve, reject) {
@@ -215,7 +217,38 @@ class Profiles {
       );
     }
     await Promise.all(promises);
+
     return finalFiles;
+  }
+  static async getFiles(type, data) {
+    let userData = data;
+    if (type == 0) {
+      userData = await this.getProfileEmail(data);
+    }
+    let fileElements = ["profile_picture", "resume"];
+    for (let i = 0; i < 6; i++) {
+      fileElements.push("other_pictures_" + i);
+    }
+    const fileArray = await this.readFiles(userData._id);
+    userData["profile_picture"] = "";
+    userData["other_pictures"] = ["", "", "", "", "", ""];
+    if (userData.type == 0) userData["resume"] = "";
+    let includeArray = ["profile_picture", "resume"];
+    for (let i = 0; i < 6; i++) {
+      includeArray.push("other_pictures_" + i);
+    }
+    for (const element of fileArray) {
+      const fileType = element[0];
+      if (includeArray.includes(fileType)) {
+        if (fileType.includes("other_pictures")) {
+          userData["other_pictures"][parseInt(fileType.split("_")[2])] =
+            element[1];
+        } else {
+          userData[fileType] = element[1];
+        }
+      }
+    }
+    return userData;
   }
   static async delete(id) {
     await mongoClient.connect();

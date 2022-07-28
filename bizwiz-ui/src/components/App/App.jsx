@@ -126,7 +126,7 @@ export default function App() {
       .catch(() => {
         setProfiles(["error"]);
       });
-    if (swipeCount == 20) {
+    if (swipeCount == 20 || profileCopy.length == 0) {
       await getSwipes();
       setSwipeCount(1);
     } else {
@@ -149,16 +149,12 @@ export default function App() {
           await axios
             .get(`${apiURL}/matches`, headers)
             .then(async (response) => {
-              let rawMatches = response.data;
-              if (rawMatches.length == 0)
+              let userMatches = response.data;
+              if (userMatches.length == 0)
                 setTemporaryMessage("No matches so far! Keep swiping!");
-              for (const element in rawMatches) {
-                await axios
-                  .get(`${apiURL}/matches/` + element, headers)
-                  .then((response) => {
-                    setMatches([...matches, response.data.user]);
-                    setChatting(false);
-                  });
+              for (const element of userMatches) {
+                setMatches([...matches, element]);
+                setChatting(false);
               }
             })
             .catch(() => {
@@ -243,6 +239,7 @@ export default function App() {
     const signupBox = document.querySelector("#signupBox").checked;
     let responseMessage = "";
 
+    changeMessage("Signing up...", "blue");
     let accountType = 2;
     checkboxesType.forEach((element) => {
       if (element.checked && element.id == "check1") accountType = 0;
@@ -534,6 +531,7 @@ export default function App() {
               <>
                 {navbar}
                 <SwipingPage
+                  temporaryMessage={temporaryMessage}
                   setTemporaryMessage={setTemporaryMessage}
                   getSwipes={getSwipes}
                   updateParameters={updateParameters}

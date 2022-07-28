@@ -21,11 +21,11 @@ export default function SwipingPage(props) {
           .get(`${props.apiURL}/get_user`, headers)
           .then((response) => {
             props.setCurrentUser(response.data);
+            props.getSwipes();
           })
           .catch(() => {
             props.setProfiles(["error"]);
           });
-        props.getSwipes();
       } else {
         window.location.replace("/login");
       }
