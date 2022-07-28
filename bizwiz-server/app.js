@@ -22,7 +22,6 @@ app.use(express.json());
 app.use("/matches", matches);
 app.use("/uploads", express.static("../bizwiz-ui/public/uploads/"));
 const multer = require("multer");
-const fs = require("fs");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -252,14 +251,8 @@ app.post(
             filePath,
             bodyData.userId,
             bodyData.category
-          ).then(() => {
-            fs.unlink(filePath, (error) => {
-              if (error) {
-                throw new Error("Local file deletion failed!");
-              }
-            });
-            response.status(200).send();
-          });
+          );
+          response.status(200).send();
         }
       });
     } catch {

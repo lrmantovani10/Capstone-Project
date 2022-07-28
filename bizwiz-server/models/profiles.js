@@ -164,15 +164,21 @@ class Profiles {
       }
     }
     await new Promise(function (resolve, reject) {
-      try {
-        fs.createReadStream(filePath).pipe(
-          bucket.openUploadStream(filePath.split("/")[2], {
-            metadata: { field: "type", value: category },
-          })
-        );
+      const uploadStream = bucket.openUploadStream(filePath.split("/")[2], {
+        metadata: { field: "type", value: category },
+      });
+      uploadStream.on("unpipe", () => {
         resolve();
-      } catch {
+      });
+      uploadStream.on("error", () => {
         reject();
+      });
+      fs.createReadStream(filePath).pipe(uploadStream);
+    });
+
+    fs.unlink(filePath, (error) => {
+      if (error) {
+        throw new Error("Local file deletion failed!");
       }
     });
   }
