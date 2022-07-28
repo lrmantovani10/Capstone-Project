@@ -1,47 +1,44 @@
-const e = require("cors");
-const { MongoClient, ObjectId } = require("mongodb");
-const { mongoUrl } = require("../authentication");
+const { MongoClient, ObjectId, GridFSBucket } = require("mongodb");
+const fs = require("fs");
+const {
+  mongoUrl,
+  mongoDatabase,
+  mongoCollection,
+} = require("../authentication");
 const mongoClient = new MongoClient(mongoUrl);
 
 class Profiles {
   static async getProfileEmail(profileEmail) {
     await mongoClient.connect();
-    const database = mongoClient.db("UserData");
-    const profiles = database.collection("Profiles");
+    const database = mongoClient.db(mongoDatabase);
+    const profiles = database.collection(mongoCollection);
     let profileRetrieved = profiles.findOne({ email: profileEmail });
     return profileRetrieved;
   }
   static async getProfileId(profileId) {
     await mongoClient.connect();
-    const database = mongoClient.db("UserData");
-    const profiles = database.collection("Profiles");
+    const database = mongoClient.db(mongoDatabase);
+    const profiles = database.collection(mongoCollection);
     let profileRetrieved = profiles.findOne({ _id: new ObjectId(profileId) });
     return profileRetrieved;
   }
   static async getProfiles(criteria) {
     await mongoClient.connect();
-    const database = mongoClient.db("UserData");
-    const profiles = database.collection("Profiles");
+    const database = mongoClient.db(mongoDatabase);
+    const profiles = database.collection(mongoCollection);
     let profilesRetrieved = await profiles.find(criteria).limit(20).toArray();
     return profilesRetrieved;
   }
   static async createProfile(profileData) {
     await mongoClient.connect();
-    const database = mongoClient.db("UserData");
-    const profiles = database.collection("Profiles");
+    const database = mongoClient.db(mongoDatabase);
+    const profiles = database.collection(mongoCollection);
     let newProfile = {
       name: profileData.name,
       email: profileData.email,
       password: profileData.password,
       type: profileData.type,
-      profile_picture: {},
       linkedin: "",
-      other_pictures_0: {},
-      other_pictures_1: {},
-      other_pictures_2: {},
-      other_pictures_3: {},
-      other_pictures_4: {},
-      other_pictures_5: {},
       about: "",
       sector: "",
       other_link: "",
@@ -58,7 +55,6 @@ class Profiles {
     if (profileData.type == 0) {
       newProfile["age"] = 18;
       newProfile["occupation"] = "";
-      newProfile["resume"] = {};
     }
 
     await profiles.insertOne(newProfile);
@@ -78,8 +74,8 @@ class Profiles {
   }
   static async removeMatch(firstEmail, secondProfile) {
     await mongoClient.connect();
-    const database = mongoClient.db("UserData");
-    const profiles = database.collection("Profiles");
+    const database = mongoClient.db(mongoDatabase);
+    const profiles = database.collection(mongoCollection);
     const firstUser = await this.getProfileEmail(firstEmail);
     const firstObject = firstUser._id;
     const secondObject = new ObjectId(secondProfile);
@@ -106,8 +102,8 @@ class Profiles {
   }
   static async changeProfile(email, userParameters) {
     await mongoClient.connect();
-    const database = mongoClient.db("UserData");
-    const profiles = database.collection("Profiles");
+    const database = mongoClient.db(mongoDatabase);
+    const profiles = database.collection(mongoCollection);
     const newSwipe = userParameters["swipedProfile"];
     const newLike = userParameters["likedProfile"];
     const thisProfile = await this.getProfileEmail(email);
@@ -157,10 +153,70 @@ class Profiles {
     await profiles.updateOne({ email: email }, updateBody);
     return;
   }
+  static async uploadFile(filePath, userId, category) {
+    await mongoClient.connect();
+    const database = mongoClient.db(mongoDatabase);
+    const bucket = new GridFSBucket(database, { bucketName: userId });
+    const files = await bucket.find({}).toArray();
+    for (const file of files) {
+      if (file.metadata.value == category) {
+        await bucket.delete(file._id);
+      }
+    }
+    await new Promise(function (resolve, reject) {
+      try {
+        fs.createReadStream(filePath).pipe(
+          bucket.openUploadStream(filePath.split("/")[2], {
+            metadata: { field: "type", value: category },
+          })
+        );
+        resolve();
+      } catch {
+        reject();
+      }
+    });
+  }
+  static async readFiles(userId) {
+    await mongoClient.connect();
+    const database = mongoClient.db(mongoDatabase);
+    const bucket = new GridFSBucket(database, { bucketName: userId });
+    const files = await bucket.find({}).toArray();
+    let finalFiles = [];
+    let promises = [];
+    for (const file of files) {
+      promises.push(
+        new Promise(function (resolve, reject) {
+          let encoded = "";
+          const mimeType =
+            (file.metadata.value != "resume" ? "image/" : "application/") +
+            file.filename.split(".")[1];
+          const streamReader = bucket.openDownloadStreamByName(file.filename);
+          streamReader.on("data", function (data) {
+            const base64Data = data.toString("base64");
+            encoded += base64Data;
+          });
+          streamReader.on("end", () => {
+            finalFiles.push([
+              file.metadata.value,
+              `data:${mimeType};base64,${encoded}`,
+            ]);
+            resolve();
+          });
+          streamReader.on("error", () => {
+            reject();
+          });
+        })
+      );
+    }
+    await Promise.all(promises);
+    return finalFiles;
+  }
   static async delete(id) {
     await mongoClient.connect();
-    const database = mongoClient.db("UserData");
-    const profiles = database.collection("Profiles");
+    const database = mongoClient.db(mongoDatabase);
+    const bucket = new GridFSBucket(database, { bucketName: id });
+    bucket.drop();
+    const profiles = database.collection(mongoCollection);
     await profiles.updateMany(
       {},
       { $pull: { profilesLiked: _id, profilesSwiped: _id, matches: _id } }

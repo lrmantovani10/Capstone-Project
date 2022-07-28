@@ -142,7 +142,7 @@ export default function Signup(props) {
                         <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                           <ThemeProvider theme={props.purpleTheme}>
                             <Button
-                              onClick={() => props.handleRegister()}
+                              onClick={props.handleRegister}
                               variant="contained"
                               style={{
                                 color: "white",
@@ -158,7 +158,7 @@ export default function Signup(props) {
                         <p id="loginOption">
                           Already have an account? <a href="/login">Log In</a>
                         </p>
-                        <p id="returnResponse" style={{color:props.messageColor}}>{props.message}</p>
+                        <p id="returnResult"></p>
                       </form>
                     </div>
                     <div

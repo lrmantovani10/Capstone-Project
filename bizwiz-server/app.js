@@ -31,10 +31,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const bodyData = JSON.parse(req.body.data);
-    const filename =
-      bodyData.userId +
-      (bodyData.category.includes("other_pictures") ? bodyData.category : "") +
-      bodyData.extension;
+    const filename = bodyData.userId + bodyData.category + bodyData.extension;
     cb(null, filename);
   },
 });
@@ -122,7 +119,6 @@ app.post("/login", async (request, response, next) => {
 });
 
 app.use(ensureToken);
-
 app.post("/logout", async (request, response, next) => {
   try {
     jwt.verify(request.token, mySecretKey, async function (error) {
@@ -187,27 +183,27 @@ app.get("/get_user", async (request, response, next) => {
         next(new ForbiddenError("Bad Token!"));
       } else {
         let userData = await Profiles.getProfileEmail(data.email);
-        const fileElements = ["profile_picture", "resume"];
-        for (let i = 0; i < fileElements.length; i++) {
-          if (Object.keys(userData[fileElements[i]]).length != 0) {
-            const fileType = userData[fileElements[i]].contentType;
-            const decodedFile =
-              userData[fileElements[i]].file.toString("base64");
-            userData[
-              fileElements[i]
-            ] = `data:${fileType};base64,${decodedFile}`;
-          }
-        }
+        let fileElements = ["profile_picture", "resume"];
         for (let i = 0; i < 6; i++) {
-          if (Object.keys(userData["other_pictures_" + i]).length != 0) {
-            const fileType = userData["other_pictures_" + i].contentType;
-            const decodedFile =
-              userData["other_pictures_" + i].file.toString("base64");
-            userData[
-              "other_pictures_" + i
-            ] = `data:image/${fileType};base64,${decodedFile}`;
-          } else {
-            userData["other_pictures_" + i] = "";
+          fileElements.push("other_pictures_" + i);
+        }
+        const fileArray = await Profiles.readFiles(userData._id);
+        userData["profile_picture"] = "";
+        userData["other_pictures"] = ["", "", "", "", "", ""];
+        if (userData.type == 0) userData["resume"] = "";
+        let includeArray = ["profile_picture", "resume"];
+        for (let i = 0; i < 6; i++) {
+          includeArray.push("other_pictures_" + i);
+        }
+        for (const element of fileArray) {
+          const fileType = element[0];
+          if (includeArray.includes(fileType)) {
+            if (fileType.includes("other_pictures")) {
+              userData["other_pictures"][parseInt(fileType.split("_")[2])] =
+                element[1];
+            } else {
+              userData[fileType] = element[1];
+            }
           }
         }
         response.status(200).send(userData);
@@ -247,37 +243,23 @@ app.post(
           next(new ForbiddenError("Bad Token!"));
         } else {
           const bodyData = JSON.parse(request.body.data);
-          let currentFile = fs.readFileSync(
+          const filePath =
             bodyData.destination +
-              bodyData.userId +
-              (bodyData.category.includes("other_pictures")
-                ? bodyData.category
-                : "") +
-              bodyData.extension
-          );
-          let encodedFile = currentFile.toString("base64");
-          const fileBuffer = Buffer.from(encodedFile, "base64");
-          let finalFile = {
-            contentType: request.file.mimetype,
-            file: fileBuffer,
-          };
-          let changeBody = {};
-          changeBody[bodyData.category] = finalFile;
-          await Profiles.changeProfile(bodyData.userEmail, changeBody);
-          fs.unlink(
-            bodyData.destination +
-              bodyData.userId +
-              (bodyData.category.includes("other_pictures")
-                ? bodyData.category
-                : "") +
-              bodyData.extension,
-            (error) => {
+            bodyData.userId +
+            bodyData.category +
+            bodyData.extension;
+          await Profiles.uploadFile(
+            filePath,
+            bodyData.userId,
+            bodyData.category
+          ).then(() => {
+            fs.unlink(filePath, (error) => {
               if (error) {
                 throw new Error("Local file deletion failed!");
               }
-            }
-          );
-          response.status(200).send();
+            });
+            response.status(200).send();
+          });
         }
       });
     } catch {

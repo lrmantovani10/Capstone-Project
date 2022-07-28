@@ -40,17 +40,15 @@ export default function App() {
   let [currentChannel, setCurrentChannel] = useState("");
   let [chatting, setChatting] = useState(false);
   let [swipeCount, setSwipeCount] = useState(1);
-  let [message, setMessage] = useState("");
-  let [messageColor, setMessageColor] = useState("white");
 
   function updateParameters(user, setFunction) {
     if (user) {
-      if (Object.keys(user.profile_picture).length > 0) {
+      if (user.profile_picture.length > 0) {
         setProfileImage(user.profile_picture);
       } else {
         setProfileImage(profilesPath + "default.png");
       }
-      if (user.type == 0 && Object.keys(user.resume).length > 0) {
+      if (user.type == 0 && user.resume.length > 0) {
         setResume(user.resume);
       } else {
         setResume({});
@@ -58,8 +56,8 @@ export default function App() {
       let newExtras = [];
 
       for (let i = 0; i < 6; i++) {
-        if (user["other_pictures_" + i].length > 0) {
-          newExtras.push(user["other_pictures_" + i]);
+        if (user["other_pictures"][i]) {
+          newExtras.push(user["other_pictures"][i]);
         } else {
           newExtras.push(othersPath + "default.png");
         }
@@ -78,7 +76,7 @@ export default function App() {
       },
     };
 
-    axios
+    await axios
       .get(`${apiURL}/get_profiles`, headers)
       .then((response) => {
         setProfiles(response.data);
@@ -90,7 +88,7 @@ export default function App() {
           );
         }
       })
-      .catch((error) => {
+      .catch(() => {
         setProfiles(["error"]);
       });
   }
@@ -230,7 +228,13 @@ export default function App() {
       });
   }
 
-  function handleRegister() {
+  function changeMessage(newMessage, newColor) {
+    const messageElement = document.getElementById("returnResult");
+    if (newMessage) messageElement.innerHTML = newMessage;
+    if (newColor) messageElement.style.color = newColor;
+  }
+
+  async function handleRegister() {
     const name = document.querySelector("#nameInput").value;
     const email = document.querySelector("#emailInput").value;
     const password = document.querySelector("#passwordInput").value;
@@ -260,12 +264,11 @@ export default function App() {
       responseMessage = "Passwords don't match!";
     }
     if (responseMessage.length > 0) {
-      setMessage(responseMessage);
-      setMessageColor("red");
+      changeMessage(responseMessage, "red");
       return;
     }
 
-    axios
+    await axios
       .post(`${apiURL}/signup`, {
         name: name,
         email: email,
@@ -273,36 +276,33 @@ export default function App() {
         type: accountType,
       })
       .then((response) => {
-        setMessage("Account successfully created!");
-        setMessageColor("green");
+        changeMessage("Account successfully created!", "green");
         localStorage.setItem("userToken", response.data);
         window.location.replace("/edit_profile");
       })
       .catch((error) => {
         if (error.code == "ERR_BAD_REQUEST")
-          setMessage(error.response.data.error.message);
-        else setMessage("Error signing up. Please try again!");
-        setMessageColor("red");
+          changeMessage(error.response.data.error.message, undefined);
+        else changeMessage("Error signing up. Please try again!");
+        changeMessage(undefined, "red");
       });
   }
 
-  function handleLogin() {
+  async function handleLogin() {
     const email = document.querySelector("#loginInput").value;
     const password = document.querySelector("#passInput").value;
-    axios
+    await axios
       .post(`${apiURL}/login`, {
         email: email,
         password: password,
       })
       .then((response) => {
-        setMessage("Logging in...");
-        setMessageColor("green");
+        changeMessage("Logging in...", "green");
         localStorage.setItem("userToken", response.data);
         window.location.replace("/");
       })
       .catch((error) => {
-        setMessage(error.response.data.error.message);
-        setMessageColor("red");
+        changeMessage(error.response.data.error.message, "red");
       });
   }
 
@@ -337,8 +337,7 @@ export default function App() {
       };
 
       if (file.size / 1000000 > 12) {
-        setMessage("File size can't be over 12MB! Please try again!");
-        setMessageColor("red");
+        changeMessage("File size can't be over 12MB! Please try again!", "red");
         throw new Error("File size can't be over 12MB! Please try again!");
       }
       newForm.append("data", JSON.stringify(body));
@@ -347,12 +346,9 @@ export default function App() {
       await axios
         .post(`${apiURL}/upload_single`, newForm, headers)
         .catch((error) => {
-          setMessage("Account update failed. Please try again!");
-          setMessageColor("red");
-          Promise.reject();
+          changeMessage("Account update failed. Please try again!", "red");
           throw new Error(error);
         });
-      Promise.resolve();
     }
   }
 
@@ -361,13 +357,10 @@ export default function App() {
       .post(`${apiURL}/check_user`, { email: email }, headers)
       .catch((error) => {
         if (error.code == "ERR_BAD_REQUEST")
-          setMessage(error.response.data.error.message);
-        else setMessage("Error updating profile. Please try again!");
-        setMessageColor("red");
-        Promise.reject();
+          changeMessage(error.response.data.error.message, "red");
+        else changeMessage("Error updating profile. Please try again!", "red");
         throw new Error(error);
       });
-    Promise.resolve();
   }
 
   async function storeExtraPictures(files, headers, othersPath) {
@@ -376,7 +369,6 @@ export default function App() {
       await storeFile(file, headers, othersPath, "other_pictures_" + index);
       index++;
     }
-    Promise.resolve();
   }
 
   async function changeProfile(body, headers) {
@@ -386,12 +378,9 @@ export default function App() {
         localStorage.setItem("userToken", response.data);
       })
       .catch((error) => {
-        setMessage("Account update failed. Please try again!");
-        setMessageColor("red");
-        Promise.reject();
+        changeMessage("Account update failed. Please try again!", "red");
         throw new Error(error);
       });
-    Promise.resolve();
   }
 
   async function handleSave() {
@@ -444,8 +433,7 @@ export default function App() {
     }
 
     if (password.length < 10) {
-      setMessageColor("red");
-      setMessage("Password is less than 10 characters!");
+      changeMessage("Password is less than 10 characters!", "red");
     } else {
       await Promise.all([
         checkUser(email, headers),
@@ -454,8 +442,7 @@ export default function App() {
         storeExtraPictures(other_pictures, headers, othersPath),
       ]).then(async () => {
         await changeProfile(body, headers).then(() => {
-          setMessage("Account successfully updated!");
-          setMessageColor("green");
+          changeMessage("Account successfully updated!", "green");
           window.location.replace("profile");
         });
       });
@@ -466,7 +453,7 @@ export default function App() {
     window.location.replace("/profile");
   }
 
-  function handleLogout() {
+  async function handleLogout() {
     const userToken = localStorage.getItem("userToken");
     if (userToken.length == 0) {
       window.location.replace("/login");
@@ -476,17 +463,15 @@ export default function App() {
         authorization: userToken,
       },
     };
-    axios
+    await axios
       .post(`${apiURL}/logout`, {}, headers)
       .then(() => {
-        setMessage("Logging out...");
-        setMessageColor("green");
+        changeMessage("Logging out...", "green");
         localStorage.clear();
         window.location.replace("/login");
       })
       .catch(() => {
-        setMessage("Error logging out. Please try again!");
-        setMessageColor("red");
+        changeMessage("Error logging out. Please try again!", "red");
       });
   }
 
@@ -504,14 +489,12 @@ export default function App() {
       await axios
         .post(`${apiURL}/delete`, { user: currentUser }, headers)
         .then(() => {
-          setMessage("Deleting account...");
-          setMessageColor("green");
+          changeMessage("Deleting account...", "green");
           localStorage.clear();
           window.location.replace("/welcome");
         })
         .catch(() => {
-          setMessage("Error deleting account. Please try again!");
-          setMessageColor("red");
+          changeMessage("Error deleting account. Please try again!", "red");
         });
     }
   }
@@ -584,8 +567,6 @@ export default function App() {
             element={
               <Signup
                 purpleTheme={purpleTheme}
-                message={profilesPath.message}
-                messageColor={profilesPath.messageColor}
                 handleRegister={handleRegister}
               />
             }
@@ -594,12 +575,7 @@ export default function App() {
           <Route
             path="/login"
             element={
-              <Login
-                message={profilesPath.message}
-                messageColor={profilesPath.messageColor}
-                purpleTheme={purpleTheme}
-                handleLogin={handleLogin}
-              />
+              <Login purpleTheme={purpleTheme} handleLogin={handleLogin} />
             }
           />
 
@@ -609,8 +585,6 @@ export default function App() {
               <>
                 {navbar}
                 <Profile
-                  message={message}
-                  messageColor={messageColor}
                   updateParameters={updateParameters}
                   profilesPath={profilesPath}
                   othersPath={othersPath}
@@ -641,10 +615,7 @@ export default function App() {
               <>
                 {navbar}
                 <EditProfile
-                  message={message}
-                  setMessage={setMessage}
-                  messageColor={messageColor}
-                  setMessageColor={setMessageColor}
+                  changeMessage={changeMessage}
                   updateParameters={updateParameters}
                   profilesPath={profilesPath}
                   othersPath={othersPath}

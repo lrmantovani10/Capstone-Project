@@ -93,9 +93,9 @@ export default function Profile(props) {
                   <div>
                     {" "}
                     {props.currentUser.age}
-                    year-old
-                    <span></span>living in
-                    <span></span>
+                    <span> </span>
+                    year-old living in
+                    <span> </span>
                     {props.currentUser.location}📍
                   </div>
                 ) : (
@@ -259,7 +259,7 @@ export default function Profile(props) {
             </ThemeProvider>
           </div>
         </div>
-        <div id="logoutStatus" style={{color:props.messageColor}}>{props.message}</div>
+        <div id="returnResult"></div>
       </div>
     );
   }

@@ -85,7 +85,7 @@ export default function Login(props) {
                         <p id="signupOption">
                           Don't have an account? <a href="/signup">Sign up!</a>
                         </p>
-                        <p id="returnResponse" style={{color: props.messageColor}}>{props.message}</p>
+                        <p id="returnResult"></p>
                       </form>
                     </div>
                     <div

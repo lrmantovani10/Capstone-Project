@@ -357,8 +357,7 @@ export default function EditProfile(props) {
             <Button
               variant="contained"
               onClick={async () => {
-                props.setMessage("Loading...");
-                props.setMessageColor("white");
+                props.changeMessage("Loading...", "white");
                 await props.handleSave();
               }}
               className="editProfileButton"
@@ -377,10 +376,8 @@ export default function EditProfile(props) {
             </Button>
           </ThemeProvider>
         </div>
-        <div id="saveStatus" style={{ color: props.messageColor }}>
-          {props.message}
-        </div>
+        <div id="returnResult"></div>
       </div>
     );
-  } 
+  }
 }
