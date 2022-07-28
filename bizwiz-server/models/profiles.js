@@ -5,6 +5,7 @@ const {
   mongoDatabase,
   mongoCollection,
 } = require("../authentication");
+const { encode } = require("punycode");
 const mongoClient = new MongoClient(mongoUrl);
 
 class Profiles {
@@ -190,23 +191,21 @@ class Profiles {
     const files = await bucket.find({}).toArray();
     let finalFiles = [];
     let promises = [];
-
     for (const file of files) {
       promises.push(
         new Promise(function (resolve, reject) {
-          let encoded = "";
+          let encoded = Buffer.from("");
           const mimeType =
             (file.metadata.value != "resume" ? "image/" : "application/") +
             file.filename.split(".")[1];
           const streamReader = bucket.openDownloadStreamByName(file.filename);
           streamReader.on("data", function (data) {
-            const base64Data = data.toString("base64");
-            encoded += base64Data;
+            encoded = Buffer.concat([encoded, data]);
           });
           streamReader.on("end", () => {
             finalFiles.push([
               file.metadata.value,
-              `data:${mimeType};base64,${encoded}`,
+              `data:${mimeType};base64,${encoded.toString("base64")}`,
             ]);
             resolve();
           });
@@ -217,7 +216,6 @@ class Profiles {
       );
     }
     await Promise.all(promises);
-
     return finalFiles;
   }
   static async getFiles(type, data) {
