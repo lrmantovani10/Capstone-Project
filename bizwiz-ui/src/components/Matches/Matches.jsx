@@ -51,7 +51,6 @@ export default function Matches(props) {
             userId={props.currentUser._id}
             nickname={props.currentUser.name}
             accessToken={props.currentUser.sendbird_access}
-            profileUrl={"https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Facebook_f_logo_%282021%29.svg/1200px-Facebook_f_logo_%282021%29.svg.png"}
           >
             <MyChatUI
               currentChannel={props.currentChannel}
