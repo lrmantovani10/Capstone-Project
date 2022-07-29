@@ -1,7 +1,7 @@
 import "@sendbird/uikit-react/dist/index.css";
 import withSendbird from "@sendbird/uikit-react/withSendbird";
 import Channel from "@sendbird/uikit-react/Channel";
-import "./Chat.css"
+import "./Chat.css";
 const MyChatUI = (props) => {
   return (
     <Channel

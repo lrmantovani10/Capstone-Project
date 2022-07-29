@@ -177,36 +177,40 @@ app.post("/delete", async (request, response, next) => {
 
         await axios
           .delete(
-            `https://api-${applicationId}.sendbird.com/v3/users/${request.body.user_id}`,
-            {},
+            `https://api-${applicationId}.sendbird.com/v3/users/${request.body.user._id}`,
             headers
           )
+          .then(async () => {
+            let deletePromises = [];
+            for (const match of request.body.user.matches) {
+              let ids = [request.body.user._id, match];
+              ids.sort();
+              let channelUrl;
+              if (ids[0] == request.body.user._id) {
+                channelUrl = request.body.user._id + match;
+              } else {
+                channelUrl = match + request.body.user._id;
+              }
+              deletePromises.push(
+                axios
+                  .delete(
+                    `https://api-${applicationId}.sendbird.com/v3/group_channels/${channelUrl}`,
+                    headers
+                  )
+                  .catch((error) => {
+                    if (!error.response.data.message.includes("not found")) {
+                      next(new BadRequestError());
+                    }
+                  })
+              );
+            }
+            await Promise.all(deletePromises);
+            await Profiles.delete(request.body.user._id);
+            response.status(200).send();
+          })
           .catch((error) => {
             next(error);
           });
-        for (const match of request.body.user.matches) {
-          let ids = [request.body.user._id, match];
-          ids.sort();
-          let channelUrl;
-          if (ids[0] == request.body.user._id) {
-            channelUrl = request.body.user._id + match;
-          } else {
-            channelUrl = match + request.body.user._id;
-          }
-          await axios
-            .delete(
-              `https://api-${applicationId}.sendbird.com/v3/group_channels/${channelUrl}`,
-              {},
-              headers
-            )
-            .catch((error) => {
-              if (!error.message.includes("not found")) {
-                next(new BadRequestError());
-              }
-            });
-        }
-        await Profiles.delete(request.body.user._id);
-        response.status(200).send();
       }
     });
   } catch (error) {

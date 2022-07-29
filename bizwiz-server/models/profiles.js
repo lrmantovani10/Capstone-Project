@@ -256,13 +256,25 @@ class Profiles {
     await mongoClient.connect();
     const database = mongoClient.db(mongoDatabase);
     const bucket = new GridFSBucket(database, { bucketName: id });
-    bucket.drop();
+    try {
+      await bucket.drop();
+    } catch (error) {
+      if (!error.message.includes("not found")) {
+        throw new Error(error);
+      }
+    }
     const profiles = database.collection(mongoCollection);
     await profiles.updateMany(
       {},
-      { $pull: { profilesLiked: id, profilesSwiped: id, matches: id } }
+      {
+        $pull: {
+          profilesLiked: ObjectId(id),
+          profilesSwiped: ObjectId(id),
+          matches: ObjectId(id),
+        },
+      }
     );
-    await profiles.deleteOne({ _id: id });
+    await profiles.deleteOne({ _id: ObjectId(id) });
   }
   static async logout() {
     await mongoClient.close();
