@@ -22,6 +22,7 @@ app.use(express.json());
 app.use("/matches", matches);
 app.use("/uploads", express.static("../bizwiz-ui/public/uploads/"));
 const multer = require("multer");
+const axios = require("axios");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -75,9 +76,9 @@ function selectPotentials(userData) {
     // interested_positions: {$in: userData.interested_positions},
     // interested_locations: {$in: userData.interested_locations}
   };
-  if (userData.type == 1) {
-    results["interested_years"] = { $gte: userData.interested_years };
-  }
+  // if (userData.type == 1) {
+  //   results["interested_years"] = { $gte: userData.interested_years };
+  // }
 
   return results;
 }
@@ -87,7 +88,35 @@ app.post("/signup", async (request, response, next) => {
     const requestBody = request.body;
     const profileData = await Profiles.getProfileEmail(requestBody.email);
     if (!profileData) {
-      await Profiles.createProfile(requestBody);
+      let insertedId = await Profiles.createProfile(requestBody);
+      insertedId = insertedId.toString();
+      const newUserBody = {
+        user_id: insertedId,
+        nickname: requestBody.name,
+        profile_url: "",
+        issue_access_token: true,
+      };
+      const headers = {
+        headers: {
+          "Content-Type": "application/json; charset=utf8",
+          "Api-Token": sendBirdToken,
+        },
+      };
+      await axios
+        .post(
+          `https://api-${applicationId}.sendbird.com/v3/users`,
+          newUserBody,
+          headers
+        )
+        .then(async (response) => {
+          await Profiles.changeProfile(requestBody.email, {
+            sendbird_access: response.data.access_token,
+          });
+        })
+        .catch((error) => {
+          next(error);
+        });
+
       const token = jwt.sign({ email: requestBody.email }, mySecretKey);
       response.status(200).send(token);
     } else {
@@ -113,7 +142,7 @@ app.post("/login", async (request, response, next) => {
       }
     }
   } catch (error) {
-    next(error);
+    next("Failed to log in. Please try again!");
   }
 });
 
@@ -145,6 +174,16 @@ app.post("/delete", async (request, response, next) => {
             "Api-Token": sendBirdToken,
           },
         };
+
+        await axios
+          .delete(
+            `https://api-${applicationId}.sendbird.com/v3/users/${request.body.user_id}`,
+            {},
+            headers
+          )
+          .catch((error) => {
+            next(error);
+          });
         for (const match of request.body.user.matches) {
           let ids = [request.body.user._id, match];
           ids.sort();

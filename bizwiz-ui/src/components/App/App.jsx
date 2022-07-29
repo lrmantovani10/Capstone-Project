@@ -155,8 +155,8 @@ export default function App() {
                 setTemporaryMessage("No matches so far! Keep swiping!");
               for (const element of userMatches) {
                 setMatches([...matches, element]);
-                setChatting(false);
               }
+              setChatting(false);
             })
             .catch(() => {
               setMatches("error");
@@ -211,17 +211,17 @@ export default function App() {
     const body = {
       name: chatName,
       channel_url: channelUrl,
-      is_distinct: true,
       user_ids: ids,
     };
+
     await axios
       .post(`${apiURL}/matches/manage_chat`, body, headers)
       .then((response) => {
         setCurrentChannel(response.data);
         setChatting(true);
       })
-      .catch((error) => {
-        setMatches(error);
+      .catch(() => {
+        setMatches("error");
       });
   }
 

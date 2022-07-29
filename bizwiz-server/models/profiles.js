@@ -58,7 +58,8 @@ class Profiles {
       newProfile["occupation"] = "";
     }
 
-    await profiles.insertOne(newProfile);
+    const createdProfile = await profiles.insertOne(newProfile);
+    return createdProfile.insertedId;
   }
   static includesElement(array, comparator) {
     let conditional = false;
@@ -259,7 +260,7 @@ class Profiles {
     const profiles = database.collection(mongoCollection);
     await profiles.updateMany(
       {},
-      { $pull: { profilesLiked: _id, profilesSwiped: _id, matches: _id } }
+      { $pull: { profilesLiked: id, profilesSwiped: id, matches: id } }
     );
     await profiles.deleteOne({ _id: id });
   }

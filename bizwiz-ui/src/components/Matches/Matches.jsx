@@ -6,9 +6,8 @@ import { Button } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import axios from "axios";
 import Message from "../Message/Message";
-import "@sendbird/uikit-react/dist/index.css";
 import ChannelProvider from "@sendbird/uikit-react/SendbirdProvider";
-import Channel from "@sendbird/uikit-react/Channel";
+import MyChatUI from "../Chat/Chat";
 
 export default function Matches(props) {
   useEffect(() => {
@@ -51,25 +50,17 @@ export default function Matches(props) {
             appId={props.applicationId}
             userId={props.currentUser._id}
             nickname={props.currentUser.name}
+            accessToken={props.currentUser.sendbird_access}
+            profileUrl={"https://upload.wikimedia.org/wikipedia/en/thumb/0/04/Facebook_f_logo_%282021%29.svg/1200px-Facebook_f_logo_%282021%29.svg.png"}
           >
-            <Channel
-              channelUrl={props.currentChannel}
-              replyType={"QUOTE_REPLY"}
-              isReactionEnabled={true}
-              disableUserProfile={true}
-              onChatHeaderActionClick={() => {
-                alert(
-                  "This is a space for you to chat with your matched " +
-                    (props.currentUser.type == 0 ? " employer" : " employee") +
-                    ". Make the most out of this opportunity!"
-                );
-              }}
+            <MyChatUI
+              currentChannel={props.currentChannel}
+              userType={props.currentUser.type}
             />
           </ChannelProvider>
         </div>
       );
     };
-
     return App();
   } else {
     if (props.matches.length > 0) {

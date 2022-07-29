@@ -50,23 +50,6 @@ router.post("/remove_match", async (request, response, next) => {
     next(error);
   }
 });
-
-router.post("/remove_match", async (request, response, next) => {
-  try {
-    jwt.verify(request.token, mySecretKey, async function (error, data) {
-      if (error) {
-        next(new ForbiddenError("Bad Token!"));
-      } else {
-        await Profiles.removeMatch(data.email, request.body.secondProfile);
-        const token = jwt.sign({ email: data.email }, mySecretKey);
-        response.status(200).send(token);
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
 router.post("/manage_chat", async (req, res, next) => {
   try {
     jwt.verify(req.token, mySecretKey, async function (error) {
@@ -95,7 +78,7 @@ router.post("/manage_chat", async (req, res, next) => {
             res.status(200).send(response.data.channel_url);
           })
           .catch((error) => {
-            console.log(error);
+            console.log(error)
             next(error);
           });
       }
