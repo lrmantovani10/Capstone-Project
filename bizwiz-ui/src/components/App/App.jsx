@@ -12,6 +12,7 @@ import Login from "../Login/Login";
 import Profile from "../Profile/Profile";
 import Matches from "../Matches/Matches";
 import EditProfile from "../EditProfile/EditProfile";
+import * as imageConversion from "image-conversion";
 import { useState } from "react";
 
 export default function App() {
@@ -333,9 +334,14 @@ export default function App() {
         category: category,
       };
 
-      if (file.size / 1000000 > 12) {
-        changeMessage("File size can't be over 12MB! Please try again!", "red");
-        throw new Error("File size can't be over 12MB! Please try again!");
+      if (file.size / 1000 > 60) {
+        const filename = file.name;
+        file = await imageConversion.compressAccurately(file, 60);
+        file = new File([file], filename);
+        changeMessage(
+          "File size can't be over 60KB to maintain its original quality! Using image compression...",
+          "red"
+        );
       }
       newForm.append("data", JSON.stringify(body));
       newForm.append("file", file);

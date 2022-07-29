@@ -157,7 +157,10 @@ class Profiles {
   static async uploadFile(filePath, userId, category) {
     await mongoClient.connect();
     const database = mongoClient.db(mongoDatabase);
-    const bucket = new GridFSBucket(database, { bucketName: userId });
+    const bucket = new GridFSBucket(database, {
+      bucketName: userId,
+      chunkSizeBytes: 1000000,
+    });
     const files = await bucket.find({}).toArray();
     for (const file of files) {
       if (file.metadata.value == category) {

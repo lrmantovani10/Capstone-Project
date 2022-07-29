@@ -95,7 +95,7 @@ router.post("/manage_chat", async (req, res, next) => {
             res.status(200).send(response.data.channel_url);
           })
           .catch((error) => {
-            console.log(error)
+            console.log(error);
             next(error);
           });
       }

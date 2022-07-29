@@ -38,9 +38,9 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   fileFilter: function (req, file, cb) {
-    if (file.size / 1000000 > 12) {
+    if (file.size / 1000 > 60) {
       return cb(
-        new BadRequestError("File size can't be over 12MB! Please try again!")
+        new BadRequestError("File size can't be over 60KB! Please try again!")
       );
     }
     let ext = file.originalname.split(".")[1];
