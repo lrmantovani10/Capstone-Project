@@ -41,7 +41,35 @@ router.post("/remove_match", async (request, response, next) => {
       if (error) {
         next(new ForbiddenError("Bad Token!"));
       } else {
-        await Profiles.removeMatch(data.email, request.body.secondProfile);
+        const headers = {
+          headers: {
+            "Content-Type": "application/json; charset=utf8",
+            "Api-Token": sendBirdToken,
+          },
+        };
+        let ids = [request.body.firstProfile, request.body.secondProfile];
+        ids.sort();
+        let channelUrl;
+        if (ids[0] == request.body.firstProfile) {
+          channelUrl = request.body.firstProfile + request.body.secondProfile;
+        } else {
+          channelUrl = request.body.secondProfile + request.body.firstProfile;
+        }
+        await axios
+          .delete(
+            `https://api-${applicationId}.sendbird.com/v3/group_channels/${channelUrl}`,
+            headers
+          )
+          .catch((error) => {
+            if (!error.response.data.message.includes("not found")) {
+              next(new BadRequestError());
+            }
+          });
+
+        await Profiles.removeMatch(
+          request.body.firstProfile,
+          request.body.secondProfile
+        );
         const token = jwt.sign({ email: data.email }, mySecretKey);
         response.status(200).send(token);
       }
@@ -78,7 +106,6 @@ router.post("/manage_chat", async (req, res, next) => {
             res.status(200).send(response.data.channel_url);
           })
           .catch((error) => {
-            console.log(error)
             next(error);
           });
       }

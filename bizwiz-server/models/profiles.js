@@ -74,12 +74,11 @@ class Profiles {
     const currentUser = await this.getProfileEmail(profileId);
     return currentUser.matches;
   }
-  static async removeMatch(firstEmail, secondProfile) {
+  static async removeMatch(firstProfile, secondProfile) {
     await mongoClient.connect();
     const database = mongoClient.db(mongoDatabase);
     const profiles = database.collection(mongoCollection);
-    const firstUser = await this.getProfileEmail(firstEmail);
-    const firstObject = firstUser._id;
+    const firstObject = new ObjectId(firstProfile);
     const secondObject = new ObjectId(secondProfile);
     const firstBody = {
       $pull: {

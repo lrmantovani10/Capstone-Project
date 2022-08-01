@@ -170,9 +170,10 @@ export default function App() {
     }
   }
 
-  async function handleEndMatch(secondId) {
+  async function handleEndMatch(secondId, firstId) {
     if (confirm("Are you sure you want to remove this match?")) {
       const body = {
+        firstProfile: firstId,
         secondProfile: secondId,
       };
       const headers = {
@@ -299,8 +300,8 @@ export default function App() {
         localStorage.setItem("userToken", response.data);
         window.location.replace("/");
       })
-      .catch((error) => {
-        changeMessage(error.response.data.error.message, "red");
+      .catch(() => {
+        changeMessage("Error logging in. Please try again!", "red");
       });
   }
 
@@ -334,14 +335,20 @@ export default function App() {
         category: category,
       };
 
-      if (file.size / 1000 > 60) {
+      if (file.size / 1000 > 60 && category != "resume") {
         const filename = file.name;
         file = await imageConversion.compressAccurately(file, 60);
         file = new File([file], filename);
         changeMessage(
-          "File size can't be over 60KB to maintain its original quality! Using image compression...",
+          "File size can't be over 60KB! Using image compression...",
           "red"
         );
+      } else if (category == "resume" && file.size / 1000 > 60) {
+        changeMessage(
+          "Resume size can't be over 60KB! Please try again!",
+          "red"
+        );
+        throw new Error("Resume size is too large!");
       }
       newForm.append("data", JSON.stringify(body));
       newForm.append("file", file);

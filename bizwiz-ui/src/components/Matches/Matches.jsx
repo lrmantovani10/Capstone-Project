@@ -85,7 +85,12 @@ export default function Matches(props) {
                       <div className="matchHeader">
                         <CloseIcon
                           className="endMatch"
-                          onClick={() => props.handleEndMatch(element._id)}
+                          onClick={() =>
+                            props.handleEndMatch(
+                              element._id,
+                              props.currentUser._id
+                            )
+                          }
                         />
                       </div>
                       <h4 className="card-title matchName">
