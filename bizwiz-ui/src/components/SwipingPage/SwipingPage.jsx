@@ -21,7 +21,7 @@ export default function SwipingPage(props) {
           .get(`${props.apiURL}/get_user`, headers)
           .then((response) => {
             props.setCurrentUser(response.data);
-            props.getSwipes();
+            props.getSwipes(response.data.location);
           })
           .catch(() => {
             props.setProfiles(["error"]);
@@ -70,8 +70,8 @@ export default function SwipingPage(props) {
                 ) : (
                   <></>
                 )}
-                {props.profile.location.length > 0 ? (
-                  " | " + props.profile.location
+                {props.profile.distance? (
+                  " | " + props.profile.distance.toFixed(2) + " miles away"
                 ) : (
                   <></>
                 )}{" "}

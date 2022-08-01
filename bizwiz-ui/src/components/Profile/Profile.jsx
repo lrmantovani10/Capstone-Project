@@ -5,6 +5,7 @@ import "@fontsource/abel";
 import Message from "../Message/Message";
 import Button from "@mui/material/Button";
 import { ThemeProvider } from "@mui/material";
+import { GoogleMap, useLoadScript } from "@react-google-maps/api";
 export default function Profile(props) {
   useEffect(() => {
     props.setCurrentUser("Loading");
@@ -31,6 +32,10 @@ export default function Profile(props) {
       window.location.replace("/login");
     }
   }, []);
+
+  useLoadScript({
+    googleMapsApiKey: props.mapsKey,
+  });
 
   if (props.currentUser == "Loading") {
     return <Message message={"Loading..."} />;
@@ -89,24 +94,30 @@ export default function Profile(props) {
               </div>
 
               <div id="currentInfo" className="abelFont whiteAbel">
-                {props.currentUser.type == 0 ? (
-                  <div>
-                    {" "}
-                    {props.currentUser.age}
-                    <span> </span>
-                    year-old living in
-                    <span> </span>
-                    {props.currentUser.location}📍
-                  </div>
+                {props.currentUser.readable_address ? (
+                  <>
+                    <div>
+                      {props.currentUser.type == 0 ? (
+                        <>
+                          {props.currentUser.age}
+                          <span> </span>
+                          year-old living in
+                          <span> </span>
+                        </>
+                      ) : (
+                        <span>Located in </span>
+                      )}
+                      {props.currentUser.readable_address}📍
+                    </div>
+                    <GoogleMap
+                      center={props.currentUser.location}
+                      mapContainerClassName="myMap"
+                      zoom={12}
+                    />
+                  </>
                 ) : (
-                  <div>Located in {props.currentUser.location}📍</div>
+                  <div></div>
                 )}
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50695.7145465034!2d-122.17036949424246!3d37.425712997784714!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fb07b9dba1c39%3A0xe1ff55235f576cf!2sPalo%20Alto%2C%20CA!5e0!3m2!1sen!2sus!4v1657561721738!5m2!1sen!2sus"
-                  id="userLocation"
-                  loading="lazy"
-                  allowFullScreen={true}
-                ></iframe>
 
                 <div id="currentLinks">
                   {props.currentUser.type == 0 ? (

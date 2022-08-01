@@ -186,17 +186,6 @@ export default function EditProfile(props) {
                   defaultValue={props.currentUser.linkedin}
                 />
               </div>
-
-              <div className="attributeSelection">
-                <div className="abelFont">Location</div>
-                <input
-                  id="locationChange"
-                  className="textInput"
-                  type="text"
-                  maxLength="50"
-                  defaultValue={props.currentUser.location}
-                />
-              </div>
             </div>
 
             <div className="attributeSelection">

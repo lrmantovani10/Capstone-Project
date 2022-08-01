@@ -29,3 +29,6 @@ bizwiz-server/authentication.js
 
 # uploads
 bizwiz-ui/public/uploads/
+
+#env file
+.env

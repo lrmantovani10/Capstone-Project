@@ -43,7 +43,6 @@ class Profiles {
       about: "",
       sector: "",
       other_link: "",
-      location: "",
       profilesLiked: [],
       profilesSwiped: [],
       interested_years: 0,

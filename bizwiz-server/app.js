@@ -3,6 +3,7 @@ const {
   ensureToken,
   sendBirdToken,
   applicationId,
+  mapsKey,
 } = require("./authentication");
 const express = require("express");
 const morgan = require("morgan");
@@ -23,6 +24,7 @@ app.use("/matches", matches);
 app.use("/uploads", express.static("../bizwiz-ui/public/uploads/"));
 const multer = require("multer");
 const axios = require("axios");
+const e = require("express");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -81,6 +83,27 @@ function selectPotentials(userData) {
   // }
 
   return results;
+}
+
+function pointDistance(point1, point2) {
+  let R = 3958.8;
+  let rlat1 = point1.lat * (Math.PI / 180);
+  let rlat2 = point2.lat * (Math.PI / 180);
+  let difflat = rlat2 - rlat1;
+  let difflon = (point2.lng - point1.lng) * (Math.PI / 180);
+  let distance =
+    2 *
+    R *
+    Math.asin(
+      Math.sqrt(
+        Math.sin(difflat / 2) * Math.sin(difflat / 2) +
+          Math.cos(rlat1) *
+            Math.cos(rlat2) *
+            Math.sin(difflon / 2) *
+            Math.sin(difflon / 2)
+      )
+    );
+  return distance;
 }
 
 app.post("/signup", async (request, response, next) => {
@@ -225,7 +248,32 @@ app.get("/get_user", async (request, response, next) => {
         next(new ForbiddenError("Bad Token!"));
       } else {
         const userData = await Profiles.getFiles(0, data.email);
-        response.status(200).send(userData);
+        if (userData.location) {
+          await axios
+            .get(
+              `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userData.location.lat},${userData.location.lng}&result_type=political&key=${mapsKey}`
+            )
+            .then((outcome) => {
+              const addressList = outcome.data.results[0].address_components;
+              if (addressList.length > 0) {
+                userData["readable_address"] =
+                  addressList[0].short_name +
+                  (addressList.length > 1
+                    ? ", " +
+                      (addressList.length >= 3
+                        ? addressList[2]
+                        : addressList[addressList.length - 1]
+                      ).short_name
+                    : "");
+              }
+              response.status(200).send(userData);
+            })
+            .catch((error) => {
+              next(error);
+            });
+        } else {
+          response.status(200).send(userData);
+        }
       }
     });
   } catch (error) {
@@ -298,7 +346,7 @@ app.post("/change_profile", async (request, response, next) => {
   }
 });
 
-app.get("/get_profiles", async (request, response, next) => {
+app.post("/get_profiles", async (request, response, next) => {
   try {
     jwt.verify(request.token, mySecretKey, async function (error, data) {
       if (error) {
@@ -307,10 +355,27 @@ app.get("/get_profiles", async (request, response, next) => {
         const userData = await Profiles.getProfileEmail(data.email);
         const profiles = await Profiles.getProfiles(selectPotentials(userData));
         let finalProfiles = [];
+        let promises = [];
         for (const profile of profiles) {
-          const userData = await Profiles.getFiles(1, profile);
-          finalProfiles.push(userData);
+          promises.push(
+            new Promise(async (resolve, reject) => {
+              try {
+                let userData = await Profiles.getFiles(1, profile);
+                if (userData.location && request.body.location) {
+                  userData["distance"] = pointDistance(
+                    request.body.location,
+                    userData.location
+                  );
+                }
+                finalProfiles.push(userData);
+                resolve();
+              } catch (error) {
+                reject(error);
+              }
+            })
+          );
         }
+        await Promise.all(promises);
         response.status(200).send(finalProfiles);
       }
     });

@@ -28,7 +28,8 @@ export default function App() {
   const profilesPath = basePath + "profiles/";
   const othersPath = basePath + "others/";
   const resumesPath = basePath + "resumes/";
-  const applicationId = "B2469C49-EFAA-4BD1-85D5-58B376D9337F";
+  const applicationId = process.env.REACT_APP_APPLICATION_ID;
+  const mapsKey = process.env.REACT_APP_MAPS_KEY;
 
   let [profiles, setProfiles] = useState([]);
   let [profile, setProfile] = useState({});
@@ -69,7 +70,7 @@ export default function App() {
     }
   }
 
-  async function getSwipes() {
+  async function getSwipes(userLocation) {
     const userToken = localStorage.getItem("userToken");
     const headers = {
       headers: {
@@ -77,8 +78,16 @@ export default function App() {
       },
     };
 
+    let body = {
+      location: userLocation,
+    };
+
+    if (!userLocation) {
+      body = {};
+    }
+
     await axios
-      .get(`${apiURL}/get_profiles`, headers)
+      .post(`${apiURL}/get_profiles`, body, headers)
       .then((response) => {
         setProfiles(response.data);
         if (response.data.length > 0) {
@@ -397,7 +406,6 @@ export default function App() {
     const email = document.getElementById("emailChange").value;
     const password = document.getElementById("passwordChange").value;
     const sector = document.getElementById("sectorChange").value;
-    const location = document.getElementById("locationChange").value;
     const about = document.getElementById("aboutChange").value;
     const site = document.getElementById("websiteChange").value;
     const linkedin = document.getElementById("linkedinChange").value;
@@ -407,6 +415,28 @@ export default function App() {
     const profilePath = initialPath + "profiles/";
     const resumePath = initialPath + "resumes/";
     const othersPath = initialPath + "others/";
+    let location;
+
+    if (navigator.geolocation) {
+      await new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            location = pos;
+            resolve();
+          },
+          () => {
+            alert("Currently not setting location.");
+            resolve();
+          }
+        );
+      });
+    } else {
+      alert("Your browser doesn't support geolocation. Not setting location.");
+    }
 
     const headers = {
       headers: {
@@ -425,7 +455,6 @@ export default function App() {
       email: email,
       password: password,
       sector: sector,
-      location: location,
       about: about,
       other_link: site,
       linkedin: linkedin,
@@ -434,6 +463,10 @@ export default function App() {
       interested_locations: currentUser.interested_locations,
       interested_positions: currentUser.interested_positions,
     };
+
+    if (location) {
+      body.location = location;
+    }
 
     let userResume;
     if (currentUser.type == 0) {
@@ -598,6 +631,7 @@ export default function App() {
                 <Profile
                   updateParameters={updateParameters}
                   profilesPath={profilesPath}
+                  mapsKey={mapsKey}
                   othersPath={othersPath}
                   resumesPath={resumesPath}
                   purpleTheme={purpleTheme}
