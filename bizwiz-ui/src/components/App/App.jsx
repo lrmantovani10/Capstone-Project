@@ -70,6 +70,15 @@ export default function App() {
     }
   }
 
+  function compareFunction(a, b) {
+    if (a.distance < b.distance) {
+      return -1;
+    } else if (a.distance > b.distance) {
+      return 1;
+    }
+    return 0;
+  }
+
   async function getSwipes(userLocation) {
     const userToken = localStorage.getItem("userToken");
     const headers = {
@@ -89,7 +98,8 @@ export default function App() {
     await axios
       .post(`${apiURL}/get_profiles`, body, headers)
       .then((response) => {
-        setProfiles(response.data);
+        const sortedResults = response.data.sort(compareFunction);
+        setProfiles(sortedResults);
         if (response.data.length > 0) {
           updateParameters(response.data[response.data.length - 1], setProfile);
         } else {
