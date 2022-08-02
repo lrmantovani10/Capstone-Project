@@ -8,6 +8,7 @@ const {
   ensureToken,
   sendBirdToken,
   applicationId,
+  mapsKey,
 } = require("../authentication");
 const { ForbiddenError } = require("../utils/errors");
 router.use(ensureToken);
@@ -25,7 +26,33 @@ router.get("/", async (request, response, next) => {
             next("Invalid profile Id!");
           }
           const userData = await Profiles.getFiles(1, matchData);
-          finalMatches.push(userData);
+
+          if (userData.location) {
+            await axios
+              .get(
+                `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userData.location.lat},${userData.location.lng}&result_type=political&key=${mapsKey}`
+              )
+              .then((outcome) => {
+                const addressList = outcome.data.results[0].address_components;
+                if (addressList.length > 0) {
+                  userData["readable_address"] =
+                    addressList[0].short_name +
+                    (addressList.length > 1
+                      ? ", " +
+                        (addressList.length >= 3
+                          ? addressList[2]
+                          : addressList[addressList.length - 1]
+                        ).short_name
+                      : "");
+                }
+                finalMatches.push(userData);
+              })
+              .catch((error) => {
+                next(error);
+              });
+          } else {
+            finalMatches.push(userData);
+          }
         }
         response.status(200).send(finalMatches);
       }

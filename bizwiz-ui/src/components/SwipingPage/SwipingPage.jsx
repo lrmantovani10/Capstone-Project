@@ -43,6 +43,7 @@ export default function SwipingPage(props) {
           <h1>
             {" "}
             {props.profile.name}
+            <span> </span>
             {props.currentUser.type == 0 ? "" : "| " + props.profile.age}{" "}
           </h1>
           <div className="swipingBasic">
@@ -70,8 +71,8 @@ export default function SwipingPage(props) {
                 ) : (
                   <></>
                 )}
-                {props.profile.distance? (
-                  " | " + props.profile.distance.toFixed(2) + " miles away"
+                {props.profile.distance ? (
+                  "  " + props.profile.distance.toFixed(0) + " miles away"
                 ) : (
                   <></>
                 )}{" "}

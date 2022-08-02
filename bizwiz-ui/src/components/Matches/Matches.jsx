@@ -114,11 +114,15 @@ export default function Matches(props) {
                           Sector: {element.sector}
                         </span>
                       </p>
-                      <p className="card-text">
-                        <span className="card-text">
-                          Location: {element.location}
-                        </span>
-                      </p>
+                      {element.readable_address ? (
+                        <p className="card-text">
+                          <span className="card-text">
+                            Location: {element.readable_address}
+                          </span>
+                        </p>
+                      ) : (
+                        <></>
+                      )}
                       <div id="messageButtonDiv">
                         <ThemeProvider theme={props.purpleTheme}>
                           <Button
