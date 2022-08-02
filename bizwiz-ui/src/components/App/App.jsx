@@ -117,6 +117,7 @@ export default function App() {
     let profileCopy = [...profiles];
     let swipedProfile = profileCopy.pop();
     if (profileCopy.length == 0) {
+      console.log("loading now!");
       setTemporaryMessage("Loading...");
     }
     let body = {
@@ -162,6 +163,12 @@ export default function App() {
         } else {
           setProfiles(profileCopy);
           updateParameters(profileCopy[profileCopy.length - 1], setProfile);
+          if (swipeCount == 20 || profileCopy.length == 0) {
+            await getSwipes();
+            setSwipeCount(1);
+          } else {
+            setSwipeCount(swipeCount + 1);
+          }
         }
       })
       .catch(() => {
