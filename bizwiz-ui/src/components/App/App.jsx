@@ -546,6 +546,7 @@ export default function App() {
       .then(() => {
         changeMessage("Logging out...", "green");
         localStorage.clear();
+        sessionStorage.clear();
         window.location.replace("/login");
       })
       .catch(() => {
@@ -569,6 +570,7 @@ export default function App() {
         .then(() => {
           changeMessage("Deleting account...", "green");
           localStorage.clear();
+          sessionStorage.clear();
           window.location.replace("/welcome");
         })
         .catch(() => {
