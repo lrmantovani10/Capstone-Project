@@ -74,13 +74,13 @@ function selectPotentials(userData) {
   let results = {
     type: { $ne: userData.type },
     _id: { $nin: allProfiles },
-    // interested_sectors: {$in: userData.interested_sectors},
-    // interested_positions: {$in: userData.interested_positions},
-    // interested_locations: {$in: userData.interested_locations}
+    interested_sectors: {$in: userData.interested_sectors},
+    interested_positions: {$in: userData.interested_positions},
+    interested_locations: {$in: userData.interested_locations}
   };
-  // if (userData.type == 1) {
-  //   results["interested_years"] = { $gte: userData.interested_years };
-  // }
+  if (userData.type == 1) {
+    results["interested_years"] = { $gte: userData.interested_years };
+  }
 
   return results;
 }
