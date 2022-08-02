@@ -3,6 +3,7 @@ import { ThemeProvider } from "@emotion/react";
 import { Button } from "@mui/material";
 import Wizard from "../Welcome/Wizard.png";
 import { useEffect } from "react";
+import FacebookLogin from "react-facebook-login";
 
 export default function Login(props) {
   useEffect(() => {
@@ -69,7 +70,7 @@ export default function Login(props) {
                         <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                           <ThemeProvider theme={props.purpleTheme}>
                             <Button
-                              onClick={() => props.handleLogin()}
+                              onClick={props.handleLogin}
                               variant="contained"
                               style={{
                                 color: "white",
@@ -81,6 +82,18 @@ export default function Login(props) {
                               Log In
                             </Button>
                           </ThemeProvider>
+                        </div>
+                        <div id="fbButton">
+                          <FacebookLogin
+                            appId={process.env.REACT_APP_FB_ID}
+                            autoLoad={false}
+                            cookie={false}
+                            fields="name,email"
+                            icon="fa-facebook"
+                            onFailure={props.facebookFailure}
+                            callback={props.responseFacebook}
+                            cssClass="facebook-button"
+                          />
                         </div>
                         <p id="signupOption">
                           Don't have an account? <a href="/signup">Sign up!</a>

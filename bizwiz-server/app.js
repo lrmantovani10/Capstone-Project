@@ -169,6 +169,57 @@ app.post("/login", async (request, response, next) => {
   }
 });
 
+app.post("/facebook_login", async (request, response, next) => {
+  try {
+    let requestBody = request.body;
+    requestBody["password"] = request.body.id * 3.65;
+    const profileData = await Profiles.getProfileEmail(requestBody.email);
+    if (!profileData) {
+      delete requestBody["id"];
+      let insertedId = await Profiles.createProfile(requestBody);
+      insertedId = insertedId.toString();
+      const newUserBody = {
+        user_id: insertedId,
+        nickname: requestBody.name,
+        profile_url: "",
+        issue_access_token: true,
+      };
+      const headers = {
+        headers: {
+          "Content-Type": "application/json; charset=utf8",
+          "Api-Token": sendBirdToken,
+        },
+      };
+      await axios
+        .post(
+          `https://api-${applicationId}.sendbird.com/v3/users`,
+          newUserBody,
+          headers
+        )
+        .then(async (response) => {
+          await Profiles.changeProfile(requestBody.email, {
+            sendbird_access: response.data.access_token,
+          });
+        })
+        .catch((error) => {
+          next(error);
+        });
+
+      const token = jwt.sign({ email: requestBody.email }, mySecretKey);
+      response.status(200).send({ url: "/edit_profile", token });
+    } else {
+      if (profileData.password != requestBody.password) {
+        next(new BadRequestError("Incorrect password!"));
+      } else {
+        const token = jwt.sign({ email: profileData.email }, mySecretKey);
+        response.status(200).send({ url: "/", token });
+      }
+    }
+  } catch (error) {
+    next("Failed to log in. Please try again!");
+  }
+});
+
 app.use(ensureToken);
 app.post("/logout", async (request, response, next) => {
   try {

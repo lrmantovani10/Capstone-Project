@@ -324,6 +324,31 @@ export default function App() {
       });
   }
 
+  const facebookFailure = () => {
+    changeMessage("Error logging in with Facebook. Please try again!", "red");
+  };
+  const responseFacebook = async (response) => {
+    await axios
+      .post(`${apiURL}/facebook_login`, {
+        email: response.email,
+        name: response.name,
+        id: response.id,
+        type: 0,
+      })
+      .then((response) => {
+        changeMessage("Logging in...", "green");
+
+        localStorage.setItem("userToken", response.data.token);
+        window.location.replace(response.data.url);
+      })
+      .catch(() => {
+        changeMessage(
+          "Error logging in with Facebook. Please try again!",
+          "red"
+        );
+      });
+  };
+
   function handleEdit() {
     window.location.replace("/edit_profile");
   }
@@ -629,7 +654,12 @@ export default function App() {
           <Route
             path="/login"
             element={
-              <Login purpleTheme={purpleTheme} handleLogin={handleLogin} />
+              <Login
+                purpleTheme={purpleTheme}
+                handleLogin={handleLogin}
+                responseFacebook={responseFacebook}
+                facebookFailure={facebookFailure}
+              />
             }
           />
 

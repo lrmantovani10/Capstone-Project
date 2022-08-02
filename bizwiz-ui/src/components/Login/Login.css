@@ -18,3 +18,23 @@
   flex-direction: column;
   justify-content: center;
 }
+#fbButton{
+  margin-bottom: 20px;
+  width:100%;
+}
+.facebook-button{
+  width:60%;
+  font-family:Arial, Helvetica, sans-serif;
+  color:white;
+  background-color: rgba(6, 108, 217, 0.947);
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  margin-left: 20%;
+}
+.facebook-button:hover{
+  opacity: 70%;
+}
