@@ -29,7 +29,6 @@ class Profiles {
     let profilesRetrieved = await profiles
       .find(criteria, {
         password: 0,
-        email: 0,
         sendbird_access: 0,
         interested_years: 0,
         interested_positions: 0,

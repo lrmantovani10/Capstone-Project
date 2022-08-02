@@ -135,23 +135,38 @@ export default function App() {
     };
     await axios
       .post(`${apiURL}/change_profile`, body, headers)
-      .then((response) => {
+      .then(async (response) => {
         localStorage.setItem("userToken", response.data);
         if (profile.profilesLiked.includes(currentUser._id)) {
           alert("You matched with " + profile.name + "! 🎉");
+          let body = {
+            matched_name: currentUser.name,
+            match_name: profile.name,
+            email: profile.email,
+          };
+          await axios
+            .post(`${apiURL}/send_email`, body, headers)
+            .then(async () => {
+              setProfiles(profileCopy);
+              updateParameters(profileCopy[profileCopy.length - 1], setProfile);
+              if (swipeCount == 20 || profileCopy.length == 0) {
+                await getSwipes();
+                setSwipeCount(1);
+              } else {
+                setSwipeCount(swipeCount + 1);
+              }
+            })
+            .catch(() => {
+              setProfiles(["error"]);
+            });
+        } else {
+          setProfiles(profileCopy);
+          updateParameters(profileCopy[profileCopy.length - 1], setProfile);
         }
-        setProfiles(profileCopy);
-        updateParameters(profileCopy[profileCopy.length - 1], setProfile);
       })
       .catch(() => {
         setProfiles(["error"]);
       });
-    if (swipeCount == 20 || profileCopy.length == 0) {
-      await getSwipes();
-      setSwipeCount(1);
-    } else {
-      setSwipeCount(swipeCount + 1);
-    }
   }
 
   async function getMatches() {

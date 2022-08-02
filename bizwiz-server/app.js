@@ -4,6 +4,10 @@ const {
   sendBirdToken,
   applicationId,
   mapsKey,
+  serviceId,
+  templateId,
+  userId,
+  emailToken,
 } = require("./authentication");
 const express = require("express");
 const morgan = require("morgan");
@@ -24,7 +28,6 @@ app.use("/matches", matches);
 app.use("/uploads", express.static("../bizwiz-ui/public/uploads/"));
 const multer = require("multer");
 const axios = require("axios");
-const e = require("express");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -74,9 +77,9 @@ function selectPotentials(userData) {
   let results = {
     type: { $ne: userData.type },
     _id: { $nin: allProfiles },
-    interested_sectors: {$in: userData.interested_sectors},
-    interested_positions: {$in: userData.interested_positions},
-    interested_locations: {$in: userData.interested_locations}
+    interested_sectors: { $in: userData.interested_sectors },
+    interested_positions: { $in: userData.interested_positions },
+    interested_locations: { $in: userData.interested_locations },
   };
   if (userData.type == 1) {
     results["interested_years"] = { $gte: userData.interested_years };
@@ -447,6 +450,42 @@ app.post("/get_profiles", async (request, response, next) => {
         }
         await Promise.all(promises);
         response.status(200).send(finalProfiles);
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post("/send_email", async (request, response, next) => {
+  try {
+    jwt.verify(request.token, mySecretKey, async function (error, data) {
+      if (error) {
+        next(new ForbiddenError("Bad Token!"));
+      } else {
+        const body = {
+          service_id: serviceId,
+          template_id: templateId,
+          user_id: userId,
+          template_params: {
+            match_name: request.body.match_name,
+            matched_name: request.body.matched_name,
+            email: request.body.email,
+          },
+          accessToken: emailToken,
+        };
+        const headers = {
+          contentType: "application/json",
+        };
+        await axios
+          .post("https://api.emailjs.com/api/v1.0/email/send", body, headers)
+          .then(() => {
+            response.status(200).send();
+          })
+          .catch((error) => {
+            console.log(error);
+            next(error);
+          });
       }
     });
   } catch (error) {
