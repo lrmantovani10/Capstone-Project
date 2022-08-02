@@ -19,6 +19,7 @@ export default function Matches(props) {
           const headers = {
             headers: {
               authorization: userToken,
+              type: 2,
             },
           };
           axios

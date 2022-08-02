@@ -160,6 +160,7 @@ export default function App() {
       const headers = {
         headers: {
           authorization: userToken,
+          type: 2,
         },
       };
       await axios

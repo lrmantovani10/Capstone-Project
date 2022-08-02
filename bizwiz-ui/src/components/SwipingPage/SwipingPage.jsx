@@ -15,6 +15,7 @@ export default function SwipingPage(props) {
         const headers = {
           headers: {
             authorization: userToken,
+            type: 0,
           },
         };
         axios

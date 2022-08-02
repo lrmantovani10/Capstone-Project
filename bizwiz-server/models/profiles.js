@@ -5,7 +5,6 @@ const {
   mongoDatabase,
   mongoCollection,
 } = require("../authentication");
-const { encode } = require("punycode");
 const mongoClient = new MongoClient(mongoUrl);
 
 class Profiles {
@@ -27,7 +26,17 @@ class Profiles {
     await mongoClient.connect();
     const database = mongoClient.db(mongoDatabase);
     const profiles = database.collection(mongoCollection);
-    let profilesRetrieved = await profiles.find(criteria).limit(20).toArray();
+    let profilesRetrieved = await profiles
+      .find(criteria, {
+        password: 0,
+        email: 0,
+        sendbird_access: 0,
+        interested_years: 0,
+        interested_positions: 0,
+        interested_sectors: 0,
+      })
+      .limit(20)
+      .toArray();
     return profilesRetrieved;
   }
   static async createProfile(profileData) {
@@ -70,8 +79,20 @@ class Profiles {
     return conditional;
   }
   static async getMatches(profileId) {
-    const currentUser = await this.getProfileEmail(profileId);
-    return currentUser.matches;
+    await mongoClient.connect();
+    const database = mongoClient.db(mongoDatabase);
+    const profiles = database.collection(mongoCollection);
+    let query = {
+      matches: 1,
+      profile_picture: 0,
+      resume: 0,
+    };
+    for (let i = 0; i < 6; i++) {
+      query["other_pictures_" + i] = 0;
+    }
+    let profileRetrieved = profiles.findOne({ _id: profileId }, query);
+
+    return profileRetrieved.matches;
   }
   static async removeMatch(firstProfile, secondProfile) {
     await mongoClient.connect();
@@ -123,6 +144,7 @@ class Profiles {
         updateBody["$push"] = {
           matches: likeObject,
         };
+        delete userParameters["referral"];
       } else {
         let containsProfile = this.includesElement(
           thisProfile.profilesLiked,

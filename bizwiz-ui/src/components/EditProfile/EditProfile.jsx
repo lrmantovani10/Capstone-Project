@@ -27,6 +27,7 @@ export default function EditProfile(props) {
         const headers = {
           headers: {
             authorization: userToken,
+            type:1,
           },
         };
         axios

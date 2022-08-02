@@ -298,8 +298,21 @@ app.get("/get_user", async (request, response, next) => {
       if (error) {
         next(new ForbiddenError("Bad Token!"));
       } else {
-        const userData = await Profiles.getFiles(0, data.email);
-        if (userData.location) {
+        let userData;
+        if (
+          request.headers.type &&
+          (parseInt(request.headers.type) == 0 ||
+            parseInt(request.headers.type) == 2)
+        ) {
+          userData = await Profiles.getProfileEmail(data.email);
+        } else {
+          userData = await Profiles.getFiles(0, data.email);
+        }
+        if (
+          userData.location &&
+          (!request.headers.type ||
+            (request.headers.type && parseInt(request.headers.type) != 2))
+        ) {
           await axios
             .get(
               `https://maps.googleapis.com/maps/api/geocode/json?latlng=${userData.location.lat},${userData.location.lng}&result_type=political&key=${mapsKey}`
@@ -317,12 +330,18 @@ app.get("/get_user", async (request, response, next) => {
                       ).short_name
                     : "");
               }
+              if (request.headers.type && parseInt(request.headers.type) != 1) {
+                delete userData["password"];
+              }
               response.status(200).send(userData);
             })
             .catch((error) => {
               next(error);
             });
         } else {
+          if (request.headers.type && parseInt(request.headers.type) != 1) {
+            delete userData["password"];
+          }
           response.status(200).send(userData);
         }
       }

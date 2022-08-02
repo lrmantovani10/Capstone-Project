@@ -26,6 +26,18 @@ router.get("/", async (request, response, next) => {
             next("Invalid profile Id!");
           }
           const userData = await Profiles.getFiles(1, matchData);
+          let parameters = [
+            "password",
+            "interested_years",
+            "interested_sectors",
+            "interested_locations",
+          ];
+          for (let i = 0; i < 6; i++) {
+            parameters.push("other_pictures_" + i);
+          }
+          for (const param in parameters) {
+            delete match[param];
+          }
 
           if (userData.location) {
             await axios
