@@ -5,7 +5,7 @@ import "@fontsource/abel";
 import Message from "../Message/Message";
 import Button from "@mui/material/Button";
 import { ThemeProvider } from "@mui/material";
-import { GoogleMap, useLoadScript } from "@react-google-maps/api";
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 export default function Profile(props) {
   useEffect(() => {
     props.setCurrentUser("Loading");
@@ -113,7 +113,9 @@ export default function Profile(props) {
                       center={props.currentUser.location}
                       mapContainerClassName="myMap"
                       zoom={12}
-                    />
+                    >
+                      <Marker position={props.currentUser.location}/>
+                    </GoogleMap>
                   </>
                 ) : (
                   <div></div>
