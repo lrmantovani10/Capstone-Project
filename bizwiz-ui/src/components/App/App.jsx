@@ -385,8 +385,8 @@ export default function App() {
         file = await imageConversion.compressAccurately(file, 60);
         file = new File([file], filename);
         changeMessage(
-          "File size can't be over 60KB! Using image compression...",
-          "red"
+          "Image size can't be over 60KB! Using image compression...",
+          "yellow"
         );
       } else if (category == "resume" && file.size / 1000 > 60) {
         changeMessage(
