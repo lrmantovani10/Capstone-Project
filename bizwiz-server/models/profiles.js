@@ -12,14 +12,14 @@ class Profiles {
     await mongoClient.connect();
     const database = mongoClient.db(mongoDatabase);
     const profiles = database.collection(mongoCollection);
-    let profileRetrieved = profiles.findOne({ email: profileEmail });
+    let profileRetrieved = await profiles.findOne({ email: profileEmail });
     return profileRetrieved;
   }
   static async getProfileId(profileId) {
     await mongoClient.connect();
     const database = mongoClient.db(mongoDatabase);
     const profiles = database.collection(mongoCollection);
-    let profileRetrieved = profiles.findOne({ _id: new ObjectId(profileId) });
+    let profileRetrieved = await profiles.findOne({ _id: new ObjectId(profileId) });
     return profileRetrieved;
   }
   static async getProfiles(criteria) {
@@ -78,20 +78,18 @@ class Profiles {
     });
     return conditional;
   }
-  static async getMatches(profileId) {
+  static async getMatches(profileEmail) {
     await mongoClient.connect();
     const database = mongoClient.db(mongoDatabase);
     const profiles = database.collection(mongoCollection);
     let query = {
-      matches: 1,
       profile_picture: 0,
       resume: 0,
     };
     for (let i = 0; i < 6; i++) {
       query["other_pictures_" + i] = 0;
     }
-    let profileRetrieved = profiles.findOne({ _id: profileId }, query);
-
+    let profileRetrieved = await profiles.findOne({ email: profileEmail }, query);
     return profileRetrieved.matches;
   }
   static async removeMatch(firstProfile, secondProfile) {
