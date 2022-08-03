@@ -1,6 +1,19 @@
 import axios from "axios";
 export default class Matching {
-  static async getMatches(changeStates, matches) {
+  constructor(
+    setCurrentUser,
+    setTemporaryMessage,
+    setMatches,
+    setChatting,
+    setCurrentChannel
+  ) {
+    this.setCurrentUser = setCurrentUser;
+    this.setTemporaryMessage = setTemporaryMessage;
+    this.setMatches = setMatches;
+    this.setChatting = setChatting;
+    this.setCurrentChannel = setCurrentChannel;
+  }
+  static async getMatches(matches) {
     const userToken = localStorage.getItem("userToken");
     if (userToken.length > 0) {
       const headers = {
@@ -12,27 +25,25 @@ export default class Matching {
       await axios
         .get(`${process.env.REACT_APP_APIURL}/get_user`, headers)
         .then(async (userResponse) => {
-          changeStates.setCurrentUser(userResponse.data);
+          this.setCurrentUser(userResponse.data);
           await axios
             .get(`${process.env.REACT_APP_APIURL}/matches`, headers)
             .then(async (response) => {
               let userMatches = response.data;
               if (userMatches.length == 0)
-                changeStates.setTemporaryMessage(
-                  "No matches so far! Keep swiping!"
-                );
+                this.setTemporaryMessage("No matches so far! Keep swiping!");
 
               for (const element of userMatches) {
-                changeStates.setMatches([...matches, element]);
+                this.setMatches([...matches, element]);
               }
-              changeStates.setChatting(false);
+              this.setChatting(false);
             })
             .catch(() => {
-              changeStates.setMatches("error");
+              this.setMatches("error");
             });
         })
         .catch(() => {
-          changeStates.setMatches("error");
+          this.setMatches("error");
         });
     } else {
       window.location.replace("/login");
@@ -61,18 +72,12 @@ export default class Matching {
           window.location.replace("/matches");
         })
         .catch(() => {
-          setMatches(["error"]);
+          this.setMatches(["error"]);
         });
     }
   }
 
-  static async handleChat(
-    firstId,
-    secondId,
-    firstName,
-    secondName,
-    changeStates
-  ) {
+  static async handleChat(firstId, secondId, firstName, secondName) {
     let ids = [firstId, secondId];
     ids.sort();
     let chatName, channelUrl;
@@ -101,11 +106,11 @@ export default class Matching {
         headers
       )
       .then((response) => {
-        changeStates.setCurrentChannel(response.data);
-        changeStates.setChatting(true);
+        this.setCurrentChannel(response.data);
+        this.setChatting(true);
       })
       .catch(() => {
-        changeStates.setMatches("error");
+        this.setMatches("error");
       });
   }
 }

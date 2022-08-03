@@ -8,7 +8,6 @@ import axios from "axios";
 import Message from "../Message/Message";
 import ChannelProvider from "@sendbird/uikit-react/SendbirdProvider";
 import MyChatUI from "../Chat/Chat";
-import Matching from "./Matching";
 export default function Matches(props) {
   useEffect(() => {
     props.setTemporaryMessage("Loading...");
@@ -34,15 +33,7 @@ export default function Matches(props) {
           window.location.replace("/login");
         }
       } else {
-        Matching.getMatches(
-          {
-            setCurrentUser: props.setCurrentUser,
-            setTemporaryMessage: props.setTemporaryMessage,
-            setMatches: props.setMatches,
-            setChatting: props.setChatting,
-          },
-          props.matches
-        );
+        props.MatchingFunctions.getMatches(props.matches);
       }
     } catch {
       window.location.replace("/login");
@@ -94,8 +85,8 @@ export default function Matches(props) {
                       <div className="matchHeader">
                         <CloseIcon
                           className="endMatch"
-                          onClick={() =>
-                            Matching.handleEndMatch(
+                          onClick={async () =>
+                            props.MatchingFunctions.handleEndMatch(
                               element._id,
                               props.currentUser._id
                             )
@@ -140,16 +131,11 @@ export default function Matches(props) {
                             id="messageButton"
                             variant="contained"
                             onClick={async () =>
-                              await Matching.handleChat(
+                              await props.MatchingFunctions.handleChat(
                                 element._id,
                                 props.currentUser._id,
                                 element.name,
-                                props.currentUser.name,
-                                {
-                                  setCurrentChannel: props.setCurrentChannel,
-                                  setChatting: props.setChatting,
-                                  setMatches: props.setMatches,
-                                }
+                                props.currentUser.name
                               )
                             }
                           >
