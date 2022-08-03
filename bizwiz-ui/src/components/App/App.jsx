@@ -23,13 +23,6 @@ export default function App() {
   const blueTheme = createTheme({
     palette: { primary: { main: lightBlue[500], contrastText: "#ffffff" } },
   });
-  const apiURL = "http://localhost:3001";
-  const basePath = "uploads/";
-  const profilesPath = basePath + "profiles/";
-  const othersPath = basePath + "others/";
-  const resumesPath = basePath + "resumes/";
-  const applicationId = process.env.REACT_APP_APPLICATION_ID;
-  const mapsKey = process.env.REACT_APP_MAPS_KEY;
 
   let [profiles, setProfiles] = useState([]);
   let [profile, setProfile] = useState({});
@@ -48,7 +41,7 @@ export default function App() {
       if (user.profile_picture.length > 0) {
         setProfileImage(user.profile_picture);
       } else {
-        setProfileImage(profilesPath + "default.png");
+        setProfileImage(process.env.REACT_APP_PROFILES + "default.png");
       }
       if (user.type == 0 && user.resume.length > 0) {
         setResume(user.resume);
@@ -61,7 +54,7 @@ export default function App() {
         if (user["other_pictures"][i]) {
           newExtras.push(user["other_pictures"][i]);
         } else {
-          newExtras.push(othersPath + "default.png");
+          newExtras.push(process.env.REACT_APP_OTHERS + "default.png");
         }
       }
 
@@ -96,7 +89,7 @@ export default function App() {
     }
 
     await axios
-      .post(`${apiURL}/get_profiles`, body, headers)
+      .post(`${process.env.REACT_APP_APIURL}/get_profiles`, body, headers)
       .then((response) => {
         const sortedResults = response.data.sort(compareFunction);
         setProfiles(sortedResults);
@@ -135,7 +128,7 @@ export default function App() {
       },
     };
     await axios
-      .post(`${apiURL}/change_profile`, body, headers)
+      .post(`${process.env.REACT_APP_APIURL}/change_profile`, body, headers)
       .then(async (response) => {
         localStorage.setItem("userToken", response.data);
         if (profile.profilesLiked.includes(currentUser._id)) {
@@ -146,7 +139,7 @@ export default function App() {
             email: profile.email,
           };
           await axios
-            .post(`${apiURL}/send_email`, body, headers)
+            .post(`${process.env.REACT_APP_APIURL}/send_email`, body, headers)
             .then(async () => {
               setProfiles(profileCopy);
               updateParameters(profileCopy[profileCopy.length - 1], setProfile);
@@ -173,98 +166,6 @@ export default function App() {
       })
       .catch(() => {
         setProfiles(["error"]);
-      });
-  }
-
-  async function getMatches() {
-    const userToken = localStorage.getItem("userToken");
-    if (userToken.length > 0) {
-      const headers = {
-        headers: {
-          authorization: userToken,
-          type: 2,
-        },
-      };
-      await axios
-        .get(`${apiURL}/get_user`, headers)
-        .then(async (userResponse) => {
-          setCurrentUser(userResponse.data);
-          await axios
-            .get(`${apiURL}/matches`, headers)
-            .then(async (response) => {
-              let userMatches = response.data;
-              if (userMatches.length == 0)
-                setTemporaryMessage("No matches so far! Keep swiping!");
-              for (const element of userMatches) {
-                setMatches([...matches, element]);
-              }
-              setChatting(false);
-            })
-            .catch(() => {
-              setMatches("error");
-            });
-        })
-        .catch(() => {
-          setMatches("error");
-        });
-    } else {
-      window.location.replace("/login");
-    }
-  }
-
-  async function handleEndMatch(secondId, firstId) {
-    if (confirm("Are you sure you want to remove this match?")) {
-      const body = {
-        firstProfile: firstId,
-        secondProfile: secondId,
-      };
-      const headers = {
-        headers: {
-          authorization: localStorage.getItem("userToken"),
-        },
-      };
-      await axios
-        .post(`${apiURL}/matches/remove_match`, body, headers)
-        .then(async (response) => {
-          localStorage.setItem("userToken", response.data);
-          window.location.replace("/matches");
-        })
-        .catch(() => {
-          setMatches(["error"]);
-        });
-    }
-  }
-
-  async function handleChat(firstId, secondId, firstName, secondName) {
-    let ids = [firstId, secondId];
-    ids.sort();
-    let chatName, channelUrl;
-    if (ids[0] == firstId) {
-      chatName = firstName + " | " + secondName;
-      channelUrl = firstId + secondId;
-    } else {
-      chatName = secondName + " | " + firstName;
-      channelUrl = secondId + firstId;
-    }
-    const headers = {
-      headers: {
-        authorization: localStorage.getItem("userToken"),
-      },
-    };
-    const body = {
-      name: chatName,
-      channel_url: channelUrl,
-      user_ids: ids,
-    };
-
-    await axios
-      .post(`${apiURL}/matches/manage_chat`, body, headers)
-      .then((response) => {
-        setCurrentChannel(response.data);
-        setChatting(true);
-      })
-      .catch(() => {
-        setMatches("error");
       });
   }
 
@@ -310,7 +211,7 @@ export default function App() {
     }
 
     await axios
-      .post(`${apiURL}/signup`, {
+      .post(`${process.env.REACT_APP_APIURL}/signup`, {
         name: name,
         email: email,
         password: password,
@@ -333,7 +234,7 @@ export default function App() {
     const email = document.querySelector("#loginInput").value;
     const password = document.querySelector("#passInput").value;
     await axios
-      .post(`${apiURL}/login`, {
+      .post(`${process.env.REACT_APP_APIURL}/login`, {
         email: email,
         password: password,
       })
@@ -352,7 +253,7 @@ export default function App() {
   };
   const responseFacebook = async (response) => {
     await axios
-      .post(`${apiURL}/facebook_login`, {
+      .post(`${process.env.REACT_APP_APIURL}/facebook_login`, {
         email: response.email,
         name: response.name,
         id: response.id,
@@ -421,7 +322,7 @@ export default function App() {
       newForm.append("file", file);
 
       await axios
-        .post(`${apiURL}/upload_single`, newForm, headers)
+        .post(`${process.env.REACT_APP_APIURL}/upload_single`, newForm, headers)
         .catch((error) => {
           changeMessage("Account update failed. Please try again!", "red");
           throw new Error(error);
@@ -431,7 +332,11 @@ export default function App() {
 
   async function checkUser(email, headers) {
     await axios
-      .post(`${apiURL}/check_user`, { email: email }, headers)
+      .post(
+        `${process.env.REACT_APP_APIURL}/check_user`,
+        { email: email },
+        headers
+      )
       .catch((error) => {
         if (error.code == "ERR_BAD_REQUEST")
           changeMessage(error.response.data.error.message, "red");
@@ -440,17 +345,17 @@ export default function App() {
       });
   }
 
-  async function storeExtraPictures(files, headers, othersPath) {
+  async function storeExtraPictures(files, headers) {
     let index = 0;
     for (const file of files) {
-      await storeFile(file, headers, othersPath, "other_pictures_" + index);
+      await storeFile(file, headers, process.env.REACT_APP_OTHERS, "other_pictures_" + index);
       index++;
     }
   }
 
   async function changeProfile(body, headers) {
     await axios
-      .post(`${apiURL}/change_profile`, body, headers)
+      .post(`${process.env.REACT_APP_APIURL}/change_profile`, body, headers)
       .then((response) => {
         localStorage.setItem("userToken", response.data);
       })
@@ -469,10 +374,6 @@ export default function App() {
     const linkedin = document.getElementById("linkedinChange").value;
     const profilePicture = document.getElementById("profilePicChange").files[0];
     const interested_years = document.getElementById("experienceChange").value;
-    const initialPath = "uploads/";
-    const profilePath = initialPath + "profiles/";
-    const resumePath = initialPath + "resumes/";
-    const othersPath = initialPath + "others/";
     let location;
 
     if (navigator.geolocation) {
@@ -538,9 +439,9 @@ export default function App() {
     } else {
       await Promise.all([
         checkUser(email, headers),
-        storeFile(profilePicture, headers, profilePath, "profile_picture"),
-        storeFile(userResume, headers, resumePath, "resume"),
-        storeExtraPictures(other_pictures, headers, othersPath),
+        storeFile(profilePicture, headers, process.env.REACT_APP_PROFILES, "profile_picture"),
+        storeFile(userResume, headers, process.env.REACT_APP_RESUMES, "resume"),
+        storeExtraPictures(other_pictures, headers),
       ]).then(async () => {
         await changeProfile(body, headers).then(() => {
           changeMessage("Account successfully updated!", "green");
@@ -565,7 +466,7 @@ export default function App() {
       },
     };
     await axios
-      .post(`${apiURL}/logout`, {}, headers)
+      .post(`${process.env.REACT_APP_APIURL}/logout`, {}, headers)
       .then(() => {
         changeMessage("Logging out...", "green");
         localStorage.clear();
@@ -589,7 +490,11 @@ export default function App() {
         },
       };
       await axios
-        .post(`${apiURL}/delete`, { user: currentUser }, headers)
+        .post(
+          `${process.env.REACT_APP_APIURL}/delete`,
+          { user: currentUser },
+          headers
+        )
         .then(() => {
           changeMessage("Deleting account...", "green");
           localStorage.clear();
@@ -644,9 +549,6 @@ export default function App() {
                   currentResume={currentResume}
                   profileImage={profileImage}
                   extraImages={extraImages}
-                  profilesPath={profilesPath}
-                  othersPath={othersPath}
-                  resumesPath={resumesPath}
                   purpleTheme={purpleTheme}
                   handleSwipe={handleSwipe}
                   profiles={profiles}
@@ -655,7 +557,6 @@ export default function App() {
                   setCurrentUser={setCurrentUser}
                   setProfile={setProfile}
                   profile={profile}
-                  apiURL={apiURL}
                 />
               </>
             }
@@ -695,17 +596,12 @@ export default function App() {
                 {navbar}
                 <Profile
                   updateParameters={updateParameters}
-                  profilesPath={profilesPath}
-                  mapsKey={mapsKey}
-                  othersPath={othersPath}
-                  resumesPath={resumesPath}
                   purpleTheme={purpleTheme}
                   profileImage={profileImage}
                   setProfileImage={setProfileImage}
                   extraImages={extraImages}
                   setExtras={setExtras}
                   handleLogout={handleLogout}
-                  apiURL={apiURL}
                   handleEdit={handleEdit}
                   currentUser={currentUser}
                   setCurrentUser={setCurrentUser}
@@ -727,9 +623,6 @@ export default function App() {
                 <EditProfile
                   changeMessage={changeMessage}
                   updateParameters={updateParameters}
-                  profilesPath={profilesPath}
-                  othersPath={othersPath}
-                  resumesPath={resumesPath}
                   purpleTheme={purpleTheme}
                   handleRemove={handleRemove}
                   handleAdd={handleAdd}
@@ -738,7 +631,6 @@ export default function App() {
                   profileImage={profileImage}
                   handleSave={handleSave}
                   handleDiscard={handleDiscard}
-                  apiURL={apiURL}
                   currentUser={currentUser}
                   setCurrentUser={setCurrentUser}
                   redTheme={redTheme}
@@ -756,19 +648,15 @@ export default function App() {
               <>
                 {navbar}
                 <Matches
-                  apiURL={apiURL}
+                  currentUser={currentUser}
                   setCurrentUser={setCurrentUser}
-                  applicationId={applicationId}
                   currentChannel={currentChannel}
+                  setCurrentChannel={setCurrentChannel}
                   chatting={chatting}
+                  setChatting={setChatting}
                   temporaryMessage={temporaryMessage}
                   setTemporaryMessage={setTemporaryMessage}
                   purpleTheme={purpleTheme}
-                  handleEndMatch={handleEndMatch}
-                  currentUser={currentUser}
-                  handleChat={handleChat}
-                  getMatches={getMatches}
-                  profilesPath={profilesPath}
                   matches={matches}
                   setMatches={setMatches}
                 />

@@ -8,7 +8,7 @@ import axios from "axios";
 import Message from "../Message/Message";
 import ChannelProvider from "@sendbird/uikit-react/SendbirdProvider";
 import MyChatUI from "../Chat/Chat";
-
+import Matching from "./Matching";
 export default function Matches(props) {
   useEffect(() => {
     props.setTemporaryMessage("Loading...");
@@ -23,7 +23,7 @@ export default function Matches(props) {
             },
           };
           axios
-            .get(`${props.apiURL}/get_user`, headers)
+            .get(`${props.process.env.REACT_APP_APIURL}/get_user`, headers)
             .then((response) => {
               props.setCurrentUser(response.data);
             })
@@ -34,7 +34,15 @@ export default function Matches(props) {
           window.location.replace("/login");
         }
       } else {
-        props.getMatches();
+        Matching.getMatches(
+          {
+            setCurrentUser: props.setCurrentUser,
+            setTemporaryMessage: props.setTemporaryMessage,
+            setMatches: props.setMatches,
+            setChatting: props.setChatting,
+          },
+          props.matches
+        );
       }
     } catch {
       window.location.replace("/login");
@@ -48,7 +56,7 @@ export default function Matches(props) {
       return (
         <div className="App">
           <ChannelProvider
-            appId={props.applicationId}
+            appId={process.env.REACT_APP_APPLICATION_ID}
             userId={props.currentUser._id}
             nickname={props.currentUser.name}
             accessToken={props.currentUser.sendbird_access}
@@ -75,7 +83,7 @@ export default function Matches(props) {
                       src={
                         element.profile_picture.length > 0
                           ? element.profile_picture
-                          : props.profilesPath + "default.png"
+                          : process.env.REACT_APP_PROFILES + "default.png"
                       }
                       className="card-img matchPicture"
                       alt={"picture of " + element.name}
@@ -87,7 +95,7 @@ export default function Matches(props) {
                         <CloseIcon
                           className="endMatch"
                           onClick={() =>
-                            props.handleEndMatch(
+                            Matching.handleEndMatch(
                               element._id,
                               props.currentUser._id
                             )
@@ -96,13 +104,15 @@ export default function Matches(props) {
                       </div>
                       <h4 className="card-title matchName">
                         {element.name}
-                        {props.currentUser.type == 0 ? "" : " | " + element.age}
+                        {props.currentUser.type == 0
+                          ? ""
+                          : " | " + element.age}{" "}
                       </h4>
 
                       <p className="card-text matchAbout">{element.about}</p>
                       <p className="card-text">
                         <span className="card-text">
-                          Email: {element.email}
+                          Email: {element.email}{" "}
                         </span>
                       </p>
                       <p className="card-text">
@@ -112,13 +122,13 @@ export default function Matches(props) {
                       </p>
                       <p className="card-text">
                         <span className="card-text">
-                          Sector: {element.sector}
+                          Sector: {element.sector}{" "}
                         </span>
                       </p>
                       {element.readable_address ? (
                         <p className="card-text">
                           <span className="card-text">
-                            Location: {element.readable_address}
+                            Location: {element.readable_address}{" "}
                           </span>
                         </p>
                       ) : (
@@ -130,11 +140,16 @@ export default function Matches(props) {
                             id="messageButton"
                             variant="contained"
                             onClick={async () =>
-                              await props.handleChat(
+                              await Matching.handleChat(
                                 element._id,
                                 props.currentUser._id,
                                 element.name,
-                                props.currentUser.name
+                                props.currentUser.name,
+                                {
+                                  setCurrentChannel: props.setCurrentChannel,
+                                  setChatting: props.setChatting,
+                                  setMatches: props.setMatches,
+                                }
                               )
                             }
                           >
@@ -147,7 +162,7 @@ export default function Matches(props) {
                 </div>
               </div>
             );
-          })}
+          })}{" "}
         </div>
       );
     } else {
