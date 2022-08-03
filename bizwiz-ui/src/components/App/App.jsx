@@ -1,6 +1,5 @@
 import * as React from "react";
 import "./App.css";
-import axios from "axios";
 import "@fontsource/abel";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { createTheme } from "@mui/material";
@@ -12,6 +11,7 @@ import Login from "../Login/Login";
 import Profile from "../Profile/Profile";
 import Matches from "../Matches/Matches";
 import EditProfile from "../EditProfile/EditProfile";
+import Apping from "./Apping";
 import Matching from "../Matches/Matching";
 import Editing from "../EditProfile/Editing";
 import Profiling from "../Profile/Profiling";
@@ -41,10 +41,11 @@ export default function App() {
   let [chatting, setChatting] = useState(false);
   let [swipeCount, setSwipeCount] = useState(1);
 
-  const EditFunctions = Editing(setCurrentUser, changeMessage);
-  const LoginFunctions = Logging(changeMessage);
-  const SigninFunctions = Signing(changeMessage);
-  const ProfileFunctions = Profiling(changeMessage);
+  const AppFunctions = Apping(setProfileImage, setResume, setExtras);
+  const EditFunctions = Editing(setCurrentUser);
+  const LoginFunctions = Logging();
+  const SigninFunctions = Signing();
+  const ProfileFunctions = Profiling();
   const MatchingFunctions = Matching(
     setCurrentUser,
     setTemporaryMessage,
@@ -54,44 +55,10 @@ export default function App() {
   );
   const SwipingFunctions = Swiping(
     setProfiles,
-    updateParameters,
     setTemporaryMessage,
     setProfile,
     setSwipeCount
   );
-
-  function updateParameters(user, setFunction) {
-    if (user) {
-      if (user.profile_picture.length > 0) {
-        setProfileImage(user.profile_picture);
-      } else {
-        setProfileImage(process.env.REACT_APP_PROFILES + "default.png");
-      }
-      if (user.type == 0 && user.resume.length > 0) {
-        setResume(user.resume);
-      } else {
-        setResume({});
-      }
-      let newExtras = [];
-
-      for (let i = 0; i < 6; i++) {
-        if (user["other_pictures"][i]) {
-          newExtras.push(user["other_pictures"][i]);
-        } else {
-          newExtras.push(process.env.REACT_APP_OTHERS + "default.png");
-        }
-      }
-
-      setExtras(newExtras);
-      setFunction(user);
-    }
-  }
-
-  function changeMessage(newMessage, newColor) {
-    const messageElement = document.getElementById("returnResult");
-    if (newMessage) messageElement.innerHTML = newMessage;
-    if (newColor) messageElement.style.color = newColor;
-  }
 
   const navbar = (
     <ul className="nav justify-content-center">
@@ -149,8 +116,8 @@ export default function App() {
               <>
                 {navbar}
                 <Profile
+                  AppFunctions={AppFunctions}
                   ProfileFunctions={ProfileFunctions}
-                  updateParameters={updateParameters}
                   purpleTheme={purpleTheme}
                   profileImage={profileImage}
                   extraImages={extraImages}
@@ -170,9 +137,8 @@ export default function App() {
               <>
                 {navbar}
                 <EditProfile
+                  AppFunctions={AppFunctions}
                   EditFunctions={EditFunctions}
-                  changeMessage={changeMessage}
-                  updateParameters={updateParameters}
                   purpleTheme={purpleTheme}
                   deepPurple={deepPurple}
                   extraImages={extraImages}
@@ -193,6 +159,7 @@ export default function App() {
               <>
                 {navbar}
                 <SwipingPage
+                  AppFunctions={AppFunctions}
                   SwipingFunctions={SwipingFunctions}
                   temporaryMessage={temporaryMessage}
                   setTemporaryMessage={setTemporaryMessage}

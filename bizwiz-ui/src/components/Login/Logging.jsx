@@ -1,9 +1,6 @@
 import axios from "axios";
+import { changeMessage } from "../App/Apping";
 export default class Logging {
-  constructor(changeMessage) {
-    this.changeMessage = changeMessage;
-  }
-
   static async handleLogin() {
     const email = document.querySelector("#loginInput").value;
     const password = document.querySelector("#passInput").value;
@@ -13,20 +10,17 @@ export default class Logging {
         password: password,
       })
       .then((response) => {
-        this.changeMessage("Logging in...", "green");
+        changeMessage("Logging in...", "green");
         localStorage.setItem("userToken", response.data);
         window.location.replace("/");
       })
       .catch(() => {
-        this.changeMessage("Error logging in. Please try again!", "red");
+        changeMessage("Error logging in. Please try again!", "red");
       });
   }
 
   static facebookFailure() {
-    this.changeMessage(
-      "Error logging in with Facebook. Please try again!",
-      "red"
-    );
+    changeMessage("Error logging in with Facebook. Please try again!", "red");
   }
 
   static async responseFacebook(response) {
@@ -38,12 +32,12 @@ export default class Logging {
         type: 0,
       })
       .then((response) => {
-        this.changeMessage("Logging in...", "green");
+        changeMessage("Logging in...", "green");
         localStorage.setItem("userToken", response.data.token);
         window.location.replace(response.data.url);
       })
       .catch(() => {
-        this.changeMessage(
+        changeMessage(
           "Error logging in with Facebook. Please try again!",
           "red"
         );

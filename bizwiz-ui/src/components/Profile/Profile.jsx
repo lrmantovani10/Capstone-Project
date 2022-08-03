@@ -20,7 +20,10 @@ export default function Profile(props) {
         axios
           .get(`${props.process.env.REACT_APP_APIURL}/get_user`, headers)
           .then((response) => {
-            props.updateParameters(response.data, props.setCurrentUser);
+            props.AppFunctions.updateParameters(
+              response.data,
+              props.setCurrentUser
+            );
           })
           .catch(() => {
             props.setCurrentUser("error");

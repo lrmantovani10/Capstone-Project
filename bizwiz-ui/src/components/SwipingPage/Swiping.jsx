@@ -2,13 +2,11 @@ import axios from "axios";
 export default class Swiping {
   constructor(
     setProfiles,
-    updateParameters,
     setTemporaryMessage,
     setProfile,
     setSwipeCount
   ) {
     this.setProfiles = setProfiles;
-    this.updateParameters = updateParameters;
     this.setTemporaryMessage = setTemporaryMessage;
     this.setProfile = setProfile;
     this.setSwipeCount = setSwipeCount;
@@ -45,7 +43,7 @@ export default class Swiping {
         const sortedResults = response.data.sort(this.compareFunction);
         this.setProfiles(sortedResults);
         if (response.data.length > 0) {
-          this.updateParameters(
+          updateFunction(
             response.data[response.data.length - 1],
             this.setProfile
           );
@@ -66,7 +64,8 @@ export default class Swiping {
     profiles,
     profile,
     currentUser,
-    swipeCount
+    swipeCount,
+    updateFunction
   ) {
     let profileCopy = [...profiles];
     let swipedProfile = profileCopy.pop();
@@ -102,7 +101,7 @@ export default class Swiping {
             .post(`${process.env.REACT_APP_APIURL}/send_email`, body, headers)
             .then(async () => {
               this.setProfiles(profileCopy);
-              this.updateParameters(
+              updateFunction(
                 profileCopy[profileCopy.length - 1],
                 this.setProfile
               );
@@ -118,7 +117,7 @@ export default class Swiping {
             });
         } else {
           this.setProfiles(profileCopy);
-          this.updateParameters(
+          updateFunction(
             profileCopy[profileCopy.length - 1],
             this.setProfile
           );

@@ -141,13 +141,14 @@ export default function SwipingPage(props) {
           <ThemeProvider theme={props.purpleTheme}>
             <Button
               onClick={() =>
-                props.handleSwipe(
+                props.SwipingFunctions.handleSwipe(
                   0,
                   props.currentUser.email,
                   props.profiles,
                   props.profile,
                   props.currentUser,
-                  props.swipeCount
+                  props.swipeCount,
+                  props.AppFunctions.updateParameters
                 )
               }
               variant="outlined"
@@ -163,13 +164,14 @@ export default function SwipingPage(props) {
             </Button>
             <Button
               onClick={() =>
-                props.handleSwipe(
+                props.SwipingFunctions.handleSwipe(
                   1,
                   props.currentUser.email,
                   props.profiles,
                   props.profile,
                   props.currentUser,
-                  props.swipeCount
+                  props.swipeCount,
+                  props.AppFunctions.updateParameters
                 )
               }
               variant="contained"

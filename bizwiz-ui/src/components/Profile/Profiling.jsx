@@ -1,9 +1,6 @@
 import axios from "axios";
+import { changeMessage } from "../App/Apping";
 export default class Profiling {
-  constructor(changeMessage) {
-    this.changeMessage = changeMessage;
-  }
-
   static async handleLogout() {
     const userToken = localStorage.getItem("userToken");
     if (userToken.length == 0) {
@@ -17,13 +14,13 @@ export default class Profiling {
     await axios
       .post(`${process.env.REACT_APP_APIURL}/logout`, {}, headers)
       .then(() => {
-        this.changeMessage("Logging out...", "green");
+        changeMessage("Logging out...", "green");
         localStorage.clear();
         sessionStorage.clear();
         window.location.replace("/login");
       })
       .catch(() => {
-        this.changeMessage("Error logging out. Please try again!", "red");
+        changeMessage("Error logging out. Please try again!", "red");
       });
   }
 
@@ -45,16 +42,13 @@ export default class Profiling {
           headers
         )
         .then(() => {
-          this.changeMessage("Deleting account...", "green");
+          changeMessage("Deleting account...", "green");
           localStorage.clear();
           sessionStorage.clear();
           window.location.replace("/welcome");
         })
         .catch(() => {
-          this.changeMessage(
-            "Error deleting account. Please try again!",
-            "red"
-          );
+          changeMessage("Error deleting account. Please try again!", "red");
         });
     }
   }
