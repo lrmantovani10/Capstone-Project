@@ -1,7 +1,8 @@
 import axios from "axios";
-import { changeMessage } from "../App/Apping";
+import Apping from "../App/Apping";
+let App = new Apping();
 export default class Logging {
-  static async handleLogin() {
+  async handleLogin() {
     const email = document.querySelector("#loginInput").value;
     const password = document.querySelector("#passInput").value;
     await axios
@@ -10,20 +11,23 @@ export default class Logging {
         password: password,
       })
       .then((response) => {
-        changeMessage("Logging in...", "green");
+        App.changeMessage("Logging in...", "green");
         localStorage.setItem("userToken", response.data);
         window.location.replace("/");
       })
       .catch(() => {
-        changeMessage("Error logging in. Please try again!", "red");
+        App.changeMessage("Error logging in. Please try again!", "red");
       });
   }
 
-  static facebookFailure() {
-    changeMessage("Error logging in with Facebook. Please try again!", "red");
+  facebookFailure() {
+    App.changeMessage(
+      "Error logging in with Facebook. Please try again!",
+      "red"
+    );
   }
 
-  static async responseFacebook(response) {
+  async responseFacebook(response) {
     await axios
       .post(`${process.env.REACT_APP_APIURL}/facebook_login`, {
         email: response.email,
@@ -32,12 +36,12 @@ export default class Logging {
         type: 0,
       })
       .then((response) => {
-        changeMessage("Logging in...", "green");
+        App.changeMessage("Logging in...", "green");
         localStorage.setItem("userToken", response.data.token);
         window.location.replace(response.data.url);
       })
       .catch(() => {
-        changeMessage(
+        App.changeMessage(
           "Error logging in with Facebook. Please try again!",
           "red"
         );

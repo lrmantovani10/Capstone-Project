@@ -19,7 +19,7 @@ export default function SwipingPage(props) {
           },
         };
         axios
-          .get(`${props.process.env.REACT_APP_APIURL}/get_user`, headers)
+          .get(`${process.env.REACT_APP_APIURL}/get_user`, headers)
           .then((response) => {
             props.setCurrentUser(response.data);
             props.SwipingFunctions.getSwipes(response.data.location);
@@ -30,7 +30,7 @@ export default function SwipingPage(props) {
       } else {
         window.location.replace("/login");
       }
-    } catch {
+    } catch (error) {
       window.location.replace("/login");
     }
   }, []);

@@ -22,7 +22,7 @@ export default function Matches(props) {
             },
           };
           axios
-            .get(`${props.process.env.REACT_APP_APIURL}/get_user`, headers)
+            .get(`${process.env.REACT_APP_APIURL}/get_user`, headers)
             .then((response) => {
               props.setCurrentUser(response.data);
             })

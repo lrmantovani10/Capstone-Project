@@ -13,7 +13,7 @@ export default class Matching {
     this.setChatting = setChatting;
     this.setCurrentChannel = setCurrentChannel;
   }
-  static async getMatches(matches) {
+  async getMatches(matches) {
     const userToken = localStorage.getItem("userToken");
     if (userToken.length > 0) {
       const headers = {
@@ -50,7 +50,7 @@ export default class Matching {
     }
   }
 
-  static async handleEndMatch(secondId, firstId) {
+  async handleEndMatch(secondId, firstId) {
     if (confirm("Are you sure you want to remove this match?")) {
       const body = {
         firstProfile: firstId,
@@ -77,7 +77,7 @@ export default class Matching {
     }
   }
 
-  static async handleChat(firstId, secondId, firstName, secondName) {
+  async handleChat(firstId, secondId, firstName, secondName) {
     let ids = [firstId, secondId];
     ids.sort();
     let chatName, channelUrl;

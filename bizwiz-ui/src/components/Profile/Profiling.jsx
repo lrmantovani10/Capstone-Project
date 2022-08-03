@@ -1,7 +1,8 @@
 import axios from "axios";
-import { changeMessage } from "../App/Apping";
+import Apping from "../App/Apping";
+let App = new Apping();
 export default class Profiling {
-  static async handleLogout() {
+  async handleLogout() {
     const userToken = localStorage.getItem("userToken");
     if (userToken.length == 0) {
       window.location.replace("/login");
@@ -14,17 +15,17 @@ export default class Profiling {
     await axios
       .post(`${process.env.REACT_APP_APIURL}/logout`, {}, headers)
       .then(() => {
-        changeMessage("Logging out...", "green");
+        App.changeMessage("Logging out...", "green");
         localStorage.clear();
         sessionStorage.clear();
         window.location.replace("/login");
       })
       .catch(() => {
-        changeMessage("Error logging out. Please try again!", "red");
+        App.changeMessage("Error logging out. Please try again!", "red");
       });
   }
 
-  static async handleDelete(currentUser) {
+  async handleDelete(currentUser) {
     if (confirm("Delete account?")) {
       const userToken = localStorage.getItem("userToken");
       if (userToken.length == 0) {
@@ -38,17 +39,19 @@ export default class Profiling {
       await axios
         .post(
           `${process.env.REACT_APP_APIURL}/delete`,
-          { user: currentUser },
+          {
+            user: currentUser,
+          },
           headers
         )
         .then(() => {
-          changeMessage("Deleting account...", "green");
+          App.changeMessage("Deleting account...", "green");
           localStorage.clear();
           sessionStorage.clear();
           window.location.replace("/welcome");
         })
         .catch(() => {
-          changeMessage("Error deleting account. Please try again!", "red");
+          App.changeMessage("Error deleting account. Please try again!", "red");
         });
     }
   }

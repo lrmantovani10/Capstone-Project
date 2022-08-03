@@ -1,6 +1,6 @@
 import * as imageConversion from "image-conversion";
 import axios from "axios";
-import { changeMessage } from "../App/Apping";
+import Apping from "../App/Apping";
 export default class Editing {
   constructor(setCurrentUser) {
     this.setCurrentUser = setCurrentUser;
@@ -52,12 +52,12 @@ export default class Editing {
         const filename = file.name;
         file = await imageConversion.compressAccurately(file, 60);
         file = new File([file], filename);
-        changeMessage(
+        Apping.changeMessage(
           "Image size can't be over 60KB! Using image compression...",
           "yellow"
         );
       } else if (category == "resume" && file.size / 1000 > 60) {
-        changeMessage(
+        Apping.changeMessage(
           "Resume size can't be over 60KB! Please try again!",
           "red"
         );
@@ -69,7 +69,10 @@ export default class Editing {
       await axios
         .post(`${process.env.REACT_APP_APIURL}/upload_single`, newForm, headers)
         .catch((error) => {
-          changeMessage("Account update failed. Please try again!", "red");
+          Apping.changeMessage(
+            "Account update failed. Please try again!",
+            "red"
+          );
           throw new Error(error);
         });
     }
@@ -84,8 +87,12 @@ export default class Editing {
       )
       .catch((error) => {
         if (error.code == "ERR_BAD_REQUEST")
-          changeMessage(error.response.data.error.message, "red");
-        else changeMessage("Error updating profile. Please try again!", "red");
+          Apping.changeMessage(error.response.data.error.message, "red");
+        else
+          Apping.changeMessage(
+            "Error updating profile. Please try again!",
+            "red"
+          );
         throw new Error(error);
       });
   }
@@ -97,7 +104,7 @@ export default class Editing {
         localStorage.setItem("userToken", response.data);
       })
       .catch((error) => {
-        changeMessage("Account update failed. Please try again!", "red");
+        Apping.changeMessage("Account update failed. Please try again!", "red");
         throw new Error(error);
       });
   }
@@ -186,7 +193,7 @@ export default class Editing {
     }
 
     if (password.length < 10) {
-      changeMessage("Password is less than 10 characters!", "red");
+      Apping.changeMessage("Password is less than 10 characters!", "red");
     } else {
       await Promise.all([
         this.checkUser(email, headers),
@@ -207,7 +214,7 @@ export default class Editing {
         this.storeExtraPictures(other_pictures, headers, currentUser),
       ]).then(async () => {
         await this.changeProfile(body, headers).then(() => {
-          changeMessage("Account successfully updated!", "green");
+          Apping.changeMessage("Account successfully updated!", "green");
           window.location.replace("profile");
         });
       });

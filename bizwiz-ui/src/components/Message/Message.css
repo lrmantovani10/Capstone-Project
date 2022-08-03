@@ -1,6 +1,6 @@
 .mainMessage {
-  width:100vw;
-  height:60vh;
+  width: 100vw;
+  height: 60vh;
   color: white;
   text-align: center;
   display: flex;
@@ -9,8 +9,8 @@
   justify-content: center;
   font-size: x-large;
 }
-#glassImage{
-  width:400px;
-  height:300px;
+#glassImage {
+  width: 400px;
+  height: 300px;
   margin-top: 50px;
 }

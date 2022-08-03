@@ -1,18 +1,13 @@
 import axios from "axios";
 export default class Swiping {
-  constructor(
-    setProfiles,
-    setTemporaryMessage,
-    setProfile,
-    setSwipeCount
-  ) {
+  constructor(setProfiles, setTemporaryMessage, setProfile, setSwipeCount) {
     this.setProfiles = setProfiles;
     this.setTemporaryMessage = setTemporaryMessage;
     this.setProfile = setProfile;
     this.setSwipeCount = setSwipeCount;
   }
 
-  static compareFunction(a, b) {
+  compareFunction(a, b) {
     if (a.distance < b.distance) {
       return -1;
     } else if (a.distance > b.distance) {
@@ -21,7 +16,7 @@ export default class Swiping {
     return 0;
   }
 
-  static async getSwipes(userLocation) {
+  async getSwipes(userLocation) {
     const userToken = localStorage.getItem("userToken");
     const headers = {
       headers: {
@@ -58,7 +53,7 @@ export default class Swiping {
       });
   }
 
-  static async handleSwipe(
+  async handleSwipe(
     type,
     userEmail,
     profiles,
@@ -117,10 +112,7 @@ export default class Swiping {
             });
         } else {
           this.setProfiles(profileCopy);
-          updateFunction(
-            profileCopy[profileCopy.length - 1],
-            this.setProfile
-          );
+          updateFunction(profileCopy[profileCopy.length - 1], this.setProfile);
           if (swipeCount == 20 || profileCopy.length == 0) {
             await this.getSwipes();
             this.setSwipeCount(1);

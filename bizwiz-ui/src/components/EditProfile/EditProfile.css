@@ -164,9 +164,9 @@
   border-radius: 50%;
   margin-bottom: 5%;
 }
-#profilePicPreview{
-  width:500px;
-  height:600px;
+#profilePicPreview {
+  width: 500px;
+  height: 600px;
   border: 5px solid white;
   padding: 10px;
   border-radius: 20px;
@@ -178,8 +178,8 @@ img {
 input {
   color: white;
 }
-.addImageInput{
-  color:purple
+.addImageInput {
+  color: purple;
 }
 #profileImageHeader {
   display: flex;
@@ -196,12 +196,12 @@ input {
   grid-template-columns: auto auto;
   overflow: scroll;
 }
-#resumeAlign{
+#resumeAlign {
   display: flex;
   flex-direction: row;
-  gap:20px;
+  gap: 20px;
 }
-#interestFlex{
+#interestFlex {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -210,21 +210,21 @@ input {
   max-width: 90%;
   overflow: scroll;
 }
-.interestGrid{
+.interestGrid {
   display: grid;
   grid-template-columns: auto auto auto;
   gap: 40px;
   overflow: scroll;
 }
-#buttonSelection{
+#buttonSelection {
   display: flex;
   flex-direction: row;
   gap: 10px;
 }
-.othersHeader{
+.othersHeader {
   margin-bottom: 30px;
 }
-.imageContainer{
+.imageContainer {
   background-color: rgba(255, 255, 255, 0.85);
   border-radius: 20px;
   padding: 20px;

@@ -1,7 +1,8 @@
 import axios from "axios";
-import { changeMessage } from "../App/Apping";
+import Apping from "../App/Apping";
+let App = new Apping();
 export default class Signing {
-  static async handleRegister() {
+  async handleRegister() {
     const name = document.querySelector("#nameInput").value;
     const email = document.querySelector("#emailInput").value;
     const password = document.querySelector("#passwordInput").value;
@@ -10,7 +11,7 @@ export default class Signing {
     const signupBox = document.querySelector("#signupBox").checked;
     let responseMessage = "";
 
-    changeMessage("Signing up...", "blue");
+    App.changeMessage("Signing up...", "blue");
     let accountType = 2;
     checkboxesType.forEach((element) => {
       if (element.checked && element.id == "check1") accountType = 0;
@@ -32,7 +33,7 @@ export default class Signing {
       responseMessage = "Passwords don't match!";
     }
     if (responseMessage.length > 0) {
-      changeMessage(responseMessage, "red");
+      App.changeMessage(responseMessage, "red");
       return;
     }
 
@@ -44,15 +45,15 @@ export default class Signing {
         type: accountType,
       })
       .then((response) => {
-        changeMessage("Account successfully created!", "green");
+        App.changeMessage("Account successfully created!", "green");
         localStorage.setItem("userToken", response.data);
         window.location.replace("/edit_profile");
       })
       .catch((error) => {
         if (error.code == "ERR_BAD_REQUEST")
-          changeMessage(error.response.data.error.message, undefined);
-        else changeMessage("Error signing up. Please try again!");
-        changeMessage(undefined, "red");
+          App.changeMessage(error.response.data.error.message, undefined);
+        else App.changeMessage("Error signing up. Please try again!");
+        App.changeMessage(undefined, "red");
       });
   }
 }

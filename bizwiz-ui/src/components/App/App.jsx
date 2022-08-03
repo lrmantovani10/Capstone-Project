@@ -41,19 +41,19 @@ export default function App() {
   let [chatting, setChatting] = useState(false);
   let [swipeCount, setSwipeCount] = useState(1);
 
-  const AppFunctions = Apping(setProfileImage, setResume, setExtras);
-  const EditFunctions = Editing(setCurrentUser);
-  const LoginFunctions = Logging();
-  const SigninFunctions = Signing();
-  const ProfileFunctions = Profiling();
-  const MatchingFunctions = Matching(
+  const AppFunctions = new Apping(setProfileImage, setResume, setExtras);
+  const EditFunctions = new Editing(setCurrentUser);
+  const LoginFunctions = new Logging();
+  const SigninFunctions = new Signing();
+  const ProfileFunctions = new Profiling();
+  const MatchingFunctions = new Matching(
     setCurrentUser,
     setTemporaryMessage,
     setMatches,
     setChatting,
     setCurrentChannel
   );
-  const SwipingFunctions = Swiping(
+  const SwipingFunctions = new Swiping(
     setProfiles,
     setTemporaryMessage,
     setProfile,
