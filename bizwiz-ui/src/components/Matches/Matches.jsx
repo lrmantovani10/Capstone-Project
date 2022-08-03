@@ -47,7 +47,7 @@ export default function Matches(props) {
     } catch {
       window.location.replace("/login");
     }
-  }, [props.chatting]);
+  }, []);
 
   if (props.matches == "error") {
     return <Message />;
