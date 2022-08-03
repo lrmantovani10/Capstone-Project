@@ -14,6 +14,7 @@ import Matches from "../Matches/Matches";
 import EditProfile from "../EditProfile/EditProfile";
 import Matching from "../Matches/Matching";
 import Editing from "../EditProfile/Editing";
+import Profiling from "../Profile/Profiling";
 import { useState } from "react";
 
 export default function App() {
@@ -38,6 +39,7 @@ export default function App() {
   let [swipeCount, setSwipeCount] = useState(1);
 
   const EditFunctions = Editing(setCurrentUser, changeMessage);
+  const ProfileFunctions = Profiling(changeMessage);
   const MatchingFunctions = Matching(
     setCurrentUser,
     setTemporaryMessage,
@@ -283,62 +285,6 @@ export default function App() {
       });
   };
 
-  function handleEdit() {
-    window.location.replace("/edit_profile");
-  }
-
-  async function handleLogout() {
-    const userToken = localStorage.getItem("userToken");
-    if (userToken.length == 0) {
-      window.location.replace("/login");
-    }
-    const headers = {
-      headers: {
-        authorization: userToken,
-      },
-    };
-    await axios
-      .post(`${process.env.REACT_APP_APIURL}/logout`, {}, headers)
-      .then(() => {
-        changeMessage("Logging out...", "green");
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.replace("/login");
-      })
-      .catch(() => {
-        changeMessage("Error logging out. Please try again!", "red");
-      });
-  }
-
-  async function handleDelete() {
-    if (confirm("Delete account?")) {
-      const userToken = localStorage.getItem("userToken");
-      if (userToken.length == 0) {
-        window.location.replace("/login");
-      }
-      const headers = {
-        headers: {
-          authorization: userToken,
-        },
-      };
-      await axios
-        .post(
-          `${process.env.REACT_APP_APIURL}/delete`,
-          { user: currentUser },
-          headers
-        )
-        .then(() => {
-          changeMessage("Deleting account...", "green");
-          localStorage.clear();
-          sessionStorage.clear();
-          window.location.replace("/welcome");
-        })
-        .catch(() => {
-          changeMessage("Error deleting account. Please try again!", "red");
-        });
-    }
-  }
-
   const navbar = (
     <ul className="nav justify-content-center">
       <li className="nav-item">
@@ -422,21 +368,16 @@ export default function App() {
               <>
                 {navbar}
                 <Profile
+                  ProfileFunctions={ProfileFunctions}
                   updateParameters={updateParameters}
                   purpleTheme={purpleTheme}
                   profileImage={profileImage}
-                  setProfileImage={setProfileImage}
                   extraImages={extraImages}
-                  setExtras={setExtras}
-                  handleLogout={handleLogout}
-                  handleEdit={handleEdit}
                   currentUser={currentUser}
                   setCurrentUser={setCurrentUser}
                   redTheme={redTheme}
                   blueTheme={blueTheme}
-                  handleDelete={handleDelete}
                   currentResume={currentResume}
-                  setResume={setResume}
                 />
               </>
             }
