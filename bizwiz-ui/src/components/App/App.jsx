@@ -17,6 +17,7 @@ import Editing from "../EditProfile/Editing";
 import Profiling from "../Profile/Profiling";
 import Logging from "../Login/Logging";
 import Signing from "../Signup/Signing";
+import Swiping from "../SwipingPage/Swiping";
 import { useState } from "react";
 
 export default function App() {
@@ -51,6 +52,13 @@ export default function App() {
     setChatting,
     setCurrentChannel
   );
+  const SwipingFunctions = Swiping(
+    setProfiles,
+    updateParameters,
+    setTemporaryMessage,
+    setProfile,
+    setSwipeCount
+  );
 
   function updateParameters(user, setFunction) {
     if (user) {
@@ -77,112 +85,6 @@ export default function App() {
       setExtras(newExtras);
       setFunction(user);
     }
-  }
-
-  function compareFunction(a, b) {
-    if (a.distance < b.distance) {
-      return -1;
-    } else if (a.distance > b.distance) {
-      return 1;
-    }
-    return 0;
-  }
-
-  async function getSwipes(userLocation) {
-    const userToken = localStorage.getItem("userToken");
-    const headers = {
-      headers: {
-        authorization: userToken,
-      },
-    };
-
-    let body = {
-      location: userLocation,
-    };
-
-    if (!userLocation) {
-      body = {};
-    }
-
-    await axios
-      .post(`${process.env.REACT_APP_APIURL}/get_profiles`, body, headers)
-      .then((response) => {
-        const sortedResults = response.data.sort(compareFunction);
-        setProfiles(sortedResults);
-        if (response.data.length > 0) {
-          updateParameters(response.data[response.data.length - 1], setProfile);
-        } else {
-          setTemporaryMessage(
-            "No potential matches! Broaden filters or come back later for more!"
-          );
-        }
-      })
-      .catch(() => {
-        setProfiles(["error"]);
-      });
-  }
-
-  async function handleSwipe(type, userEmail) {
-    let profileCopy = [...profiles];
-    let swipedProfile = profileCopy.pop();
-    if (profileCopy.length == 0) {
-      console.log("loading now!");
-      setTemporaryMessage("Loading...");
-    }
-    let body = {
-      email: userEmail,
-    };
-    if (type == 0) {
-      body["swipedProfile"] = swipedProfile._id;
-    } else {
-      body["likedProfile"] = swipedProfile._id;
-      body["otherEmail"] = profile.email;
-    }
-    const headers = {
-      headers: {
-        authorization: localStorage.getItem("userToken"),
-      },
-    };
-    await axios
-      .post(`${process.env.REACT_APP_APIURL}/change_profile`, body, headers)
-      .then(async (response) => {
-        localStorage.setItem("userToken", response.data);
-        if (profile.profilesLiked.includes(currentUser._id)) {
-          alert("You matched with " + profile.name + "! 🎉");
-          let body = {
-            matched_name: currentUser.name,
-            match_name: profile.name,
-            email: profile.email,
-          };
-          await axios
-            .post(`${process.env.REACT_APP_APIURL}/send_email`, body, headers)
-            .then(async () => {
-              setProfiles(profileCopy);
-              updateParameters(profileCopy[profileCopy.length - 1], setProfile);
-              if (swipeCount == 20 || profileCopy.length == 0) {
-                await getSwipes();
-                setSwipeCount(1);
-              } else {
-                setSwipeCount(swipeCount + 1);
-              }
-            })
-            .catch(() => {
-              setProfiles(["error"]);
-            });
-        } else {
-          setProfiles(profileCopy);
-          updateParameters(profileCopy[profileCopy.length - 1], setProfile);
-          if (swipeCount == 20 || profileCopy.length == 0) {
-            await getSwipes();
-            setSwipeCount(1);
-          } else {
-            setSwipeCount(swipeCount + 1);
-          }
-        }
-      })
-      .catch(() => {
-        setProfiles(["error"]);
-      });
   }
 
   function changeMessage(newMessage, newColor) {
@@ -291,21 +193,19 @@ export default function App() {
               <>
                 {navbar}
                 <SwipingPage
+                  SwipingFunctions={SwipingFunctions}
                   temporaryMessage={temporaryMessage}
                   setTemporaryMessage={setTemporaryMessage}
-                  getSwipes={getSwipes}
-                  updateParameters={updateParameters}
                   currentResume={currentResume}
                   profileImage={profileImage}
                   extraImages={extraImages}
                   purpleTheme={purpleTheme}
-                  handleSwipe={handleSwipe}
                   profiles={profiles}
                   setProfiles={setProfiles}
                   currentUser={currentUser}
                   setCurrentUser={setCurrentUser}
-                  setProfile={setProfile}
                   profile={profile}
+                  swipeCount={swipeCount}
                 />
               </>
             }
