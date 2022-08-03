@@ -70,7 +70,7 @@ export default function Login(props) {
                         <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                           <ThemeProvider theme={props.purpleTheme}>
                             <Button
-                              onClick={props.handleLogin}
+                              onClick={props.LoginFunctions.handleLogin}
                               variant="contained"
                               style={{
                                 color: "white",
@@ -90,8 +90,8 @@ export default function Login(props) {
                             cookie={false}
                             fields="name,email"
                             icon="fa-facebook"
-                            onFailure={props.facebookFailure}
-                            callback={props.responseFacebook}
+                            onFailure={props.LoginFunctions.facebookFailure}
+                            callback={props.LoginFunctions.responseFacebook}
                             cssClass="facebook-button"
                           />
                         </div>
