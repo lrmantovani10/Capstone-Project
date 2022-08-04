@@ -13,7 +13,7 @@ export default class Matching {
     this.setChatting = setChatting;
     this.setCurrentChannel = setCurrentChannel;
   }
-  async getMatches(matches) {
+  async getMatches() {
     const userToken = localStorage.getItem("userToken");
     if (userToken.length > 0) {
       const headers = {
@@ -32,10 +32,7 @@ export default class Matching {
               let userMatches = response.data;
               if (userMatches.length == 0)
                 this.setTemporaryMessage("No matches so far! Keep swiping!");
-
-              for (const element of userMatches) {
-                this.setMatches([...matches, element]);
-              }
+              this.setMatches(userMatches);
               this.setChatting(false);
             })
             .catch(() => {

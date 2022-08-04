@@ -33,7 +33,7 @@ export default function Matches(props) {
           window.location.replace("/login");
         }
       } else {
-        props.MatchingFunctions.getMatches(props.matches);
+        props.MatchingFunctions.getMatches();
       }
     } catch {
       window.location.replace("/login");
