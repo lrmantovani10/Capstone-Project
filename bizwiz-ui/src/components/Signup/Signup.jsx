@@ -108,7 +108,9 @@ export default function Signup(props) {
                             type="checkbox"
                             value=""
                             id="check1"
-                            onClick={() => handleCheck("check1")}
+                            onClick={() => {
+                              handleCheck("check1");
+                            }}
                           />
                           <label className="form-check-label" htmlFor="check1">
                             Individual
@@ -118,7 +120,9 @@ export default function Signup(props) {
                             type="checkbox"
                             value=""
                             id="check2"
-                            onClick={() => handleCheck("check2")}
+                            onClick={() => {
+                              handleCheck("check2");
+                            }}
                           />
                           <label className="form-check-label" htmlFor="check2">
                             Organization

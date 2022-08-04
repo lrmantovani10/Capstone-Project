@@ -49,7 +49,9 @@ export default function Profile(props) {
           <ThemeProvider theme={props.blueTheme}>
             <Button
               variant="contained"
-              onClick={window.location.replace("/edit_profile")}
+              onClick={() => {
+                window.location.replace("/edit_profile");
+              }}
               id="editButton"
             >
               Edit Profile
@@ -103,9 +105,9 @@ export default function Profile(props) {
                         <>
                           {" "}
                           {props.currentUser.age}
-                          <span></span>
+                          &nbsp;
                           year-old living in
-                          <span></span>
+                          &nbsp;
                         </>
                       ) : (
                         <span>Located in</span>
@@ -138,9 +140,9 @@ export default function Profile(props) {
                     ) : (
                       <a
                         className="personalLink"
-                        onClick={() =>
-                          alert("Edit your profile to add a resume!")
-                        }
+                        onClick={() => {
+                          alert("Edit your profile to add a resume!");
+                        }}
                       >
                         Resume
                       </a>
@@ -159,11 +161,11 @@ export default function Profile(props) {
                   ) : (
                     <a
                       className="personalLink"
-                      onClick={() =>
+                      onClick={() => {
                         alert(
                           "Edit your profile to add a personal website link!"
-                        )
-                      }
+                        );
+                      }}
                     >
                       Website
                     </a>
@@ -267,9 +269,9 @@ export default function Profile(props) {
             <ThemeProvider theme={props.redTheme}>
               <Button
                 variant="contained"
-                onClick={() =>
-                  props.ProfileFunctions.handleDelete(props.currentUser)
-                }
+                onClick={() => {
+                  props.ProfileFunctions.handleDelete(props.currentUser);
+                }}
                 className="dangerButton"
               >
                 Delete Account

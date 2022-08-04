@@ -362,7 +362,9 @@ export default function EditProfile(props) {
           <ThemeProvider theme={props.redTheme}>
             <Button
               variant="contained"
-              onClick={window.location.replace("/profile")}
+              onClick={() => {
+                window.location.replace("/profile");
+              }}
               className="editProfileButton"
             >
               Discard Changes

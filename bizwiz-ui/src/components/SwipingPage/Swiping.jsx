@@ -16,7 +16,7 @@ export default class Swiping {
     return 0;
   }
 
-  async getSwipes(userLocation) {
+  async getSwipes(userLocation, updateClass) {
     const userToken = localStorage.getItem("userToken");
     const headers = {
       headers: {
@@ -38,7 +38,7 @@ export default class Swiping {
         const sortedResults = response.data.sort(this.compareFunction);
         this.setProfiles(sortedResults);
         if (response.data.length > 0) {
-          updateFunction(
+          updateClass.updateParameters(
             response.data[response.data.length - 1],
             this.setProfile
           );
@@ -60,7 +60,7 @@ export default class Swiping {
     profile,
     currentUser,
     swipeCount,
-    updateFunction
+    updateClass
   ) {
     let profileCopy = [...profiles];
     let swipedProfile = profileCopy.pop();
@@ -96,7 +96,7 @@ export default class Swiping {
             .post(`${process.env.REACT_APP_APIURL}/send_email`, body, headers)
             .then(async () => {
               this.setProfiles(profileCopy);
-              updateFunction(
+              updateClass.updateParameters(
                 profileCopy[profileCopy.length - 1],
                 this.setProfile
               );
@@ -112,7 +112,7 @@ export default class Swiping {
             });
         } else {
           this.setProfiles(profileCopy);
-          updateFunction(profileCopy[profileCopy.length - 1], this.setProfile);
+          updateClass.updateParameters(profileCopy[profileCopy.length - 1], this.setProfile);
           if (swipeCount == 20 || profileCopy.length == 0) {
             await this.getSwipes();
             this.setSwipeCount(1);

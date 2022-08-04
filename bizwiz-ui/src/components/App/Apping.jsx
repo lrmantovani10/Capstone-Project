@@ -4,7 +4,7 @@ export default class Apping {
     this.setResume = setResume;
     this.setExtras = setExtras;
   }
-  static updateParameters(user, setFunction) {
+  updateParameters(user, setFunction) {
     if (user) {
       if (user.profile_picture.length > 0) {
         this.setProfileImage(user.profile_picture);
@@ -31,7 +31,7 @@ export default class Apping {
     }
   }
 
-  static changeMessage(newMessage, newColor) {
+  changeMessage(newMessage, newColor) {
     const messageElement = document.getElementById("returnResult");
     if (newMessage) messageElement.innerHTML = newMessage;
     if (newColor) messageElement.style.color = newColor;

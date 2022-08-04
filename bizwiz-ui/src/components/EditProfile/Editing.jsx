@@ -1,16 +1,17 @@
 import * as imageConversion from "image-conversion";
 import axios from "axios";
 import Apping from "../App/Apping";
+let App = new Apping();
 export default class Editing {
   constructor(setCurrentUser) {
     this.setCurrentUser = setCurrentUser;
   }
-  static handleChangeImage(event, targetId) {
+  handleChangeImage(event, targetId) {
     const picturePreview = document.getElementById(targetId);
     picturePreview.src = URL.createObjectURL(event.target.files[0]);
   }
 
-  static calibrateValue(e, currentUser) {
+  calibrateValue(e, currentUser) {
     let years = e.value;
     {
       years < 0 ? (years = 0) : years > 40 ? (years = 40) : years;
@@ -22,21 +23,26 @@ export default class Editing {
     this.setCurrentUser(newUser);
   }
 
-  static handleRemove(index, field, currentUser) {
-    let user = { ...currentUser };
+  handleRemove(index, field, currentUser) {
+    let user = {
+      ...currentUser,
+    };
     user[field].splice(index, 1);
     this.setCurrentUser(user);
   }
 
-  static handleAdd(itemId, field, currentUser) {
+  handleAdd(itemId, field, currentUser) {
     const newItem = document.getElementById(itemId).value;
-    let user = { ...currentUser };
+    let user = {
+      ...currentUser,
+    };
     if (!user[field].includes(newItem.toLowerCase()))
       user[field].push(newItem.toLowerCase());
+
     this.setCurrentUser(user);
   }
 
-  static async storeFile(file, headers, destination, category, currentUser) {
+  async storeFile(file, headers, destination, category, currentUser) {
     if (file) {
       let newForm = new FormData();
       const extension = "." + file.name.split(".")[1];
@@ -52,12 +58,12 @@ export default class Editing {
         const filename = file.name;
         file = await imageConversion.compressAccurately(file, 60);
         file = new File([file], filename);
-        Apping.changeMessage(
+        App.changeMessage(
           "Image size can't be over 60KB! Using image compression...",
           "yellow"
         );
       } else if (category == "resume" && file.size / 1000 > 60) {
-        Apping.changeMessage(
+        App.changeMessage(
           "Resume size can't be over 60KB! Please try again!",
           "red"
         );
@@ -69,47 +75,44 @@ export default class Editing {
       await axios
         .post(`${process.env.REACT_APP_APIURL}/upload_single`, newForm, headers)
         .catch((error) => {
-          Apping.changeMessage(
-            "Account update failed. Please try again!",
-            "red"
-          );
+          App.changeMessage("Account update failed. Please try again!", "red");
           throw new Error(error);
         });
     }
   }
 
-  static async checkUser(email, headers) {
+  async checkUser(email, headers) {
     await axios
       .post(
         `${process.env.REACT_APP_APIURL}/check_user`,
-        { email: email },
+        {
+          email: email,
+        },
         headers
       )
       .catch((error) => {
         if (error.code == "ERR_BAD_REQUEST")
-          Apping.changeMessage(error.response.data.error.message, "red");
+          App.changeMessage(error.response.data.error.message, "red");
         else
-          Apping.changeMessage(
-            "Error updating profile. Please try again!",
-            "red"
-          );
+          App.changeMessage("Error updating profile. Please try again!", "red");
+
         throw new Error(error);
       });
   }
 
-  static async changeProfile(body, headers) {
+  async changeProfile(body, headers) {
     await axios
       .post(`${process.env.REACT_APP_APIURL}/change_profile`, body, headers)
       .then((response) => {
         localStorage.setItem("userToken", response.data);
       })
       .catch((error) => {
-        Apping.changeMessage("Account update failed. Please try again!", "red");
+        App.changeMessage("Account update failed. Please try again!", "red");
         throw new Error(error);
       });
   }
 
-  static async storeExtraPictures(files, headers, currentUser) {
+  async storeExtraPictures(files, headers, currentUser) {
     let index = 0;
     for (const file of files) {
       await this.storeFile(
@@ -123,7 +126,7 @@ export default class Editing {
     }
   }
 
-  static async handleSave(currentUser) {
+  async handleSave(currentUser) {
     const email = document.getElementById("emailChange").value;
     const password = document.getElementById("passwordChange").value;
     const sector = document.getElementById("sectorChange").value;
@@ -193,7 +196,7 @@ export default class Editing {
     }
 
     if (password.length < 10) {
-      Apping.changeMessage("Password is less than 10 characters!", "red");
+      App.changeMessage("Password is less than 10 characters!", "red");
     } else {
       await Promise.all([
         this.checkUser(email, headers),
@@ -214,7 +217,7 @@ export default class Editing {
         this.storeExtraPictures(other_pictures, headers, currentUser),
       ]).then(async () => {
         await this.changeProfile(body, headers).then(() => {
-          Apping.changeMessage("Account successfully updated!", "green");
+          App.changeMessage("Account successfully updated!", "green");
           window.location.replace("profile");
         });
       });

@@ -22,7 +22,10 @@ export default function SwipingPage(props) {
           .get(`${process.env.REACT_APP_APIURL}/get_user`, headers)
           .then((response) => {
             props.setCurrentUser(response.data);
-            props.SwipingFunctions.getSwipes(response.data.location);
+            props.SwipingFunctions.getSwipes(
+              response.data.location,
+              props.AppFunctions
+            );
           })
           .catch(() => {
             props.setProfiles(["error"]);
@@ -44,7 +47,7 @@ export default function SwipingPage(props) {
           <h1>
             {" "}
             {props.profile.name}
-            <span></span>
+            &nbsp;
             {props.currentUser.type == 0 ? "" : "| " + props.profile.age}{" "}
           </h1>
           <div className="swipingBasic">
@@ -148,7 +151,7 @@ export default function SwipingPage(props) {
                   props.profile,
                   props.currentUser,
                   props.swipeCount,
-                  props.AppFunctions.updateParameters
+                  props.AppFunctions
                 )
               }
               variant="outlined"
@@ -171,7 +174,7 @@ export default function SwipingPage(props) {
                   props.profile,
                   props.currentUser,
                   props.swipeCount,
-                  props.AppFunctions.updateParameters
+                  props.AppFunctions
                 )
               }
               variant="contained"
