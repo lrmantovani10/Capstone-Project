@@ -8,7 +8,7 @@ import { ThemeProvider } from "@mui/material";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
 export default function Profile(props) {
   useEffect(() => {
-    props.setCurrentUser("Loading");
+    props.setCurrentUser(1);
     try {
       const userToken = localStorage.getItem("userToken");
       if (userToken.length > 0) {
@@ -26,7 +26,7 @@ export default function Profile(props) {
             );
           })
           .catch(() => {
-            props.setCurrentUser("error");
+            props.setCurrentUser(0);
           });
       } else {
         window.location.replace("/login");
@@ -38,11 +38,11 @@ export default function Profile(props) {
 
   useLoadScript({ googleMapsApiKey: process.env.REACT_APP_MAPS_KEY });
 
-  if (props.currentUser == "Loading") {
-    return <Message message={"Loading..."} />;
-  } else if (props.currentUser == "error") {
+  if (props.currentUser == 1) {
+    return <Message message={1} />;
+  } else if (props.currentUser == 0) {
     return <Message />;
-  } else if (props.currentUser != "") {
+  } else if (props.currentUser != 2) {
     return (
       <div className="profilePage">
         <div className="profileHeader">
@@ -105,9 +105,7 @@ export default function Profile(props) {
                         <>
                           {" "}
                           {props.currentUser.age}
-                          &nbsp;
-                          year-old living in
-                          &nbsp;
+                          &nbsp; year-old living in &nbsp;
                         </>
                       ) : (
                         <span>Located in</span>

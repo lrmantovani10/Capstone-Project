@@ -43,13 +43,11 @@ export default class Swiping {
             this.setProfile
           );
         } else {
-          this.setTemporaryMessage(
-            "No potential matches! Broaden filters or come back later for more!"
-          );
+          this.setTemporaryMessage(3);
         }
       })
       .catch(() => {
-        this.setProfiles(["error"]);
+        this.setProfiles([false]);
       });
   }
 
@@ -65,7 +63,7 @@ export default class Swiping {
     let profileCopy = [...profiles];
     let swipedProfile = profileCopy.pop();
     if (profileCopy.length == 0) {
-      this.setTemporaryMessage("Loading...");
+      this.setTemporaryMessage(1);
     }
     let body = {
       email: userEmail,
@@ -108,11 +106,14 @@ export default class Swiping {
               }
             })
             .catch(() => {
-              this.setProfiles(["error"]);
+              this.setProfiles([false]);
             });
         } else {
           this.setProfiles(profileCopy);
-          updateClass.updateParameters(profileCopy[profileCopy.length - 1], this.setProfile);
+          updateClass.updateParameters(
+            profileCopy[profileCopy.length - 1],
+            this.setProfile
+          );
           if (swipeCount == 20 || profileCopy.length == 0) {
             await this.getSwipes();
             this.setSwipeCount(1);
@@ -122,7 +123,7 @@ export default class Swiping {
         }
       })
       .catch(() => {
-        this.setProfiles(["error"]);
+        this.setProfiles([false]);
       });
   }
 }

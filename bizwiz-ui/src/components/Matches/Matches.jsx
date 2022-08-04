@@ -10,7 +10,7 @@ import ChannelProvider from "@sendbird/uikit-react/SendbirdProvider";
 import MyChatUI from "../Chat/Chat";
 export default function Matches(props) {
   useEffect(() => {
-    props.setTemporaryMessage("Loading...");
+    props.setTemporaryMessage(1);
     try {
       if (props.chatting) {
         const userToken = localStorage.getItem("userToken");

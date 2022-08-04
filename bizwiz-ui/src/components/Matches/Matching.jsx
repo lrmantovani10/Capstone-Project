@@ -31,7 +31,7 @@ export default class Matching {
             .then(async (response) => {
               let userMatches = response.data;
               if (userMatches.length == 0)
-                this.setTemporaryMessage("No matches so far! Keep swiping!");
+                this.setTemporaryMessage(2);
               this.setMatches(userMatches);
               this.setChatting(false);
             })

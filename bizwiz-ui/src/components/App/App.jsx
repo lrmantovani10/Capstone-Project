@@ -31,12 +31,12 @@ export default function App() {
 
   let [profiles, setProfiles] = useState([]);
   let [profile, setProfile] = useState({});
-  let [currentUser, setCurrentUser] = useState("");
+  let [currentUser, setCurrentUser] = useState(2);
   let [profileImage, setProfileImage] = useState({});
   let [extraImages, setExtras] = useState([]);
   let [currentResume, setResume] = useState("");
   let [matches, setMatches] = useState([]);
-  let [temporaryMessage, setTemporaryMessage] = useState("Loading...");
+  let [temporaryMessage, setTemporaryMessage] = useState(1);
   let [currentChannel, setCurrentChannel] = useState("");
   let [chatting, setChatting] = useState(false);
   let [swipeCount, setSwipeCount] = useState(1);

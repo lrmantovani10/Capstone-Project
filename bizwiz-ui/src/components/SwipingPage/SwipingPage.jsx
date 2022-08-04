@@ -8,7 +8,7 @@ import Message from "../Message/Message";
 
 export default function SwipingPage(props) {
   useEffect(() => {
-    props.setTemporaryMessage("Loading...");
+    props.setTemporaryMessage(1);
     try {
       const userToken = localStorage.getItem("userToken");
       if (userToken.length > 0) {
@@ -28,7 +28,7 @@ export default function SwipingPage(props) {
             );
           })
           .catch(() => {
-            props.setProfiles(["error"]);
+            props.setProfiles([false]);
           });
       } else {
         window.location.replace("/login");
@@ -38,9 +38,9 @@ export default function SwipingPage(props) {
     }
   }, []);
 
-  if (props.profiles.length > 0 && props.profiles[0] == "error") {
+  if (props.profiles.length > 0 && !props.profiles[0]) {
     return <Message />;
-  } else if (props.profiles.length > 0 && props.currentUser !== "") {
+  } else if (props.profiles.length > 0 && props.currentUser !== 2) {
     return (
       <div className="swipingGeneral">
         <div className="swipingProfile">

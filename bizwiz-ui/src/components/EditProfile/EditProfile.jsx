@@ -10,7 +10,7 @@ import { ThemeProvider } from "@mui/material";
 export default function EditProfile(props) {
   useEffect(() => {
     try {
-      props.setCurrentUser("Loading");
+      props.setCurrentUser(1);
       const userToken = localStorage.getItem("userToken");
       if (userToken.length > 0) {
         const headers = {
@@ -28,7 +28,7 @@ export default function EditProfile(props) {
             );
           })
           .catch(() => {
-            props.setCurrentUser("error");
+            props.setCurrentUser(0);
           });
       } else {
         window.location.replace("/login");
@@ -38,11 +38,11 @@ export default function EditProfile(props) {
     }
   }, []);
 
-  if (props.currentUser == "Loading") {
-    return <Message message={"Loading..."} />;
-  } else if (props.currentUser == "error") {
+  if (props.currentUser == 1) {
+    return <Message message={1} />;
+  } else if (props.currentUser == 0) {
     return <Message />;
-  } else if (props.currentUser !== "") {
+  } else if (props.currentUser !== 2) {
     return (
       <div id="editProfile">
         <h1 id="editProfileHeader" className="abelFont whiteAbel">
@@ -277,7 +277,7 @@ export default function EditProfile(props) {
                     <div className="attributeSelection interestDiv">
                       <div className="abelFont">
                         {firstUppercase}
-                        of Interest
+                        &nbsp;of Interest
                       </div>
                       <div className="chosenInterest">
                         {parameterArray[index].map((interest, idx) => {
