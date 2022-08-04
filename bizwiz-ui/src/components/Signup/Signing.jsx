@@ -2,22 +2,15 @@ import axios from "axios";
 import Apping from "../App/Apping";
 let App = new Apping();
 export default class Signing {
-  async handleRegister() {
-    const name = document.querySelector("#nameInput").value;
-    const email = document.querySelector("#emailInput").value;
-    const password = document.querySelector("#passwordInput").value;
-    const passwordRepeat = document.querySelector("#repeatPasswordInput").value;
-    const checkboxesType = document.querySelectorAll(".accountTypes");
-    const signupBox = document.querySelector("#signupBox").checked;
+  checkConditions(
+    name,
+    email,
+    password,
+    passwordRepeat,
+    signupBox,
+    accountType
+  ) {
     let responseMessage = "";
-
-    App.changeMessage("Signing up...", "blue");
-    let accountType = 2;
-    checkboxesType.forEach((element) => {
-      if (element.checked && element.id == "check1") accountType = 0;
-      else if (element.checked && element.id == "check2") accountType = 1;
-    });
-
     if (
       name.length == 0 ||
       email.length == 0 ||
@@ -34,9 +27,38 @@ export default class Signing {
     }
     if (responseMessage.length > 0) {
       App.changeMessage(responseMessage, "red");
+      return false;
+    }
+    return true;
+  }
+
+  async handleRegister() {
+    const name = document.querySelector("#nameInput").value;
+    const email = document.querySelector("#emailInput").value;
+    const password = document.querySelector("#passwordInput").value;
+    const passwordRepeat = document.querySelector("#repeatPasswordInput").value;
+    const checkboxesType = document.querySelectorAll(".accountTypes");
+    const signupBox = document.querySelector("#signupBox").checked;
+
+    App.changeMessage("Signing up...", "blue");
+    let accountType = 2;
+    checkboxesType.forEach((element) => {
+      if (element.checked && element.id == "check1") accountType = 0;
+      else if (element.checked && element.id == "check2") accountType = 1;
+    });
+
+    if (
+      !this.checkConditions(
+        name,
+        email,
+        password,
+        passwordRepeat,
+        signupBox,
+        accountType
+      )
+    ) {
       return;
     }
-
     await axios
       .post(`${process.env.REACT_APP_APIURL}/signup`, {
         name: name,

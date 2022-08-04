@@ -126,6 +126,30 @@ export default class Editing {
     }
   }
 
+  async getLocation() {
+    let pos;
+    if (navigator.geolocation) {
+      await new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            pos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            resolve();
+          },
+          () => {
+            alert("Currently not setting location.");
+            resolve();
+          }
+        );
+      });
+      return pos;
+    } else {
+      alert("Your browser doesn't support geolocation. Not setting location.");
+    }
+  }
+
   async handleSave(currentUser) {
     const email = document.getElementById("emailChange").value;
     const password = document.getElementById("passwordChange").value;
@@ -135,28 +159,7 @@ export default class Editing {
     const linkedin = document.getElementById("linkedinChange").value;
     const profilePicture = document.getElementById("profilePicChange").files[0];
     const interested_years = document.getElementById("experienceChange").value;
-    let location;
-
-    if (navigator.geolocation) {
-      await new Promise((resolve) => {
-        navigator.geolocation.getCurrentPosition(
-          (position) => {
-            const pos = {
-              lat: position.coords.latitude,
-              lng: position.coords.longitude,
-            };
-            location = pos;
-            resolve();
-          },
-          () => {
-            alert("Currently not setting location.");
-            resolve();
-          }
-        );
-      });
-    } else {
-      alert("Your browser doesn't support geolocation. Not setting location.");
-    }
+    const location = await this.getLocation();
 
     const headers = {
       headers: {

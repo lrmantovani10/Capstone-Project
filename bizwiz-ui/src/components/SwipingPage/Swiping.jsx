@@ -51,6 +51,41 @@ export default class Swiping {
       });
   }
 
+  async sendEmail(body, headers, profileCopy, updateClass, swipeCount) {
+    await axios
+      .post(`${process.env.REACT_APP_APIURL}/send_email`, body, headers)
+      .then(async () => {
+        this.setProfiles(profileCopy);
+        updateClass.updateParameters(
+          profileCopy[profileCopy.length - 1],
+          this.setProfile
+        );
+        if (swipeCount == 20 || profileCopy.length == 0) {
+          await this.getSwipes();
+          this.setSwipeCount(1);
+        } else {
+          this.setSwipeCount(swipeCount + 1);
+        }
+      })
+      .catch(() => {
+        this.setProfiles([false]);
+      });
+  }
+
+  async swipeLimit(swipeCount, profileCopy, updateClass) {
+    this.setProfiles(profileCopy);
+    updateClass.updateParameters(
+      profileCopy[profileCopy.length - 1],
+      this.setProfile
+    );
+    if (swipeCount == 20 || profileCopy.length == 0) {
+      await this.getSwipes();
+      this.setSwipeCount(1);
+    } else {
+      this.setSwipeCount(swipeCount + 1);
+    }
+  }
+
   async handleSwipe(
     type,
     userEmail,
@@ -90,36 +125,15 @@ export default class Swiping {
             match_name: profile.name,
             email: profile.email,
           };
-          await axios
-            .post(`${process.env.REACT_APP_APIURL}/send_email`, body, headers)
-            .then(async () => {
-              this.setProfiles(profileCopy);
-              updateClass.updateParameters(
-                profileCopy[profileCopy.length - 1],
-                this.setProfile
-              );
-              if (swipeCount == 20 || profileCopy.length == 0) {
-                await this.getSwipes();
-                this.setSwipeCount(1);
-              } else {
-                this.setSwipeCount(swipeCount + 1);
-              }
-            })
-            .catch(() => {
-              this.setProfiles([false]);
-            });
-        } else {
-          this.setProfiles(profileCopy);
-          updateClass.updateParameters(
-            profileCopy[profileCopy.length - 1],
-            this.setProfile
+          await this.sendEmail(
+            body,
+            headers,
+            profileCopy,
+            updateClass,
+            swipeCount
           );
-          if (swipeCount == 20 || profileCopy.length == 0) {
-            await this.getSwipes();
-            this.setSwipeCount(1);
-          } else {
-            this.setSwipeCount(swipeCount + 1);
-          }
+        } else {
+          await this.swipeLimit(swipeCount, profileCopy, updateClass);
         }
       })
       .catch(() => {
