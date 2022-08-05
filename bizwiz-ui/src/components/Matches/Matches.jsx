@@ -69,7 +69,7 @@ export default function Matches(props) {
             return (
               <div key={"match" + index} className="card mb-3 matchIndividual">
                 <div className="row no-gutters">
-                  <div className="col-md-4">
+                  <div className="col-md-4" id="imageHeader">
                     <img
                       src={
                         element.profile_picture.length > 0
