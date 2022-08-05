@@ -19,7 +19,9 @@ class Profiles {
     await mongoClient.connect();
     const database = mongoClient.db(mongoDatabase);
     const profiles = database.collection(mongoCollection);
-    let profileRetrieved = await profiles.findOne({ _id: new ObjectId(profileId) });
+    let profileRetrieved = await profiles.findOne({
+      _id: new ObjectId(profileId),
+    });
     return profileRetrieved;
   }
   static async getProfiles(criteria) {
@@ -88,7 +90,10 @@ class Profiles {
     for (let i = 0; i < 6; i++) {
       query["other_pictures_" + i] = 0;
     }
-    let profileRetrieved = await profiles.findOne({ email: profileEmail }, query);
+    let profileRetrieved = await profiles.findOne(
+      { email: profileEmail },
+      query
+    );
     return profileRetrieved.matches;
   }
   static async removeMatch(firstProfile, secondProfile) {
@@ -281,13 +286,20 @@ class Profiles {
       }
     }
     const profiles = database.collection(mongoCollection);
+    const idObject = ObjectId(id);
     await profiles.updateMany(
-      {},
+      {
+        $or: [
+          { profilesLiked: idObject },
+          { profilesSwiped: idObject },
+          { matches: idObject },
+        ],
+      },
       {
         $pull: {
-          profilesLiked: ObjectId(id),
-          profilesSwiped: ObjectId(id),
-          matches: ObjectId(id),
+          profilesLiked: idObject,
+          profilesSwiped: idObject,
+          matches: idObject,
         },
       }
     );
