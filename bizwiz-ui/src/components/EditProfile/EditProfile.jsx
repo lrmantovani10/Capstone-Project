@@ -6,6 +6,7 @@ import "@fontsource/abel";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import { ThemeProvider } from "@mui/material";
+import EditComponents from "./EditComponents";
 
 export default function EditProfile(props) {
   useEffect(() => {
@@ -79,27 +80,18 @@ export default function EditProfile(props) {
 
           <div id="editProfileParameters">
             <div className="parameterGrid">
-              <div className="attributeSelection">
-                <div className="abelFont">Email</div>
-                <input
-                  id="emailChange"
-                  className="textInput"
-                  type="email"
-                  maxLength="50"
-                  defaultValue={props.currentUser.email}
-                />
-              </div>
-
-              <div className="attributeSelection">
-                <div className="abelFont">Password</div>
-                <input
-                  id="passwordChange"
-                  className="textInput"
-                  type="password"
-                  maxLength="50"
-                  defaultValue={props.currentUser.password}
-                />
-              </div>
+              <EditComponents
+                field={"Email"}
+                id={"emailChange"}
+                type={"email"}
+                userValue={props.currentUser.email}
+              />
+              <EditComponents
+                field={"Password"}
+                id={"passwordChange"}
+                type={"password"}
+                userValue={props.currentUser.password}
+              />
 
               {props.currentUser.type == 0 ? (
                 <div className="attributeSelection">
@@ -120,28 +112,20 @@ export default function EditProfile(props) {
                 <></>
               )}
 
-              <div className="attributeSelection">
-                <div className="abelFont">Sector</div>
-                <input
-                  id="sectorChange"
-                  className="textInput"
-                  type="text"
-                  maxLength="50"
-                  defaultValue={props.currentUser.sector}
-                />
-              </div>
+              <EditComponents
+                field={"Sector"}
+                id={"sectorChange"}
+                type={"text"}
+                userValue={props.currentUser.sector}
+              />
 
               {props.currentUser.type == 0 ? (
-                <div className="attributeSelection">
-                  <div className="abelFont">Position</div>
-                  <input
-                    id="occupationChange"
-                    className="textInput"
-                    type="text"
-                    maxLength="50"
-                    defaultValue={props.currentUser.occupation}
-                  />
-                </div>
+                <EditComponents
+                  field={"Position"}
+                  id={"occupationChange"}
+                  type={"text"}
+                  userValue={props.currentUser.occupation}
+                />
               ) : (
                 <></>
               )}
@@ -176,16 +160,12 @@ export default function EditProfile(props) {
                 />
               </div>
 
-              <div className="attributeSelection">
-                <div className="abelFont">LinkedIn URL</div>
-                <input
-                  id="linkedinChange"
-                  className="textInput"
-                  type="url"
-                  maxLength="50"
-                  defaultValue={props.currentUser.linkedin}
-                />
-              </div>
+              <EditComponents
+                field={"LinkedIn URL"}
+                id={"linkedinChange"}
+                type={"url"}
+                userValue={props.currentUser.linkedin}
+              />
             </div>
 
             <div className="attributeSelection">

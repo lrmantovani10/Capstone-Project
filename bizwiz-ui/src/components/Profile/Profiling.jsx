@@ -2,6 +2,8 @@ import axios from "axios";
 import Apping from "../App/Apping";
 let App = new Apping();
 export default class Profiling {
+
+  // Send a logout request and clear the local and session storages if successful.
   async handleLogout() {
     const userToken = localStorage.getItem("userToken");
     if (userToken.length == 0) {
@@ -25,6 +27,7 @@ export default class Profiling {
       });
   }
 
+  // Send a request to delete the user's profile.
   async handleDelete(currentUser) {
     if (confirm("Delete account?")) {
       const userToken = localStorage.getItem("userToken");

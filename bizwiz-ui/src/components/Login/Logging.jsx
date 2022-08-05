@@ -2,6 +2,7 @@ import axios from "axios";
 import Apping from "../App/Apping";
 let App = new Apping();
 export default class Logging {
+  // Send a login request with the user's credentials.
   async handleLogin() {
     const email = document.querySelector("#loginInput").value;
     const password = document.querySelector("#passInput").value;
@@ -20,6 +21,7 @@ export default class Logging {
       });
   }
 
+  // Handle a Facebook login failure.
   facebookFailure() {
     App.changeMessage(
       "Error logging in with Facebook. Please try again!",
@@ -27,6 +29,7 @@ export default class Logging {
     );
   }
 
+  // Send a Facebook login request and handle the Facebook API's response to the request.
   async responseFacebook(response) {
     await axios
       .post(`${process.env.REACT_APP_APIURL}/facebook_login`, {

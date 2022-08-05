@@ -7,6 +7,7 @@ export default class Swiping {
     this.setSwipeCount = setSwipeCount;
   }
 
+  // Function that compares two user objects by distance. Used for sorting.
   compareFunction(a, b) {
     if (a.distance < b.distance) {
       return -1;
@@ -16,6 +17,7 @@ export default class Swiping {
     return 0;
   }
 
+  // Make a request to obtain the profiles of potential matches.
   async getSwipes(userLocation, updateClass) {
     const userToken = localStorage.getItem("userToken");
     const headers = {
@@ -51,6 +53,7 @@ export default class Swiping {
       });
   }
 
+  // Send a notification email to the matched user whenever a match occurs.
   async sendEmail(body, headers, profileCopy, updateClass, swipeCount) {
     await axios
       .post(`${process.env.REACT_APP_APIURL}/send_email`, body, headers)
@@ -72,6 +75,8 @@ export default class Swiping {
       });
   }
 
+  // Get more potential matches or render a notification message whenever the user
+  // reaches 20 swipes or there are no more profiles that pass its filters.
   async swipeLimit(swipeCount, profileCopy, updateClass) {
     this.setProfiles(profileCopy);
     updateClass.updateParameters(
@@ -86,6 +91,8 @@ export default class Swiping {
     }
   }
 
+  // Update the user's profile with the profiles that they liked/rejected whenever they swipe. Also
+  // change the matched user's profile to add a match to its "matches" array whenever a match occurs.
   async handleSwipe(
     type,
     userEmail,

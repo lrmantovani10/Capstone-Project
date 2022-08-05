@@ -2,6 +2,8 @@ import axios from "axios";
 import Apping from "../App/Apping";
 let App = new Apping();
 export default class Signing {
+
+  // Make sure that all of the required fields have been filled out.
   checkConditions(
     name,
     email,
@@ -32,6 +34,7 @@ export default class Signing {
     return true;
   }
 
+  // After clicking the "Register" button, send a request to the /signup endpoint to register the new user.
   async handleRegister() {
     const name = document.querySelector("#nameInput").value;
     const email = document.querySelector("#emailInput").value;

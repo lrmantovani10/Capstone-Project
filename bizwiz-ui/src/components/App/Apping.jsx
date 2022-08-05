@@ -4,6 +4,8 @@ export default class Apping {
     this.setResume = setResume;
     this.setExtras = setExtras;
   }
+
+  // Updating the parameters (image, name, etc.) of the profile displayed on the page.
   updateParameters(user, setFunction) {
     if (user) {
       if (user.profile_picture.length > 0) {
@@ -31,6 +33,7 @@ export default class Apping {
     }
   }
 
+  // Change the update message displayed on the screen.
   changeMessage(newMessage, newColor) {
     const messageElement = document.getElementById("returnResult");
     if (newMessage) messageElement.innerHTML = newMessage;

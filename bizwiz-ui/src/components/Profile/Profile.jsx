@@ -6,6 +6,8 @@ import Message from "../Message/Message";
 import Button from "@mui/material/Button";
 import { ThemeProvider } from "@mui/material";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import ProfileComponents from "./ProfileComponents";
+
 export default function Profile(props) {
   useEffect(() => {
     props.setCurrentUser(1);
@@ -203,50 +205,23 @@ export default function Profile(props) {
 
           <div className="profileFooter">
             <div className="swipingBasic">
-              <div className="interestsDiv">
-                <h3 className="abelFont whiteAbel">Sectors of Interest</h3>
-                <div className="currentInterests">
-                  {props.currentUser.interested_sectors.map(
-                    (element, index) => {
-                      return (
-                        <p className="interestElement" key={"sector" + index}>
-                          {element}{" "}
-                        </p>
-                      );
-                    }
-                  )}{" "}
-                </div>
-              </div>
+              <ProfileComponents
+                parameter={"sector"}
+                title={"Sectors of Interest"}
+                userArray={props.currentUser.interested_sectors}
+              />
 
-              <div className="interestsDiv">
-                <h3 className="abelFont whiteAbel">Positions of Interest</h3>
-                <div className="currentInterests">
-                  {props.currentUser.interested_positions.map(
-                    (element, index) => {
-                      return (
-                        <p className="interestElement" key={"position" + index}>
-                          {element}{" "}
-                        </p>
-                      );
-                    }
-                  )}{" "}
-                </div>
-              </div>
+              <ProfileComponents
+                parameter={"position"}
+                title={"Positions of Interest"}
+                userArray={props.currentUser.interested_positions}
+              />
 
-              <div className="interestsDiv">
-                <h3 className="abelFont whiteAbel">Locations of Interest</h3>
-                <div className="currentInterests">
-                  {props.currentUser.interested_locations.map(
-                    (element, index) => {
-                      return (
-                        <p className="interestElement" key={"location" + index}>
-                          {element}{" "}
-                        </p>
-                      );
-                    }
-                  )}{" "}
-                </div>
-              </div>
+              <ProfileComponents
+                parameter={"location"}
+                title={"Locations of Interest"}
+                userArray={props.currentUser.interested_locations}
+              />
             </div>
           </div>
         </div>

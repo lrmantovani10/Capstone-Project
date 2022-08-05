@@ -13,6 +13,8 @@ export default class Matching {
     this.setChatting = setChatting;
     this.setCurrentChannel = setCurrentChannel;
   }
+
+  // Send a request to retrieve all of the user's matches.
   async getMatches() {
     const userToken = localStorage.getItem("userToken");
     if (userToken.length > 0) {
@@ -47,6 +49,9 @@ export default class Matching {
     }
   }
 
+  // Send a request to remove a profile from the user's "matches" array and insert
+  // it into the array of rejected profiles. Do the same for the matched profile in
+  // relation to the current user. 
   async handleEndMatch(secondId, firstId) {
     if (confirm("Are you sure you want to remove this match?")) {
       const body = {
@@ -74,6 +79,8 @@ export default class Matching {
     }
   }
 
+  // Send a request to the /manage_chat endpoint to create or retrieve a Sendbird 
+  // channel between the two users when either one of them clicks the "Message" button.
   async handleChat(firstId, secondId, firstName, secondName) {
     let ids = [firstId, secondId];
     ids.sort();

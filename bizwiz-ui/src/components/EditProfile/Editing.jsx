@@ -6,11 +6,14 @@ export default class Editing {
   constructor(setCurrentUser) {
     this.setCurrentUser = setCurrentUser;
   }
+
+  // Displaying the newly uploaded image
   handleChangeImage(event, targetId) {
     const picturePreview = document.getElementById(targetId);
     picturePreview.src = URL.createObjectURL(event.target.files[0]);
   }
 
+  // Making numeric value fall within constraints
   calibrateValue(e, currentUser) {
     let years = e.value;
     {
@@ -23,6 +26,7 @@ export default class Editing {
     this.setCurrentUser(newUser);
   }
 
+  // Removing an interest field
   handleRemove(index, field, currentUser) {
     let user = {
       ...currentUser,
@@ -31,6 +35,7 @@ export default class Editing {
     this.setCurrentUser(user);
   }
 
+  // Adding an interest field
   handleAdd(itemId, field, currentUser) {
     const newItem = document.getElementById(itemId).value;
     let user = {
@@ -42,6 +47,7 @@ export default class Editing {
     this.setCurrentUser(user);
   }
 
+  // Uploading a file to the database (such as an image or a resume)
   async storeFile(file, headers, destination, category, currentUser) {
     if (file) {
       let newForm = new FormData();
@@ -81,6 +87,7 @@ export default class Editing {
     }
   }
 
+  // Check if a user exists when signing up
   async checkUser(email, headers) {
     await axios
       .post(
@@ -100,6 +107,7 @@ export default class Editing {
       });
   }
 
+  // Make changes to a user's document in the MongoDB database
   async changeProfile(body, headers) {
     await axios
       .post(`${process.env.REACT_APP_APIURL}/change_profile`, body, headers)
@@ -112,6 +120,7 @@ export default class Editing {
       });
   }
 
+  // Upload the six optional pictures
   async storeExtraPictures(files, headers, currentUser) {
     let index = 0;
     for (const file of files) {
@@ -126,6 +135,7 @@ export default class Editing {
     }
   }
 
+  // Get a user's location through the geolocation API. 
   async getLocation() {
     let pos;
     if (navigator.geolocation) {
@@ -150,6 +160,7 @@ export default class Editing {
     }
   }
 
+  // Save user's profile updates in the database.
   async handleSave(currentUser) {
     const email = document.getElementById("emailChange").value;
     const password = document.getElementById("passwordChange").value;
