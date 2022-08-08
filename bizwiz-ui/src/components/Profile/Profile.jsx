@@ -110,7 +110,7 @@ export default function Profile(props) {
                           &nbsp; year-old living in &nbsp;
                         </>
                       ) : (
-                        <span>Located in</span>
+                        <span>Located in &nbsp;</span>
                       )}
                       {props.currentUser.readable_address}📍
                     </div>
