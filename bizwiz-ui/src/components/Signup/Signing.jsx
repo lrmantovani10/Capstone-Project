@@ -45,7 +45,7 @@ export default class Signing {
   }
 
   // After clicking the "Register" button, send a request to the /signup endpoint to register the new user.
-  async handleRegister() {
+  async handleRegister(self) {
     const name = document.querySelector("#nameInput").value;
     const email = document.querySelector("#emailInput").value;
     const password = document.querySelector("#passwordInput").value;
@@ -61,7 +61,7 @@ export default class Signing {
     });
 
     if (
-      !this.checkConditions(
+      !self.checkConditions(
         name,
         email,
         password,
