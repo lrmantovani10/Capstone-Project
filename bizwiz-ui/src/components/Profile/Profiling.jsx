@@ -28,6 +28,10 @@ export default class Profiling {
 
   // Send a request to delete the user's profile.
   async handleDelete(currentUser) {
+    let finalUser = {};
+    finalUser._id = currentUser._id;
+    finalUser.matches = currentUser.matches;
+
     if (confirm("Delete account?")) {
       const userToken = localStorage.getItem("userToken");
       if (userToken.length == 0) {
