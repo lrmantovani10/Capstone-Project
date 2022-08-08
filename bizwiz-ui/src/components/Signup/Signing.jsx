@@ -33,6 +33,17 @@ export default class Signing {
     return true;
   }
 
+  // Make only one box be checked at a time
+  handleCheck(id) {
+    const checks = document.querySelectorAll(".accountTypes");
+    const currentElement = document.getElementById(id);
+
+    checks.forEach((element) => {
+      if (element.checked && element.id != id && currentElement.checked)
+        element.checked = false;
+    });
+  }
+
   // After clicking the "Register" button, send a request to the /signup endpoint to register the new user.
   async handleRegister() {
     const name = document.querySelector("#nameInput").value;

@@ -4,16 +4,6 @@ import { ThemeProvider } from "@emotion/react";
 import { Button } from "@mui/material";
 import Wizard from "../Welcome/Wizard.png";
 
-function handleCheck(id) {
-  const checks = document.querySelectorAll(".accountTypes");
-  const currentElement = document.getElementById(id);
-
-  checks.forEach((element) => {
-    if (element.checked && element.id != id && currentElement.checked)
-      element.checked = false;
-  });
-}
-
 export default function Signup(props) {
   return (
     <div className="signupDiv">
@@ -109,7 +99,7 @@ export default function Signup(props) {
                             value=""
                             id="check1"
                             onClick={() => {
-                              handleCheck("check1");
+                              props.Signinfunctions.handleCheck("check1");
                             }}
                           />
                           <label className="form-check-label" htmlFor="check1">
@@ -121,7 +111,7 @@ export default function Signup(props) {
                             value=""
                             id="check2"
                             onClick={() => {
-                              handleCheck("check2");
+                              props.Signinfunctions.handleCheck("check2");
                             }}
                           />
                           <label className="form-check-label" htmlFor="check2">
@@ -146,7 +136,7 @@ export default function Signup(props) {
                         <div className="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                           <ThemeProvider theme={props.purpleTheme}>
                             <Button
-                              onClick={props.handleRegister}
+                              onClick={props.Signinfunctions.handleRegister}
                               variant="contained"
                               style={{
                                 color: "white",
