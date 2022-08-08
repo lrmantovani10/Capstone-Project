@@ -30,7 +30,10 @@ export default class Profiling {
   async handleDelete(currentUser) {
     let finalUser = {};
     finalUser._id = currentUser._id;
-    finalUser.matches = currentUser.matches;
+    finalUser.matches = [];
+    for (const match of currentUser.matches) {
+      finalUser.matches.push(match._id);
+    }
 
     if (confirm("Delete account?")) {
       const userToken = localStorage.getItem("userToken");
