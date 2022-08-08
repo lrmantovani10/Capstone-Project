@@ -135,7 +135,7 @@ export default class Editing {
     }
   }
 
-  // Get a user's location through the geolocation API. 
+  // Get a user's location through the geolocation API.
   async getLocation() {
     let pos;
     if (navigator.geolocation) {

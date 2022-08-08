@@ -1,4 +1,5 @@
 # Capstone-Project
+
 Repo containing code for Lucas Mantovani's Meta University capstone project.
 
 #### User Roles / Personas
@@ -8,11 +9,11 @@ Repo containing code for Lucas Mantovani's Meta University capstone project.
 
 #### Timeline
 
-* Week 4 (Starting July 5th): Finish authentication
-* Week 5: Modify profile option and add filters, preferences
-* Week 6: Make matching system
-* Week 7: integrate with Messenger API on Matches page
-* Week 8: Stretch features (check Google Doc), fix bugs
-* Week 9: Finish stretch features, fix bugs
+- Week 4 (Starting July 5th): Finish authentication
+- Week 5: Modify profile option and add filters, preferences
+- Week 6: Make matching system
+- Week 7: integrate with Messenger API on Matches page
+- Week 8: Stretch features (check Google Doc), fix bugs
+- Week 9: Finish stretch features, fix bugs
 
-- August 10th: fully functional prototype with scenarios for the demo (dry run)
+* August 10th: fully functional prototype with scenarios for the demo (dry run)

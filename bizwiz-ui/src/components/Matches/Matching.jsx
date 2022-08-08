@@ -32,8 +32,7 @@ export default class Matching {
             .get(`${process.env.REACT_APP_APIURL}/matches`, headers)
             .then(async (response) => {
               let userMatches = response.data;
-              if (userMatches.length == 0)
-                this.setTemporaryMessage(2);
+              if (userMatches.length == 0) this.setTemporaryMessage(2);
               this.setMatches(userMatches);
               this.setChatting(false);
             })
@@ -51,7 +50,7 @@ export default class Matching {
 
   // Send a request to remove a profile from the user's "matches" array and insert
   // it into the array of rejected profiles. Do the same for the matched profile in
-  // relation to the current user. 
+  // relation to the current user.
   async handleEndMatch(secondId, firstId) {
     if (confirm("Are you sure you want to remove this match?")) {
       const body = {
@@ -79,7 +78,7 @@ export default class Matching {
     }
   }
 
-  // Send a request to the /manage_chat endpoint to create or retrieve a Sendbird 
+  // Send a request to the /manage_chat endpoint to create or retrieve a Sendbird
   // channel between the two users when either one of them clicks the "Message" button.
   async handleChat(firstId, secondId, firstName, secondName) {
     let ids = [firstId, secondId];

@@ -2,7 +2,6 @@ import axios from "axios";
 import Apping from "../App/Apping";
 let App = new Apping();
 export default class Signing {
-
   // Make sure that all of the required fields have been filled out.
   checkConditions(
     name,

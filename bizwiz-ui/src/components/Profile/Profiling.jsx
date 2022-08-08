@@ -2,7 +2,6 @@ import axios from "axios";
 import Apping from "../App/Apping";
 let App = new Apping();
 export default class Profiling {
-
   // Send a logout request and clear the local and session storages if successful.
   async handleLogout() {
     const userToken = localStorage.getItem("userToken");

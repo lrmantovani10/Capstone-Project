@@ -61,31 +61,32 @@
 .sendbird-image-renderer__image {
   cursor: auto;
 }
-@media (max-width: 1200px){
-  .matchPicture{
-    width:200px;
+@media (max-width: 1200px) {
+  .matchPicture {
+    width: 200px;
     height: 240px;
     margin-top: 50px;
   }
-  .card-text, #companyWebsite{
+  .card-text,
+  #companyWebsite {
     margin-left: 8px;
   }
-  .matchAbout{
+  .matchAbout {
     margin-left: 15px;
   }
 }
-@media (max-width: 830px){
-  .matchPicture{
-    width:170px;
+@media (max-width: 830px) {
+  .matchPicture {
+    width: 170px;
     height: 180px;
   }
 }
-@media (max-width: 770px){
-  .matchPicture{
-    width:170px;
+@media (max-width: 770px) {
+  .matchPicture {
+    width: 170px;
     height: 180px;
   }
-  #imageHeader{
+  #imageHeader {
     text-align: center;
   }
 }

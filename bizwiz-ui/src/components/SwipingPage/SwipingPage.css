@@ -14,7 +14,7 @@
   border: 2px solid white;
   border-radius: 5%;
   max-width: 500px;
-  width:80%;
+  width: 80%;
   padding: 25px;
 }
 .swipingBasic {
@@ -100,9 +100,9 @@ h2 {
   height: 130px;
   border-radius: 30%;
 }
-@media(max-width:600px){
-  .workPicture{
-    width:80px;
+@media (max-width: 600px) {
+  .workPicture {
+    width: 80px;
     height: 80px;
   }
 }
