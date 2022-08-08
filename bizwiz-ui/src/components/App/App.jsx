@@ -44,7 +44,7 @@ export default function App() {
   const AppFunctions = new Apping(setProfileImage, setResume, setExtras);
   const EditFunctions = new Editing(setCurrentUser);
   const LoginFunctions = new Logging();
-  const SigninFunctions = new Signing();
+  const SignupFunctions = new Signing();
   const ProfileFunctions = new Profiling();
   const MatchingFunctions = new Matching(
     setCurrentUser,
@@ -95,7 +95,7 @@ export default function App() {
             element={
               <Signup
                 purpleTheme={purpleTheme}
-                SigninFunctions={SigninFunctions}
+                SignupFunctions={SignupFunctions}
               />
             }
           />
