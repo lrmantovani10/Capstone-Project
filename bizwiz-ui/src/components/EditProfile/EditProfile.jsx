@@ -168,7 +168,7 @@ export default function EditProfile(props) {
               />
             </div>
 
-            <div className="attributeSelection">
+            <div className="attributeSelection" id="introText">
               <div className="abelFont">Intro</div>
               <textarea
                 id="aboutChange"

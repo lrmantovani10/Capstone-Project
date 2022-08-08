@@ -176,3 +176,49 @@
   margin-top: 20px;
   margin-bottom: 20px;
 }
+@media (max-width: 970px) {
+  #profileImage {
+    width: 250px;
+    height: 312.5px;
+  }
+  .myMap {
+    width: 350px;
+    height: 250px;
+  }
+}
+@media (max-width: 750px) {
+  #profileImage {
+    width: 175px;
+    height: 270px;
+  }
+  .myMap {
+    width: 350px;
+    height: 250px;
+  }
+  .swipingBasic {
+    gap: 20px;
+  }
+}
+@media (max-width: 630px) {
+  #profileImage {
+    width: 300px;
+    height: 350px;
+  }
+  .myMap {
+    width: 300px;
+    height: 250px;
+  }
+  .swipingBasic {
+    gap: 20px;
+    flex-direction: column;
+  }
+  #editButton {
+    position: static;
+  }
+  .secondItem {
+    max-width: 300px;
+  }
+  #currentInfo {
+    width: 300px;
+  }
+}
